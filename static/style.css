@@ -1,0 +1,37 @@
+/* Estilo general del cuerpo de la página */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    /* Un gris muy claro */
+    background-color: #f0f2f5;
+    /* Texto oscuro, no negro puro */
+    color: #1c1e21;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Contenedor principal con efecto de tarjeta */
+.container {
+    background-color: #ffffff;
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 500px;
+    border: 1px solid #ddd;
+}
+
+/* Estilo para los encabezados */
+h1 {
+    color: #0056b3; /* Un azul corporativo */
+    margin-bottom: 15px;
+}
+
+/* Estilo para los párrafos */
+p {
+    font-size: 1.1em;
+    line-height: 1.6;
+    color: #333;
+}
