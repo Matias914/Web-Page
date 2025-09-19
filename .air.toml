@@ -1,0 +1,18 @@
+root = "."
+tmp_dir = "tmp"
+
+[build]
+cmd = "go build -o ./tmp/main ./cmd/web"
+bin = "tmp/main"
+full_bin = "./tmp/main"
+delay = 1000 # ms
+exclude_dir = ["assets", "tmp", "vendor", "testdata"]
+exclude_file = []
+exclude_regex = ["_test.go"]
+follow_symlink = true
+
+[log]
+time = true
+
+[custom_command]
+test = "go test -v ./..."
