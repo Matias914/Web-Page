@@ -26,7 +26,8 @@ func WithRecovery(next http.Handler) http.Handler {
 		// puede recuperarse o no. Si no lo hace, se loguea.
 		defer func() {
 			if err := recover(); err != nil {
-				log.Printf("Recuperado de pánico: %v", err)
+				log.Printf("El servidor entró en pánico %v", err)
+				//TODO: hacer pagina web para el error.
 				http.Error(w, "Error interno del servidor", http.StatusInternalServerError)
 			}
 		}()

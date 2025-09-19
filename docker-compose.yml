@@ -1,0 +1,34 @@
+services:
+  # Servicio para la base de datos PostgreSQL
+  db:
+    image: postgres:16-alpine
+    container_name: movies-app-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ./internal/storage/postgres/schema:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  # Servicio para la aplicación Go
+  app:
+    build: .
+    image: movies-app:latest
+    container_name: movies-app-web
+    ports:
+      - "${APP_PORT}:8080"
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    depends_on:
+      - db
+
+# Definición de los volúmenes para persistencia
+volumes:
+  postgres_data:

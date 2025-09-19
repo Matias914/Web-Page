@@ -1,5 +1,5 @@
 # ---------------------------
-# Etapa de construcción
+# Etapa de construcción (Builder)
 # ---------------------------
 FROM golang:1.24.6-alpine AS builder
 LABEL authors="matiasortiz"
@@ -7,18 +7,24 @@ LABEL authors="matiasortiz"
 # Establecer variables para un binario estático
 ENV CGO_ENABLED=0
 ENV GOOS=linux
+ENV GOARCH=amd64
 
 WORKDIR /app
 
-# Copiar dependencias primero para caching (descomentá si tenés go.mod y go.sum)
-# COPY go.mod go.sum ./
-# RUN go mod download
+# 1. Copiamos solo los archivos de dependencias para aprovechar la caché de Docker.
+#    Esta capa solo se reconstruye si go.mod o go.sum cambian.
+COPY go.mod go.sum ./
 
-# Copiar el código fuente
+# 2. Descargamos las dependencias.
+RUN go mod download
+RUN go mod verify
+
+# 3. Copiamos el resto del código fuente.
+#    Esta capa se reconstruye si cualquier archivo .go cambia.
 COPY . .
 
-# Compilar la aplicación de forma limpia
-RUN go build -ldflags="-s -w" -o /app/main .
+# 4. Construimos la aplicación apuntando al main correcto dentro de cmd/web.
+RUN go build -ldflags="-s -w" -o /app/main ./cmd/web
 
 # ---------------------------
 # Etapa final minimalista
@@ -32,14 +38,12 @@ RUN apk add --no-cache ca-certificates \
 
 WORKDIR /app
 
-# Copiar binario y assets desde builder, asignando propietario
+# Copiamos el binario compilado desde la etapa de construcción
 COPY --from=builder --chown=app:app /app/main /app/main
-COPY --from=builder --chown=app:app /app/templates /app/templates
-COPY --from=builder --chown=app:app /app/errors /app/errors
-COPY --from=builder --chown=app:app /app/static /app/static
 
-# Asegurar permisos de ejecución
-RUN chmod +x /app/main
+# Copiamos la carpeta 'web' completa que contiene templates y static.
+# Esto simplifica las múltiples líneas de COPY que tenías antes.
+COPY --from=builder --chown=app:app /app/web ./web
 
 # Exponer puerto y definir usuario no root
 EXPOSE 8080
