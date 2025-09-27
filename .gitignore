@@ -17,7 +17,7 @@ go.work
 go.work.sum
 
 .env
-/tmp
+tmp/
 
 .idea/
 .vscode/
