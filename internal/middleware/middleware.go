@@ -11,7 +11,6 @@ import (
 func WithLogging(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
-		// Se invoca al siguiente handler
 		next.ServeHTTP(w, r)
 		log.Printf("%s %s %v", r.Method, r.URL.Path, time.Since(start))
 	})
@@ -21,13 +20,9 @@ func WithLogging(next http.Handler) http.Handler {
 // después de un error fatal.
 func WithRecovery(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Al tener defer se ejecuta luego de la función (haya habido error o no)
-		// Si no hubo error, recover() retorna nil. Si hubo error, depende de si
-		// puede recuperarse o no. Si no lo hace, se loguea.
 		defer func() {
 			if err := recover(); err != nil {
 				log.Printf("El servidor entró en pánico %v", err)
-				//TODO: hacer pagina web para el error.
 				http.Error(w, "Error interno del servidor", http.StatusInternalServerError)
 			}
 		}()

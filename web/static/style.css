@@ -25,7 +25,8 @@ body {
 
 /* Estilo para los encabezados */
 h1 {
-    color: #0056b3; /* Un azul corporativo */
+    /* Un azul corporativo */
+    color: #0056b3;
     margin-bottom: 15px;
 }
 

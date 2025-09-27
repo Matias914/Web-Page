@@ -48,7 +48,7 @@ func (t *Renderer) loadTemplates(templatesPath string) error {
 	return nil
 }
 
-// executeTemplate recibe el escritor del paquete de respuesta, el nombre de la plantilla a
+// renderToBuffer recibe el escritor del paquete de respuesta, el nombre de la plantilla a
 // ejecutar y los datos dinamicos que podrian necesitarse. Con esto, se busca la plantilla y
 // se prepara el Content-Type de la respuesta. Retorna un código de OK si no hubo errores.
 func (t *Renderer) renderToBuffer(name string, data interface{}) (*bytes.Buffer, error) {

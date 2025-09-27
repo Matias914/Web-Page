@@ -7,15 +7,13 @@ import (
 
 // Config guarda la información de entorno.
 type Config struct {
-	AppPort string // Puerto en el que escuchará el servidor
-
-	// ----------- Configuración Base de Datos ----------- //
-	DBHost     string // Dirección de la Base de Datos (nombre de contenedor para Docker)
-	DBPort     string // Puerto de la Base de Datos
-	DBUser     string // Nombre del Usuario para la conexión
-	DBPassword string // Contraseña
-	DBName     string // Nombre de la Base de Datos
-	DSN        string // Data Source Name: la cadena de conexión completa y formateada.
+	AppPort    string
+	DBHost     string
+	DBPort     string
+	DBUser     string
+	DBPassword string
+	DBName     string
+	DSN        string
 }
 
 // getEnv obtiene el valor de una variable de entorno dada su clave.

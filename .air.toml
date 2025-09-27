@@ -1,18 +1,19 @@
-root = "."
 tmp_dir = "tmp"
 
 [build]
-cmd = "go build -o ./tmp/main ./cmd/web"
+cmd = "sqlc generate && go build -o ./tmp/main ./cmd/web"
 bin = "tmp/main"
-full_bin = "./tmp/main"
-delay = 1000 # ms
-exclude_dir = ["assets", "tmp", "vendor", "testdata"]
-exclude_file = []
+include_ext = ["go", "sql"]
+exclude_dir = [
+    "tmp",
+    "testdata",
+    "vendor",
+    "web",
+    "internal/storage/postgres/sqlc",
+    "internal/storage/postgres/schema",
+    "internal/storage/postgres/migrations"
+]
 exclude_regex = ["_test.go"]
-follow_symlink = true
 
 [log]
 time = true
-
-[custom_command]
-test = "go test -v ./..."

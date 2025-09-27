@@ -5,13 +5,57 @@
 package sqlc
 
 import (
-	"database/sql"
+	"time"
 )
 
+type Category struct {
+	GenreID int32 `json:"genre_id"`
+	MovieID int64 `json:"movie_id"`
+}
+
+type Celebrity struct {
+	ID        int64     `json:"id"`
+	Name      string    `json:"name"`
+	BirthDate time.Time `json:"birth_date"`
+}
+
+type Genre struct {
+	ID   int32  `json:"id"`
+	Name string `json:"name"`
+}
+
 type Movie struct {
-	ID          int32          `json:"id"`
-	Title       string         `json:"title"`
-	Director    sql.NullString `json:"director"`
-	ReleaseYear sql.NullInt32  `json:"release_year"`
-	CreatedAt   sql.NullTime   `json:"created_at"`
+	ID              int64     `json:"id"`
+	Title           string    `json:"title"`
+	Synopsis        string    `json:"synopsis"`
+	ReleasedAt      time.Time `json:"released_at"`
+	PosterUrl       string    `json:"poster_url"`
+	DurationMinutes int32     `json:"duration_minutes"`
+}
+
+type Rating struct {
+	UserID    int64     `json:"user_id"`
+	MovieID   int64     `json:"movie_id"`
+	Rating    int32     `json:"rating"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type Review struct {
+	UserID    int64     `json:"user_id"`
+	MovieID   int64     `json:"movie_id"`
+	Comment   string    `json:"comment"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type Role struct {
+	MovieID     int64  `json:"movie_id"`
+	CelebrityID int64  `json:"celebrity_id"`
+	Role        string `json:"role"`
+}
+
+type User struct {
+	ID        int64     `json:"id"`
+	Username  string    `json:"username"`
+	Mail      string    `json:"mail"`
+	CreatedAt time.Time `json:"created_at"`
 }

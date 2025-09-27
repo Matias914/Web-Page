@@ -7,66 +7,88 @@ package sqlc
 
 import (
 	"context"
-	"database/sql"
+	"time"
 )
 
-const createMovie = `-- name: CreateMovie :one
-INSERT INTO movies (title, director, release_year)
-VALUES ($1, $2, $3)
-RETURNING id, title, director, release_year, created_at
+const addMovie = `-- name: AddMovie :one
+INSERT INTO movies (title, synopsis, released_at, poster_url, duration_minutes)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id, title, synopsis, released_at, poster_url, duration_minutes
 `
 
-type CreateMovieParams struct {
-	Title       string         `json:"title"`
-	Director    sql.NullString `json:"director"`
-	ReleaseYear sql.NullInt32  `json:"release_year"`
+type AddMovieParams struct {
+	Title           string    `json:"title"`
+	Synopsis        string    `json:"synopsis"`
+	ReleasedAt      time.Time `json:"released_at"`
+	PosterUrl       string    `json:"poster_url"`
+	DurationMinutes int32     `json:"duration_minutes"`
 }
 
-func (q *Queries) CreateMovie(ctx context.Context, arg CreateMovieParams) (Movie, error) {
-	row := q.db.QueryRowContext(ctx, createMovie, arg.Title, arg.Director, arg.ReleaseYear)
+func (q *Queries) AddMovie(ctx context.Context, arg AddMovieParams) (Movie, error) {
+	row := q.db.QueryRowContext(ctx, addMovie,
+		arg.Title,
+		arg.Synopsis,
+		arg.ReleasedAt,
+		arg.PosterUrl,
+		arg.DurationMinutes,
+	)
 	var i Movie
 	err := row.Scan(
 		&i.ID,
 		&i.Title,
-		&i.Director,
-		&i.ReleaseYear,
-		&i.CreatedAt,
+		&i.Synopsis,
+		&i.ReleasedAt,
+		&i.PosterUrl,
+		&i.DurationMinutes,
 	)
 	return i, err
 }
 
-const deleteMovie = `-- name: DeleteMovie :exec
-DELETE FROM movies WHERE id = $1
+const deleteMovieById = `-- name: DeleteMovieById :exec
+DELETE FROM movies
+WHERE id = $1
 `
 
-func (q *Queries) DeleteMovie(ctx context.Context, id int32) error {
-	_, err := q.db.ExecContext(ctx, deleteMovie, id)
+func (q *Queries) DeleteMovieById(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteMovieById, id)
 	return err
 }
 
-const getMovie = `-- name: GetMovie :one
-SELECT id, title, director, release_year, created_at FROM movies WHERE id = $1
+const getMovieById = `-- name: GetMovieById :one
+SELECT id, title, synopsis, released_at, poster_url, duration_minutes
+FROM movies
+WHERE id = $1
 `
 
-func (q *Queries) GetMovie(ctx context.Context, id int32) (Movie, error) {
-	row := q.db.QueryRowContext(ctx, getMovie, id)
+func (q *Queries) GetMovieById(ctx context.Context, id int64) (Movie, error) {
+	row := q.db.QueryRowContext(ctx, getMovieById, id)
 	var i Movie
 	err := row.Scan(
 		&i.ID,
 		&i.Title,
-		&i.Director,
-		&i.ReleaseYear,
-		&i.CreatedAt,
+		&i.Synopsis,
+		&i.ReleasedAt,
+		&i.PosterUrl,
+		&i.DurationMinutes,
 	)
 	return i, err
 }
 
-const listMovies = `-- name: ListMovies :many
-SELECT id, title, director, release_year, created_at FROM movies ORDER BY created_at DESC
+const listMoviesByReleaseDate = `-- name: ListMoviesByReleaseDate :many
+SELECT id, title, synopsis, released_at, poster_url, duration_minutes
+FROM movies
+ORDER BY released_at DESC
+LIMIT $1
+OFFSET $2
 `
 
-func (q *Queries) ListMovies(ctx context.Context) ([]Movie, error) {
-	rows, err := q.db.QueryContext(ctx, listMovies)
+type ListMoviesByReleaseDateParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) ListMoviesByReleaseDate(ctx context.Context, arg ListMoviesByReleaseDateParams) ([]Movie, error) {
+	rows, err := q.db.QueryContext(ctx, listMoviesByReleaseDate, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -77,9 +99,10 @@ func (q *Queries) ListMovies(ctx context.Context) ([]Movie, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&i.Title,
-			&i.Director,
-			&i.ReleaseYear,
-			&i.CreatedAt,
+			&i.Synopsis,
+			&i.ReleasedAt,
+			&i.PosterUrl,
+			&i.DurationMinutes,
 		); err != nil {
 			return nil, err
 		}
@@ -94,69 +117,43 @@ func (q *Queries) ListMovies(ctx context.Context) ([]Movie, error) {
 	return items, nil
 }
 
-const searchMovies = `-- name: SearchMovies :many
-SELECT id, title, director, release_year, created_at FROM movies
-WHERE title ILIKE '%' || $1 || '%'
-OR director ILIKE '%' || $1 || '%'
-`
-
-func (q *Queries) SearchMovies(ctx context.Context, dollar_1 sql.NullString) ([]Movie, error) {
-	rows, err := q.db.QueryContext(ctx, searchMovies, dollar_1)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Movie
-	for rows.Next() {
-		var i Movie
-		if err := rows.Scan(
-			&i.ID,
-			&i.Title,
-			&i.Director,
-			&i.ReleaseYear,
-			&i.CreatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const updateMovie = `-- name: UpdateMovie :one
+const updateMovieById = `-- name: UpdateMovieById :one
 UPDATE movies
-SET title = $1, director = $2, release_year = $3
-WHERE id = $4
-RETURNING id, title, director, release_year, created_at
+SET title = $2,
+    synopsis = $3,
+    released_at = $4,
+    poster_url = $5,
+    duration_minutes = $6
+WHERE id = $1
+RETURNING id, title, synopsis, released_at, poster_url, duration_minutes
 `
 
-type UpdateMovieParams struct {
-	Title       string         `json:"title"`
-	Director    sql.NullString `json:"director"`
-	ReleaseYear sql.NullInt32  `json:"release_year"`
-	ID          int32          `json:"id"`
+type UpdateMovieByIdParams struct {
+	ID              int64     `json:"id"`
+	Title           string    `json:"title"`
+	Synopsis        string    `json:"synopsis"`
+	ReleasedAt      time.Time `json:"released_at"`
+	PosterUrl       string    `json:"poster_url"`
+	DurationMinutes int32     `json:"duration_minutes"`
 }
 
-func (q *Queries) UpdateMovie(ctx context.Context, arg UpdateMovieParams) (Movie, error) {
-	row := q.db.QueryRowContext(ctx, updateMovie,
-		arg.Title,
-		arg.Director,
-		arg.ReleaseYear,
+func (q *Queries) UpdateMovieById(ctx context.Context, arg UpdateMovieByIdParams) (Movie, error) {
+	row := q.db.QueryRowContext(ctx, updateMovieById,
 		arg.ID,
+		arg.Title,
+		arg.Synopsis,
+		arg.ReleasedAt,
+		arg.PosterUrl,
+		arg.DurationMinutes,
 	)
 	var i Movie
 	err := row.Scan(
 		&i.ID,
 		&i.Title,
-		&i.Director,
-		&i.ReleaseYear,
-		&i.CreatedAt,
+		&i.Synopsis,
+		&i.ReleasedAt,
+		&i.PosterUrl,
+		&i.DurationMinutes,
 	)
 	return i, err
 }

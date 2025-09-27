@@ -23,8 +23,6 @@ func (app *Application) handleResponse(w http.ResponseWriter, status int, name s
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(status)
-
-	// Si falla, no se puede enviar una respuesta al cliente, solo se registra el error
 	_, err = buf.WriteTo(w)
 	if err != nil {
 		log.Printf("error al escribir el buffer en la respuesta: %v", err)
@@ -36,8 +34,6 @@ func (app *Application) handleResponse(w http.ResponseWriter, status int, name s
 // Caso contrario, maneja el error.
 func (app *Application) handleServerError(w http.ResponseWriter, err error) {
 	log.Printf("error interno del servidor: %v", err)
-	// Reutiliza el createResponse para mostrar una página de error 500
-	// Si falla, usa "http.Error" como último recurso
 	if err := app.handleResponse(w, http.StatusInternalServerError, "500", nil); err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}

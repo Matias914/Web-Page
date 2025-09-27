@@ -1,17 +1,16 @@
 services:
   # Servicio para la base de datos PostgreSQL
   db:
-    image: postgres:16-alpine
+    image: postgres:15-alpine
     container_name: movies-app-db
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
-      - ./internal/storage/postgres/schema:/docker-entrypoint-initdb.d
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT}:5432"
 
   # Servicio para la aplicación Go
   app:
@@ -22,7 +21,7 @@ services:
       - "${APP_PORT}:8080"
     environment:
       POSTGRES_HOST: db
-      POSTGRES_PORT: 5432
+      POSTGRES_PORT: ${POSTGRES_PORT}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
