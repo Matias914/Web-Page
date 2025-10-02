@@ -1,5 +1,5 @@
 -- Created by Vertabelo (http://vertabelo.com)
--- Last modification date: 2025-10-02 16:40:08.698
+-- Last modification date: 2025-10-02 17:34:33.101
 
 -- tables
 -- Table: categories
@@ -79,6 +79,7 @@ CREATE INDEX idx_roles_role on roles (role ASC);
 CREATE TABLE users (
     id bigserial  NOT NULL,
     username varchar(255)  NOT NULL,
+    password varchar(255)  NOT NULL,
     mail varchar(255)  NOT NULL,
     created_at timestamp with time zone  NOT NULL DEFAULT NOW(),
     CONSTRAINT AK_USERNAME UNIQUE (username) NOT DEFERRABLE  INITIALLY IMMEDIATE,

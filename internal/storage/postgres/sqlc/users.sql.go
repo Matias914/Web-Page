@@ -12,7 +12,7 @@ import (
 const addUser = `-- name: AddUser :one
 INSERT INTO users (username, mail)
 VALUES ($1, $2)
-RETURNING id, username, mail, created_at
+RETURNING id, username, password, mail, created_at
 `
 
 type AddUserParams struct {
@@ -26,6 +26,7 @@ func (q *Queries) AddUser(ctx context.Context, arg AddUserParams) (User, error) 
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
+		&i.Password,
 		&i.Mail,
 		&i.CreatedAt,
 	)
@@ -43,7 +44,7 @@ func (q *Queries) DeleteUserById(ctx context.Context, id int64) error {
 }
 
 const getUserById = `-- name: GetUserById :one
-SELECT id, username, mail, created_at
+SELECT id, username, password, mail, created_at
 FROM users
 WHERE id = $1
 `
@@ -54,6 +55,7 @@ func (q *Queries) GetUserById(ctx context.Context, id int64) (User, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
+		&i.Password,
 		&i.Mail,
 		&i.CreatedAt,
 	)
@@ -61,7 +63,7 @@ func (q *Queries) GetUserById(ctx context.Context, id int64) (User, error) {
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT id, username, mail, created_at
+SELECT id, username, password, mail, created_at
 FROM users
 LIMIT $1
 OFFSET $2
@@ -84,6 +86,7 @@ func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, e
 		if err := rows.Scan(
 			&i.ID,
 			&i.Username,
+			&i.Password,
 			&i.Mail,
 			&i.CreatedAt,
 		); err != nil {
@@ -105,7 +108,7 @@ UPDATE users
 SET username = $2,
     mail = $3
 WHERE id = $1
-RETURNING id, username, mail, created_at
+RETURNING id, username, password, mail, created_at
 `
 
 type UpdateUserByIdParams struct {
@@ -120,6 +123,7 @@ func (q *Queries) UpdateUserById(ctx context.Context, arg UpdateUserByIdParams) 
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
+		&i.Password,
 		&i.Mail,
 		&i.CreatedAt,
 	)

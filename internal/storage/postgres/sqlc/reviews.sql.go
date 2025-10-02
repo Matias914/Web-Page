@@ -79,7 +79,7 @@ func (q *Queries) GetReview(ctx context.Context, arg GetReviewParams) (Review, e
 }
 
 const listMoviesReviewsFromUserId = `-- name: ListMoviesReviewsFromUserId :many
-SELECT user_id, movie_id, comment, rev.created_at, id, username, mail, usr.created_at
+SELECT user_id, movie_id, comment, rev.created_at, id, username, password, mail, usr.created_at
 FROM reviews AS rev
 JOIN users AS usr
 ON (rev.user_id = usr.id)
@@ -101,6 +101,7 @@ type ListMoviesReviewsFromUserIdRow struct {
 	CreatedAt   time.Time `json:"created_at"`
 	ID          int64     `json:"id"`
 	Username    string    `json:"username"`
+	Password    string    `json:"password"`
 	Mail        string    `json:"mail"`
 	CreatedAt_2 time.Time `json:"created_at_2"`
 }
@@ -121,6 +122,7 @@ func (q *Queries) ListMoviesReviewsFromUserId(ctx context.Context, arg ListMovie
 			&i.CreatedAt,
 			&i.ID,
 			&i.Username,
+			&i.Password,
 			&i.Mail,
 			&i.CreatedAt_2,
 		); err != nil {
@@ -138,7 +140,7 @@ func (q *Queries) ListMoviesReviewsFromUserId(ctx context.Context, arg ListMovie
 }
 
 const listUsersReviewsFromMovieId = `-- name: ListUsersReviewsFromMovieId :many
-SELECT user_id, movie_id, comment, rev.created_at, id, username, mail, usr.created_at
+SELECT user_id, movie_id, comment, rev.created_at, id, username, password, mail, usr.created_at
 FROM reviews AS rev
 JOIN users AS usr
 ON (rev.user_id = usr.id)
@@ -160,6 +162,7 @@ type ListUsersReviewsFromMovieIdRow struct {
 	CreatedAt   time.Time `json:"created_at"`
 	ID          int64     `json:"id"`
 	Username    string    `json:"username"`
+	Password    string    `json:"password"`
 	Mail        string    `json:"mail"`
 	CreatedAt_2 time.Time `json:"created_at_2"`
 }
@@ -180,6 +183,7 @@ func (q *Queries) ListUsersReviewsFromMovieId(ctx context.Context, arg ListUsers
 			&i.CreatedAt,
 			&i.ID,
 			&i.Username,
+			&i.Password,
 			&i.Mail,
 			&i.CreatedAt_2,
 		); err != nil {

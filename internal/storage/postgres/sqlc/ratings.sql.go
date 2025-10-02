@@ -137,7 +137,7 @@ func (q *Queries) ListMoviesRatingsFromUserId(ctx context.Context, arg ListMovie
 }
 
 const listUsersRatingsFromMovieId = `-- name: ListUsersRatingsFromMovieId :many
-SELECT user_id, movie_id, rating, rat.created_at, id, username, mail, usr.created_at
+SELECT user_id, movie_id, rating, rat.created_at, id, username, password, mail, usr.created_at
 FROM ratings AS rat
 JOIN users AS usr
 ON (usr.id = rat.user_id)
@@ -160,6 +160,7 @@ type ListUsersRatingsFromMovieIdRow struct {
 	CreatedAt   time.Time `json:"created_at"`
 	ID          int64     `json:"id"`
 	Username    string    `json:"username"`
+	Password    string    `json:"password"`
 	Mail        string    `json:"mail"`
 	CreatedAt_2 time.Time `json:"created_at_2"`
 }
@@ -180,6 +181,7 @@ func (q *Queries) ListUsersRatingsFromMovieId(ctx context.Context, arg ListUsers
 			&i.CreatedAt,
 			&i.ID,
 			&i.Username,
+			&i.Password,
 			&i.Mail,
 			&i.CreatedAt_2,
 		); err != nil {
