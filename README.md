@@ -116,11 +116,17 @@ Estas son herramientas de desarrollo que nos ayudan a automatizar tareas. Se ins
 3.  **Inicia el entorno de producción:**
     Este único comando utiliza el `Makefile` para orquestar todo: levanta la base de datos y la aplicación en contenedores docker.
     ```bash
-    make dev
+    make prod
     ```
 
 4.  **¡Listo!**
-    La aplicación estará corriendo y accesible en `http://localhost:8080`.
+    La aplicación estará corriendo y accesible en `http://localhost:8080`.    
+
+**Opcional:**
+       Para detener el entorno de producción, se utiliza el siguiente comando de make:
+```bash
+   make prod-down
+```
 ---
 ## Flujo de Trabajo
 
