@@ -113,8 +113,8 @@ Estas son herramientas de desarrollo que nos ayudan a automatizar tareas. Se ins
     cp .env.example .env
     ```
 
-3.  **Inicia el entorno de desarrollo:**
-    Este único comando utiliza el `Makefile` para orquestar todo: levanta la base de datos, espera a que esté lista e inicia el servidor de Go con recarga en caliente.
+3.  **Inicia el entorno de producción:**
+    Este único comando utiliza el `Makefile` para orquestar todo: levanta la base de datos y la aplicación en contenedores docker.
     ```bash
     make dev
     ```
