@@ -48,8 +48,8 @@ type Review struct {
 }
 
 type Role struct {
-	MovieID     int64  `json:"movie_id"`
 	CelebrityID int64  `json:"celebrity_id"`
+	MovieID     int64  `json:"movie_id"`
 	Role        string `json:"role"`
 }
 

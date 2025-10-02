@@ -34,6 +34,8 @@ help:
 	@echo ""
 	@echo "Comandos Principales:"
 	@echo "  dev           - Inicia DB, aplica migraciones y corre el servidor en modo desarrollo."
+	@echo "  prod  		   - Construye y levanta toda la aplicación (app y db) en Docker."
+	@echo "  prod-down     - Detiene los contenedores de producción y remueve contenedores huérfanos."
 	@echo "  server        - Corre el servidor con hot-reload (Air)."
 	@echo ""
 	@echo "Comandos de Base de Datos (Docker):"
@@ -61,14 +63,21 @@ help:
 # CICLO DE VIDA DE DESARROLLO
 # ==============================================================================
 
-.PHONY: dev server
+.PHONY: dev prod prod-down server
 
 dev: db-up sqlc-gen migrate-up server
 
-server:
-	@echo "🚀 Iniciando servidor con hot-reload..."
-	@$(AIR)
+prod:
+	@echo "🐋  Construyendo y levantando la aplicación en modo producción..."
+	@$(DOCKER) up -d --build
 
+prod-down:
+	@echo "🐳  Deteniendo el entorno de producción (Docker)..."
+	@$(DOCKER) down --remove-orphans
+
+server:
+	@echo "🚀  Iniciando servidor con hot-reload..."
+	@$(AIR)
 
 # ==============================================================================
 # GESTIÓN DE LA BASE DE DATOS
@@ -76,31 +85,31 @@ server:
 
 .PHONY: db-up wait-db db-down db-nuke docker-clean docker-nuke
 db-up:
-	@echo "🐘 Levantando la base de datos con Docker..."
+	@echo "🐘  Levantando la base de datos con Docker..."
 	@$(DOCKER) up -d db
 	@$(MAKE) wait-db
 
 wait-db:
-	@echo "⏳ Esperando a que la base de datos esté lista para aceptar conexiones..."
+	@echo "⏳  Esperando a que la base de datos esté lista para aceptar conexiones..."
 	@until $(DOCKER) exec db pg_isready -U "$(POSTGRES_USER)" -d "$(POSTGRES_DB)" -q; do \
 		sleep 1; \
 	done
-	@echo "✅ ¡Base de datos lista!"
+	@echo "✅  ¡Base de datos lista!"
 
 db-down:
-	@echo "✋ Deteniendo la base de datos..."
+	@echo "✋  Deteniendo la base de datos..."
 	@$(DOCKER) down
 
 db-nuke:
-	@echo "🔥 Eliminando la base de datos y sus volúmenes..."
+	@echo "🔥  Eliminando la base de datos y sus volúmenes..."
 	@$(DOCKER) down -v
 
 docker-clean:
-	@echo "💣 Limpiando todo lo relacionado con este proyecto en Docker..."
+	@echo "💣  Limpiando todo lo relacionado con este proyecto en Docker..."
 	@$(DOCKER) down -v --rmi 'local' --remove-orphans
 
 docker-nuke:
-	@echo "🔥 Destruyendo sistema Docker..."
+	@echo "🔥  Destruyendo sistema Docker..."
 	@$(DOCKER) down --remove-orphans
 	@docker system prune -af
 	@docker volume prune -f
@@ -111,16 +120,16 @@ docker-nuke:
 
 .PHONY: sqlc-gen migrate-diff migrate-up migrate-down
 sqlc-gen:
-	@echo "🧬 Generando código Go con sqlc..."
+	@echo "🧬  Generando código Go con sqlc..."
 	@$(SQLC) generate
 
 migrate-diff:
 	@if [ -z "$(NAME)" ]; then echo "Error: La variable NAME es requerida. Ej: make migrate-diff NAME=create_users_table"; exit 1; fi
-	@echo "🔍 Creando nuevo archivo de migración llamado '$(NAME)'..."
+	@echo "🔍  Creando nuevo archivo de migración llamado '$(NAME)'..."
 	@$(ATLAS) migrate diff $(NAME) --to "file://$(SCHEMA_FILE)" --dev-url "docker://postgres/15/dev?search_path=public" --env local
 
 migrate-up:
-	@echo "📈 Aplicando migraciones pendientes..."
+	@echo "📈  Aplicando migraciones pendientes..."
 	@$(ATLAS) migrate apply --env local
 
 migrate-set:
@@ -128,7 +137,7 @@ migrate-set:
 		echo "Error: VERSION es requerido. Ej: make migrate-set VERSION=1"; \
 		exit 1; \
 	fi
-	@echo "📉 Revertiendo la última migración..."
+	@echo "📉  Revertiendo la última migración..."
 	@$(ATLAS) migrate set $(VERSION) --env local
 
 
@@ -146,11 +155,11 @@ run: build
 	@./$(BIN)
 
 test:
-	@echo "🧪 Ejecutando pruebas..."
+	@echo "🧪  Ejecutando pruebas..."
 	@$(GO) test -v ./...
 
 tidy:
-	@echo "📦 Ordenando dependencias de Go..."
+	@echo "📦  Ordenando dependencias de Go..."
 	@$(GO) mod tidy
 	@$(GO) mod verify
 

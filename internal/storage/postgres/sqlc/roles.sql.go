@@ -13,7 +13,7 @@ import (
 const addRole = `-- name: AddRole :one
 INSERT INTO roles (movie_id, celebrity_id, role)
 VALUES ($1, $2, $3)
-RETURNING movie_id, celebrity_id, role
+RETURNING celebrity_id, movie_id, role
 `
 
 type AddRoleParams struct {
@@ -25,7 +25,7 @@ type AddRoleParams struct {
 func (q *Queries) AddRole(ctx context.Context, arg AddRoleParams) (Role, error) {
 	row := q.db.QueryRowContext(ctx, addRole, arg.MovieID, arg.CelebrityID, arg.Role)
 	var i Role
-	err := row.Scan(&i.MovieID, &i.CelebrityID, &i.Role)
+	err := row.Scan(&i.CelebrityID, &i.MovieID, &i.Role)
 	return i, err
 }
 
@@ -45,7 +45,7 @@ func (q *Queries) DeleteRoleByMovieId(ctx context.Context, arg DeleteRoleByMovie
 }
 
 const getRoleByMovieId = `-- name: GetRoleByMovieId :one
-SELECT movie_id, celebrity_id, role
+SELECT celebrity_id, movie_id, role
 FROM roles
 WHERE movie_id = $1 AND celebrity_id = $2
 `
@@ -58,12 +58,12 @@ type GetRoleByMovieIdParams struct {
 func (q *Queries) GetRoleByMovieId(ctx context.Context, arg GetRoleByMovieIdParams) (Role, error) {
 	row := q.db.QueryRowContext(ctx, getRoleByMovieId, arg.MovieID, arg.CelebrityID)
 	var i Role
-	err := row.Scan(&i.MovieID, &i.CelebrityID, &i.Role)
+	err := row.Scan(&i.CelebrityID, &i.MovieID, &i.Role)
 	return i, err
 }
 
 const listCelebritiesFromMovieId = `-- name: ListCelebritiesFromMovieId :many
-SELECT movie_id, celebrity_id, role, id, name, birth_date
+SELECT celebrity_id, movie_id, role, id, name, birth_date
 FROM roles AS rol
 JOIN celebrities AS cel
 ON (cel.id = rol.celebrity_id)
@@ -80,8 +80,8 @@ type ListCelebritiesFromMovieIdParams struct {
 }
 
 type ListCelebritiesFromMovieIdRow struct {
-	MovieID     int64     `json:"movie_id"`
 	CelebrityID int64     `json:"celebrity_id"`
+	MovieID     int64     `json:"movie_id"`
 	Role        string    `json:"role"`
 	ID          int64     `json:"id"`
 	Name        string    `json:"name"`
@@ -98,8 +98,8 @@ func (q *Queries) ListCelebritiesFromMovieId(ctx context.Context, arg ListCelebr
 	for rows.Next() {
 		var i ListCelebritiesFromMovieIdRow
 		if err := rows.Scan(
-			&i.MovieID,
 			&i.CelebrityID,
+			&i.MovieID,
 			&i.Role,
 			&i.ID,
 			&i.Name,
@@ -119,7 +119,7 @@ func (q *Queries) ListCelebritiesFromMovieId(ctx context.Context, arg ListCelebr
 }
 
 const listMoviesFromCelebrityId = `-- name: ListMoviesFromCelebrityId :many
-SELECT movie_id, celebrity_id, role, id, title, synopsis, released_at, poster_url, duration_minutes
+SELECT celebrity_id, movie_id, role, id, title, synopsis, released_at, poster_url, duration_minutes
 FROM roles AS rol
 JOIN movies AS mov
 ON (mov.id = rol.movie_id)
@@ -136,8 +136,8 @@ type ListMoviesFromCelebrityIdParams struct {
 }
 
 type ListMoviesFromCelebrityIdRow struct {
-	MovieID         int64     `json:"movie_id"`
 	CelebrityID     int64     `json:"celebrity_id"`
+	MovieID         int64     `json:"movie_id"`
 	Role            string    `json:"role"`
 	ID              int64     `json:"id"`
 	Title           string    `json:"title"`
@@ -157,8 +157,8 @@ func (q *Queries) ListMoviesFromCelebrityId(ctx context.Context, arg ListMoviesF
 	for rows.Next() {
 		var i ListMoviesFromCelebrityIdRow
 		if err := rows.Scan(
-			&i.MovieID,
 			&i.CelebrityID,
+			&i.MovieID,
 			&i.Role,
 			&i.ID,
 			&i.Title,
