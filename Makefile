@@ -8,7 +8,7 @@ export
 GO     ?= go
 AIR    ?= air
 SQLC   ?= sqlc
-DOCKER ?= docker-compose
+DOCKER ?= docker compose
 ATLAS  ?= atlas
 
 # Variables del Proyecto
