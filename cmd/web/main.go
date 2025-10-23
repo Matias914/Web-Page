@@ -6,17 +6,42 @@ import (
 	"net/http"
 	"time"
 
+	_ "github.com/Matias914/Web-Page/docs"
+	httpSwagger "github.com/swaggo/http-swagger"
+
+	"github.com/Matias914/Web-Page/internal/api"
 	"github.com/Matias914/Web-Page/internal/config"
-	"github.com/Matias914/Web-Page/internal/handler"
 	"github.com/Matias914/Web-Page/internal/middleware"
+	"github.com/Matias914/Web-Page/internal/service"
 	"github.com/Matias914/Web-Page/internal/storage/postgres"
 	"github.com/Matias914/Web-Page/internal/storage/postgres/sqlc"
+	"github.com/Matias914/Web-Page/internal/transport"
+	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 )
+
+// @title			API de Películas UNICEN
+// @version			1.0
+// @description		Esta es la API REST para la aplicación de gestión de películas.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host      localhost:8080
+// @BasePath  /api
 
 func main() {
 	_ = godotenv.Load()
 	cfg := config.LoadConfig()
+
+	/* ----------------------------------------------------------------------------- */
+	/*						    	DATABASE CONNECTION	    				         */
+	/* ----------------------------------------------------------------------------- */
 
 	db, err := postgres.NewDB(cfg.DSN)
 	if err != nil {
@@ -34,18 +59,27 @@ func main() {
 	if err != nil {
 		log.Fatalf("no pudo crearse una instancia de Renderer: %v", err)
 	}
-	app := &handler.Application{
-		Queries:  sqlc.New(db),
+	app := &transport.Application{
 		Renderer: renderer,
 	}
 
+	/* ----------------------------------------------------------------------------- */
+	/*						       	      SERVER  	        				         */
+	/* ----------------------------------------------------------------------------- */
+
+	mainRouter := chi.NewRouter()
+	mainRouter.Mount("/", app.GetRouter())
+	mainRouter.Mount("/api", apiRest.GetRouter())
+	mainRouter.Get("/swagger/*", httpSwagger.WrapHandler)
+
 	server := &http.Server{
 		Addr:         ":" + cfg.AppPort,
-		Handler:      middleware.WithRecovery(middleware.WithLogging(app.GetRouter())),
+		Handler:      middleware.WithRecovery(middleware.WithLogging(mainRouter)),
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
 		IdleTimeout:  60 * time.Second,
 	}
+
 	log.Printf("servidor ejecutándose en http://localhost:%s", cfg.AppPort)
 	log.Printf("conectando a la base de datos con DSN: '%s'", cfg.DSN)
 	log.Fatal(server.ListenAndServe())

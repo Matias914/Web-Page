@@ -5,11 +5,13 @@ export
 # CONFIGURACIÓN
 # ==============================================================================
 
-GO     ?= go
-AIR    ?= air
-SQLC   ?= sqlc
-DOCKER ?= docker compose
-ATLAS  ?= atlas
+GO      ?= go
+AIR     ?= air
+SQLC    ?= sqlc
+DOCKER  ?= docker
+DOCKERC ?= docker compose
+ATLAS   ?= atlas
+SWAG    ?= swag
 
 # Variables del Proyecto
 APP_NAME := App Web en Go
@@ -27,6 +29,7 @@ MIGRATIONS_PATH := internal/storage/postgres/migrations
 # ==============================================================================
 
 .PHONY: help
+
 help:
 	@echo "Gestión del Proyecto ($(APP_NAME))"
 	@echo "--------------------------------------------------"
@@ -34,7 +37,7 @@ help:
 	@echo ""
 	@echo "Comandos Principales:"
 	@echo "  dev           - Inicia DB, aplica migraciones y corre el servidor en modo desarrollo."
-	@echo "  prod  		   - Construye y levanta toda la aplicación (app y db) en Docker."
+	@echo "  prod          - Construye y levanta toda la aplicación (app y db) en Docker."
 	@echo "  prod-down     - Detiene los contenedores de producción y remueve contenedores huérfanos."
 	@echo "  server        - Corre el servidor con hot-reload (Air)."
 	@echo ""
@@ -57,7 +60,9 @@ help:
 	@echo "  clean         - Elimina el directorio de binarios '$(BIN_DIR)'."
 	@echo "  docker-clean  - Limpieza completa del proyecto actual en Docker."
 	@echo "  docker-nuke   - Elimina contenedores y volúmenes de Docker no utilizados."
-
+	@echo ""
+	@echo "Comandos para Documentación:"
+	@echo "  swagger       - Genera la documentación Swagger/OpenAPI."
 
 # ==============================================================================
 # CICLO DE VIDA DE DESARROLLO
@@ -65,15 +70,15 @@ help:
 
 .PHONY: dev prod prod-down server
 
-dev: db-up sqlc-gen migrate-up server
+dev: db-up swagger sqlc-gen migrate-up server
 
 prod:
 	@echo "🐋  Construyendo y levantando la aplicación en modo producción..."
-	@$(DOCKER) up -d --build
+	@$(DOCKERC) up -d --build
 
 prod-down:
 	@echo "🐳  Deteniendo el entorno de producción (Docker)..."
-	@$(DOCKER) down --remove-orphans
+	@$(DOCKERC) down --remove-orphans
 
 server:
 	@echo "🚀  Iniciando servidor con hot-reload..."
@@ -84,41 +89,43 @@ server:
 # ==============================================================================
 
 .PHONY: db-up wait-db db-down db-nuke docker-clean docker-nuke
+
 db-up:
 	@echo "🐘  Levantando la base de datos con Docker..."
-	@$(DOCKER) up -d db
+	@$(DOCKERC) up -d db
 	@$(MAKE) wait-db
 
 wait-db:
 	@echo "⏳  Esperando a que la base de datos esté lista para aceptar conexiones..."
-	@until $(DOCKER) exec db pg_isready -U "$(POSTGRES_USER)" -d "$(POSTGRES_DB)" -q; do \
+	@until $(DOCKERC) exec db pg_isready -U "$(POSTGRES_USER)" -d "$(POSTGRES_DB)" -q; do \
 		sleep 1; \
 	done
 	@echo "✅  ¡Base de datos lista!"
 
 db-down:
 	@echo "✋  Deteniendo la base de datos..."
-	@$(DOCKER) down
+	@$(DOCKERC) down
 
 db-nuke:
 	@echo "🔥  Eliminando la base de datos y sus volúmenes..."
-	@$(DOCKER) down -v
+	@$(DOCKERC) down -v
 
 docker-clean:
 	@echo "💣  Limpiando todo lo relacionado con este proyecto en Docker..."
-	@$(DOCKER) down -v --rmi 'local' --remove-orphans
+	@$(DOCKERC) down -v --rmi 'local' --remove-orphans
 
 docker-nuke:
 	@echo "🔥  Destruyendo sistema Docker..."
-	@$(DOCKER) down --remove-orphans
-	@docker system prune -af
-	@docker volume prune -f
+	@$(DOCKERC) down --remove-orphans
+	@$(DOCKER) system prune -af
+	@$(DOCKER) volume prune -f
 
 # ==============================================================================
 # MIGRACIONES (ATLAS & SQLC)
 # ==============================================================================
 
 .PHONY: sqlc-gen migrate-diff migrate-up migrate-down
+
 sqlc-gen:
 	@echo "🧬  Generando código Go con sqlc..."
 	@$(SQLC) generate
@@ -146,6 +153,7 @@ migrate-set:
 # ==============================================================================
 
 .PHONY: build run test tidy clean
+
 build:
 	@echo "🛠️  Compilando el binario en $(BIN)..."
 	@$(GO) build -o $(BIN) ./cmd/web
@@ -166,3 +174,13 @@ tidy:
 clean:
 	@echo "🗑️  Limpiando el directorio $(BIN_DIR)..."
 	@rm -rf $(BIN_DIR)
+
+# ==============================================================================
+# DOCUMENTACION
+# ==============================================================================
+
+.PHONY: swagger
+
+swagger:
+	@echo "==> Generando documentación Swagger..."
+	@$(SWAG) init -g cmd/web/main.go

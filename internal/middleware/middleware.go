@@ -22,8 +22,8 @@ func WithRecovery(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {
-				log.Printf("El servidor entró en pánico %v", err)
-				http.Error(w, "Error interno del servidor", http.StatusInternalServerError)
+				log.Printf("el servidor entró en pánico %v", err)
+				http.Error(w, "error interno del servidor", http.StatusInternalServerError)
 			}
 		}()
 		next.ServeHTTP(w, r)
