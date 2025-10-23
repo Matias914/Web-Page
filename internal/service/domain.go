@@ -6,14 +6,6 @@ import (
 	"github.com/Matias914/Web-Page/internal/storage/postgres/sqlc"
 )
 
-const MaxMovieTitleLength = 255
-const MaxGenresNameLength = 255
-const MaxRoleLength = 255
-const MaxUsernameLength = 255
-const MaxPasswordLength = 255
-const MaxSynopsisLength = 5000
-const MaxCommentLength = 5000
-
 /* ----------------------------------------------------------------------------- */
 /*						       	     SERVICES  	        				         */
 /* ----------------------------------------------------------------------------- */
@@ -71,12 +63,12 @@ type Genre struct {
 }
 
 type Movie struct {
-	ID              int       `json:"id"`
-	Title           string    `json:"title"`
-	Synopsis        string    `json:"synopsis"`
-	ReleasedAt      time.Time `json:"released_at"`
-	DurationMinutes int       `json:"duration_minutes"`
-	PosterUrl       string    `json:"poster_url"`
+	ID              int       `json:"id" example:"1"`
+	Title           string    `json:"title" example:"Lord of the Strings"`
+	Synopsis        string    `json:"synopsis" example:"A man that can manipulate every string variable"`
+	ReleasedAt      time.Time `json:"released_at" example:"2025-10-30T00:00:00Z"`
+	DurationMinutes int       `json:"duration_minutes" example:"255"`
+	PosterUrl       string    `json:"poster_url" example:"https://imgs.search.brave.com/8beLkj9LsaTyqIIEdbEELICTyQJkSQnTz6UQfl4x5oI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLmVi/YXlpbWcuY29tL2lt/YWdlcy9nL3hwNEFB/ZVN3cGNwb2xKRFQv/cy1sMjI1LmpwZw"`
 }
 
 type Rating struct {

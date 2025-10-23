@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 
 	"github.com/Matias914/Web-Page/internal/storage/postgres/sqlc"
 )
@@ -31,25 +30,6 @@ func (service *UserService) adaptQueryResults(results []sqlc.User) []User {
 		}
 	}
 	return users
-}
-
-func (service *User) ValidateUser(user User) error {
-	if len(user.Username) <= 1 || len(user.Username) > 255 {
-		text := fmt.Sprintf("username is not between 1 and %d", MaxUsernameLength)
-		return errors.New(text)
-	}
-	if len(user.Password) <= 1 || len(user.Password) > 255 {
-		text := fmt.Sprintf("username is not between 1 and %d", MaxPasswordLength)
-		return errors.New(text)
-	}
-	if len(user.Mail) <= 1 || len(user.Mail) > 255 {
-		text := fmt.Sprintf("mail is not between 1 and %d", MaxUsernameLength)
-		return errors.New(text)
-	}
-	if user.ID <= 0 {
-		return errors.New("invalid user identifier")
-	}
-	return nil
 }
 
 func (service *UserService) GetUsersList(ctx context.Context, page int, rows int) ([]User, error) {

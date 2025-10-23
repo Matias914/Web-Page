@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/Matias914/Web-Page/internal/storage/postgres/sqlc"
@@ -26,14 +25,6 @@ func (service *GenreService) adaptQueryResults(results []sqlc.Genre) []Genre {
 		}
 	}
 	return genres
-}
-
-func (service *Genre) ValidateGenre(genre Genre) error {
-	if len(genre.Name) <= 0 || len(genre.Name) > MaxGenresNameLength {
-		text := fmt.Sprintf("genre name length is not between 0 and %d)", MaxGenresNameLength)
-		return errors.New(text)
-	}
-	return nil
 }
 
 func (service *GenreService) GetGenresList(ctx context.Context, page int, rows int) ([]Genre, error) {

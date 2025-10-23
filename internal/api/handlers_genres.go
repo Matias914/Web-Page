@@ -15,7 +15,7 @@ import (
 // @Failure    500    {object}  api.JsonError  "Error interno del servidor"
 // @Router     /movies/{id1}/genres [get]
 func (api *API) handleGetMovieGenres(w http.ResponseWriter, r *http.Request) {
-	movieID, err := api.handleSingleIdentifierParsing(r) // id1 es el ID de la película
+	movieID, err := api.handleSingleIdentifierParsing(r)
 	page, rows, err := api.handlePageAndRowsParsing(r)
 	if err != nil {
 		api.handleErrorResponse(w, http.StatusBadRequest, err)
@@ -24,7 +24,7 @@ func (api *API) handleGetMovieGenres(w http.ResponseWriter, r *http.Request) {
 
 	genres, err := api.GenreService.GetMovieGenresList(r.Context(), movieID, page, rows)
 	if err != nil {
-		api.handleErrorResponse(w, http.StatusInternalServerError, err) // 500 para errores de DB/Service
+		api.handleErrorResponse(w, http.StatusInternalServerError, err)
 		return
 	}
 	api.handleJsonResponse(w, http.StatusOK, genres)

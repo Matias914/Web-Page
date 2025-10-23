@@ -6,7 +6,13 @@ import (
 	"errors"
 
 	"github.com/Matias914/Web-Page/internal/storage/postgres/sqlc"
+	"github.com/jackc/pgx/v5/pgconn"
 )
+
+var ErrMovieNotFound = errors.New("invalid movie identifier")
+var ErrMovieDuplicated = errors.New("the given movie already exists")
+var ErrMovieReferenced = errors.New("the given movie exists in other entities")
+var ErrInvalidMovie = errors.New("some movie fields were rejected")
 
 func (service *MovieService) adaptQueryResult(result sqlc.Movie) Movie {
 	posterUrl := ""
@@ -51,6 +57,8 @@ func (service *MovieService) adaptNullablePoster(posterUrl string) sql.NullStrin
 	return nullableposterUrl
 }
 
+// GetMoviesList retorna una lista de peliculas limitada. Se pueden pedir por páginas de cierto tamaño.
+// Si ocurre un error con la función es porque hubo un error inesperado.
 func (service *MovieService) GetMoviesList(ctx context.Context, page int, rows int) ([]Movie, error) {
 	offset := (page - 1) * rows
 	results, err := service.Queries.ListMovies(ctx, sqlc.ListMoviesParams{
@@ -63,6 +71,9 @@ func (service *MovieService) GetMoviesList(ctx context.Context, page int, rows i
 	return service.adaptQueryResults(results), nil
 }
 
+// AddMovie agrega una película a la base de datos. La URL del póster puede omitirse.
+// Si ocurre un error con la función es porque hay películas duplicadas, algún dato de la misma
+// no cumple con alguna de las restricciones de integridad u ocurrió un error inesperado.
 func (service *MovieService) AddMovie(ctx context.Context, movie AddMovieInput) (Movie, error) {
 	result, err := service.Queries.AddMovie(ctx, sqlc.AddMovieParams{
 		Title:           movie.Title,
@@ -71,16 +82,29 @@ func (service *MovieService) AddMovie(ctx context.Context, movie AddMovieInput) 
 		ReleasedAt:      movie.ReleasedAt,
 		PosterUrl:       service.adaptNullablePoster(movie.PosterUrl),
 	})
+	var pgErr *pgconn.PgError
+	if errors.As(err, &pgErr) {
+		switch pgErr.Code {
+		case "23505":
+			return Movie{}, ErrMovieDuplicated
+		case "23514":
+			return Movie{}, ErrInvalidMovie
+		default:
+			return Movie{}, err
+		}
+	}
 	if err != nil {
 		return Movie{}, err
 	}
 	return service.adaptQueryResult(result), nil
 }
 
+// GetMovie obtiene una película dado su ID. Si ocurre un error con la función es porque
+// la película no existe u ocurrió un error inesperado.
 func (service *MovieService) GetMovie(ctx context.Context, id int) (Movie, error) {
 	result, err := service.Queries.GetMovie(ctx, int64(id))
 	if errors.Is(err, sql.ErrNoRows) {
-		return Movie{}, errors.New("invalid movie identifier")
+		return Movie{}, ErrMovieNotFound
 	}
 	if err != nil {
 		return Movie{}, err
@@ -88,6 +112,9 @@ func (service *MovieService) GetMovie(ctx context.Context, id int) (Movie, error
 	return service.adaptQueryResult(result), nil
 }
 
+// UpdateMovie actualiza todos los datos de una película. Si ocurre un error con la función
+// es porque hay películas duplicadas, algún dato de la misma no cumple con alguna de las
+// restricciones de integridad u ocurrió un error inesperado.
 func (service *MovieService) UpdateMovie(ctx context.Context, id int, movie UpdateMovieInput) (Movie, error) {
 	result, err := service.Queries.UpdateMovie(ctx, sqlc.UpdateMovieParams{
 		ID:              int64(id),
@@ -97,8 +124,19 @@ func (service *MovieService) UpdateMovie(ctx context.Context, id int, movie Upda
 		ReleasedAt:      movie.ReleasedAt,
 		PosterUrl:       service.adaptNullablePoster(movie.PosterUrl),
 	})
+	var pgErr *pgconn.PgError
+	if errors.As(err, &pgErr) {
+		switch pgErr.Code {
+		case "23505":
+			return Movie{}, ErrMovieDuplicated
+		case "23514":
+			return Movie{}, ErrInvalidMovie
+		default:
+			return Movie{}, err
+		}
+	}
 	if errors.Is(err, sql.ErrNoRows) {
-		return Movie{}, errors.New("invalid movie identifier")
+		return Movie{}, ErrMovieNotFound
 	}
 	if err != nil {
 		return Movie{}, err
@@ -106,13 +144,31 @@ func (service *MovieService) UpdateMovie(ctx context.Context, id int, movie Upda
 	return service.adaptQueryResult(result), nil
 }
 
+// DeleteMovie elimina una película a la base de datos dado su ID. Si ocurre un error con
+// la función es porque hay películas no existe u ocurrió un error inesperado.
 func (service *MovieService) DeleteMovie(ctx context.Context, id int) error {
-	if err := service.Queries.DeleteMovie(ctx, int64(id)); err != nil {
+	_, err := service.Queries.DeleteMovie(ctx, int64(id))
+	if errors.Is(err, sql.ErrNoRows) {
+		return ErrMovieNotFound
+	}
+	var pgErr *pgconn.PgError
+	if errors.As(err, &pgErr) {
+		switch pgErr.Code {
+		case "23503":
+			return ErrMovieReferenced
+		default:
+			return err
+		}
+	}
+	if err != nil {
 		return err
 	}
 	return nil
 }
 
+// GetGenreMoviesList agrega una película a la base de datos. La URL del póster puede omitirse.
+// Si ocurre un error con la función es porque hay películas duplicadas, algún dato de la misma
+// no cumple con alguna de las restricciones de integridad u ocurrió un error inesperado.
 func (service *MovieService) GetGenreMoviesList(ctx context.Context, genre int, page int, rows int) ([]Movie, error) {
 	offset := (page - 1) * rows
 	results, err := service.Queries.ListGenreMovies(ctx, sqlc.ListGenreMoviesParams{
@@ -126,6 +182,9 @@ func (service *MovieService) GetGenreMoviesList(ctx context.Context, genre int, 
 	return service.adaptQueryResults(results), nil
 }
 
+// GetCelebrityMoviesList agrega una película a la base de datos. La URL del póster puede omitirse.
+// Si ocurre un error con la función es porque hay películas duplicadas, algún dato de la misma
+// no cumple con alguna de las restricciones de integridad u ocurrió un error inesperado.
 func (service *MovieService) GetCelebrityMoviesList(ctx context.Context, celebrity int, page int, rows int) ([]Movie, error) {
 	offset := (page - 1) * rows
 	results, err := service.Queries.ListCelebrityMovies(ctx, sqlc.ListCelebrityMoviesParams{

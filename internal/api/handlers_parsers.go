@@ -25,7 +25,7 @@ func (api *API) handlePageAndRowsParsing(r *http.Request) (int, int, error) {
 func (api *API) handleSingleIdentifierParsing(r *http.Request) (int, error) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id1"))
 	if err != nil || id < 1 {
-		return -1, errors.New("invalid identifier")
+		return -1, errors.New("invalid path identifier")
 	}
 	return id, nil
 }
@@ -37,7 +37,7 @@ func (api *API) handleDoubleIdentifierParsing(r *http.Request) (int, int, error)
 	}
 	id2, err := strconv.Atoi(chi.URLParam(r, "id2"))
 	if err != nil || id2 < 1 {
-		return id1, -1, errors.New("invalid identifier")
+		return id1, -1, errors.New("invalid path identifier")
 	}
 	return id1, id2, nil
 }
@@ -49,7 +49,7 @@ func (api *API) handleTripleIdentifierParsing(r *http.Request) (int, int, int, e
 	}
 	id3, err := strconv.Atoi(chi.URLParam(r, "id3"))
 	if err != nil || id3 < 1 {
-		return id1, id2, -1, errors.New("invalid identifier")
+		return id1, id2, -1, errors.New("invalid path identifier")
 	}
 	return id1, id2, id3, nil
 }

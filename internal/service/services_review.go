@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 
 	"github.com/Matias914/Web-Page/internal/storage/postgres/sqlc"
 )
@@ -29,23 +28,6 @@ func (service *ReviewService) adaptQueryResults(results []sqlc.Review) []Review 
 		}
 	}
 	return reviews
-}
-
-func (service *ReviewService) ValidateReview(review Review) error {
-	if review.UserID <= 0 {
-		return errors.New("invalid user identifier")
-	}
-	if review.MovieID <= 0 {
-		return errors.New("invalid movie identifier")
-	}
-	if len(review.Comment) <= 0 || len(review.Comment) > MaxCommentLength {
-		text := fmt.Sprintf("comment length is not between 0 and %d", MaxCommentLength)
-		return errors.New(text)
-	}
-	if review.CreatedAt.IsZero() {
-		return errors.New("created date does not exists")
-	}
-	return nil
 }
 
 func (service *ReviewService) AddReview(ctx context.Context, review Review) (Review, error) {

@@ -64,13 +64,13 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Error de validación en parámetros",
+                        "description": "Error de validación de los parámetros\" // {\"message\":\"invalid page number\"}",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
                     },
                     "500": {
-                        "description": "Error interno del servidor",
+                        "description": "Error interno del servidor\" \t\t\t// {\"message\":\"internal server error\"}",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
@@ -78,7 +78,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Agrega una nueva película al catálogo usando el formato JSON. La URL del póster puede omitirse.",
+                "description": "Agrega una nueva película al catálogo. La URL del póster puede omitirse.",
                 "consumes": [
                     "application/json"
                 ],
@@ -101,23 +101,26 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "Lista de películas exitosa",
+                    "201": {
+                        "description": "Película agregada exitosamente",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/service.Movie"
-                            }
+                            "$ref": "#/definitions/service.Movie"
                         }
                     },
                     "400": {
-                        "description": "Error de validación en parámetros",
+                        "description": "Error de validación de los parámetros\" // {\"message\":\"invalid page number\"}",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "409": {
+                        "description": "Error de duplicacion de recursos\" \t\t// {\"message\":\"the given movie already exists\"}",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
                     },
                     "500": {
-                        "description": "Error interno del servidor",
+                        "description": "Error interno del servidor\"\t\t\t// {\"message\":\"internal server error\"}",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
@@ -227,7 +230,7 @@ const docTemplate = `{
         },
         "/movies/{id}": {
             "get": {
-                "description": "Obtiene toda la información asociada a una película dado su ID.",
+                "description": "Obtiene toda la información asociada a una película dada por ID.",
                 "consumes": [
                     "application/json"
                 ],
@@ -249,16 +252,25 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Película obtenida exitosamente"
+                        "description": "Película obtenida exitosamente",
+                        "schema": {
+                            "$ref": "#/definitions/service.Movie"
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros\" // {\"message\":\"invalid path identifier\"}",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
                     },
                     "404": {
-                        "description": "Película no encontrada",
+                        "description": "Error por película no encontrada\" \t\t// {\"message\":\"invalid movie identifier\"}",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
                     },
                     "500": {
-                        "description": "Error interno del servidor",
+                        "description": "Error interno del servidor\"\t\t\t// {\"message\":\"internal server error\"}",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
@@ -266,7 +278,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Actualiza toda la información de una película. Todos los campos son requeridos.",
+                "description": "Actualiza toda la información de una película dada por ID. Todos los campos son requeridos.",
                 "consumes": [
                     "application/json"
                 ],
@@ -296,29 +308,32 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Actualización de película exitosa",
+                    "200": {
+                        "description": "Película actualizada exitosamente",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/service.Movie"
-                            }
+                            "$ref": "#/definitions/service.Movie"
                         }
                     },
                     "400": {
-                        "description": "Parámetros inválidos",
+                        "description": "Error de validación de los parámetros\" // {\"message\":\"invalid path identifier\"}",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
                     },
                     "404": {
-                        "description": "Película no encontrada",
+                        "description": "Error por película no encontrada\"\t\t// {\"message\":\"invalid movie identifier\"}",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "409": {
+                        "description": "Error de duplicacion de recursos\" \t\t// {\"message\":\"the given movie already exists\"}",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
                     },
                     "500": {
-                        "description": "Error interno del servidor",
+                        "description": "Error interno del servidor\"\t\t\t// {\"message\":\"internal server error\"}",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
@@ -326,7 +341,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Borra una película del catálogo permanentemente con su ID.",
+                "description": "Borra una película dada por ID permanentemente del catálogo.",
                 "consumes": [
                     "application/json"
                 ],
@@ -351,19 +366,19 @@ const docTemplate = `{
                         "description": "Película eliminada exitosamente"
                     },
                     "400": {
-                        "description": "Película no eliminable",
+                        "description": "Error de validación de los parámetros\" // {\"message\":\"invalid path identifier\"}",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
                     },
                     "404": {
-                        "description": "Película no encontrada",
+                        "description": "Error por película no encontrada\"\t\t// {\"message\":\"invalid movie identifier\"}",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
                     },
                     "500": {
-                        "description": "Error interno del servidor",
+                        "description": "Error interno del servidor\"\t\t\t// {\"message\":\"internal server error\"}",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
@@ -425,22 +440,28 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "duration_minutes": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 255
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "poster_url": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://imgs.search.brave.com/8beLkj9LsaTyqIIEdbEELICTyQJkSQnTz6UQfl4x5oI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLmVi/YXlpbWcuY29tL2lt/YWdlcy9nL3hwNEFB/ZVN3cGNwb2xKRFQv/cy1sMjI1LmpwZw"
                 },
                 "released_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2025-10-30T00:00:00Z"
                 },
                 "synopsis": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "A man that can manipulate every string variable"
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Lord of the Strings"
                 }
             }
         },

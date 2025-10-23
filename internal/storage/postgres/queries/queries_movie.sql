@@ -18,9 +18,10 @@ SET title = $2,
 WHERE id = $1
 RETURNING *;
 
--- name: DeleteMovie :exec
+-- name: DeleteMovie :one
 DELETE FROM movies
-WHERE id = $1;
+WHERE id = $1
+RETURNING *;
 
 -- name: ListMovies :many
 SELECT *

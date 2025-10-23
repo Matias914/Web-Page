@@ -45,14 +45,24 @@ func (q *Queries) AddMovie(ctx context.Context, arg AddMovieParams) (Movie, erro
 	return i, err
 }
 
-const deleteMovie = `-- name: DeleteMovie :exec
+const deleteMovie = `-- name: DeleteMovie :one
 DELETE FROM movies
 WHERE id = $1
+RETURNING id, title, synopsis, released_at, poster_url, duration_minutes
 `
 
-func (q *Queries) DeleteMovie(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, deleteMovie, id)
-	return err
+func (q *Queries) DeleteMovie(ctx context.Context, id int64) (Movie, error) {
+	row := q.db.QueryRowContext(ctx, deleteMovie, id)
+	var i Movie
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Synopsis,
+		&i.ReleasedAt,
+		&i.PosterUrl,
+		&i.DurationMinutes,
+	)
+	return i, err
 }
 
 const getMovie = `-- name: GetMovie :one
