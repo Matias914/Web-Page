@@ -113,13 +113,20 @@ Estas son herramientas de desarrollo que nos ayudan a automatizar tareas. Se ins
     cp .env.example .env
     ```
 
-3.  **Inicia el entorno de producción:**
+3. **Configura el PATH para Go:**
+    Si utilizas Go y no tenes agregado su binario al PATH, necesitas exportarlo para que el sistema reconozca los comandos instalados con go install.
+    ```bash
+    export PATH=$PATH:$HOME/go/bin
+    ```
+
+
+4.  **Inicia el entorno de producción:**
     Este único comando utiliza el `Makefile` para orquestar todo: levanta la base de datos y la aplicación en contenedores docker.
     ```bash
     make prod
     ```
 
-4.  **¡Listo!**
+5.  **¡Listo!**
     La aplicación estará corriendo y accesible en `http://localhost:8080`.    
 
 **Opcional:**

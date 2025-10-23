@@ -5,6 +5,7 @@
 package sqlc
 
 import (
+	"database/sql"
 	"time"
 )
 
@@ -25,12 +26,12 @@ type Genre struct {
 }
 
 type Movie struct {
-	ID              int64     `json:"id"`
-	Title           string    `json:"title"`
-	Synopsis        string    `json:"synopsis"`
-	ReleasedAt      time.Time `json:"released_at"`
-	PosterUrl       string    `json:"poster_url"`
-	DurationMinutes int32     `json:"duration_minutes"`
+	ID              int64          `json:"id"`
+	Title           string         `json:"title"`
+	Synopsis        string         `json:"synopsis"`
+	ReleasedAt      time.Time      `json:"released_at"`
+	PosterUrl       sql.NullString `json:"poster_url"`
+	DurationMinutes int32          `json:"duration_minutes"`
 }
 
 type Rating struct {

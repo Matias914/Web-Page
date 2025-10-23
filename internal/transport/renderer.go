@@ -1,4 +1,4 @@
-package handler
+package transport
 
 import (
 	"bytes"
@@ -42,7 +42,7 @@ func (t *Renderer) loadTemplates(templatesPath string) error {
 			}
 			t.templates[name] = tmpl
 		} else {
-			return fmt.Errorf("el template '%s' no es un archivo '.html'", f.Name())
+			return fmt.Errorf("(loadTemplates) el template '%s' no es un archivo '.html'", f.Name())
 		}
 	}
 	return nil
@@ -52,9 +52,9 @@ func (t *Renderer) loadTemplates(templatesPath string) error {
 // ejecutar y los datos dinamicos que podrian necesitarse. Con esto, se busca la plantilla y
 // se prepara el Content-Type de la respuesta. Retorna un código de OK si no hubo errores.
 func (t *Renderer) renderToBuffer(name string, data interface{}) (*bytes.Buffer, error) {
-	tmpl, existe := t.templates[name]
-	if !existe {
-		err := fmt.Errorf("el template '%s' no fue encontrado", name)
+	tmpl, exists := t.templates[name]
+	if !exists {
+		err := fmt.Errorf("(renderToBuffer) el template '%s' no fue encontrado", name)
 		return nil, err
 	}
 	buf := new(bytes.Buffer)
