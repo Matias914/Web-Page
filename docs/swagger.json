@@ -18,6 +18,329 @@
     "host": "localhost:8080",
     "basePath": "/api",
     "paths": {
+        "/genres": {
+            "get": {
+                "description": "Obtiene una lista de géneros, ordenada por fecha de estreno descendente, con paginación.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Genres"
+                ],
+                "summary": "Lista géneros paginados",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Número de página",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Cantidad de filas por página",
+                        "name": "rows",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de géneros exitosa",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/service.Genre"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Agrega un nuevo género al catálogo.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Genres"
+                ],
+                "summary": "Agrega un género",
+                "parameters": [
+                    {
+                        "description": "Número de página",
+                        "name": "movie",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.AddGenreInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Género agregado exitosamente",
+                        "schema": {
+                            "$ref": "#/definitions/service.Genre"
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "409": {
+                        "description": "Error de duplicacion de recursos",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            }
+        },
+        "/genres/{id}": {
+            "get": {
+                "description": "Obtiene toda la información asociada a un género dado por ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Genres"
+                ],
+                "summary": "Obtiene un género",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del género a obtener",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Género obtenida exitosamente",
+                        "schema": {
+                            "$ref": "#/definitions/service.Genre"
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "Error por género no encontrado",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Actualiza toda la información de un género dado por ID. Todos los campos son requeridos.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Genres"
+                ],
+                "summary": "Actualiza los datos de un género",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del género a actualizar",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Número de página",
+                        "name": "movie",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.UpdateGenreInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Género actualizada exitosamente",
+                        "schema": {
+                            "$ref": "#/definitions/service.Genre"
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "Error por género no encontrado",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "409": {
+                        "description": "Error de duplicación de recursos",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Borra un género dado por ID permanentemente del catálogo.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Genres"
+                ],
+                "summary": "Borra un género",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del género a eliminar",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Género eliminada exitosamente"
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "Error por género no encontrado",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            }
+        },
+        "/genres/{id}/movies": {
+            "get": {
+                "description": "Obtiene la lista de películas asociadas a un género dado por ID, con paginación.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Lista películas de un género paginadas",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Número de página",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Cantidad de filas por página",
+                        "name": "rows",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID del género",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de películas exitosa",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/service.Genre"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            }
+        },
         "/movies": {
             "get": {
                 "description": "Obtiene una lista de películas, ordenada por fecha de estreno descendente, con paginación.",
@@ -58,13 +381,13 @@
                         }
                     },
                     "400": {
-                        "description": "Error de validación de los parámetros\" // {\"message\":\"invalid page number\"}",
+                        "description": "Error de validación de los parámetros",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
                     },
                     "500": {
-                        "description": "Error interno del servidor\" \t\t\t// {\"message\":\"internal server error\"}",
+                        "description": "Error interno del servidor",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
@@ -102,119 +425,19 @@
                         }
                     },
                     "400": {
-                        "description": "Error de validación de los parámetros\" // {\"message\":\"invalid page number\"}",
+                        "description": "Error de validación de los parámetros",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
                     },
                     "409": {
-                        "description": "Error de duplicacion de recursos\" \t\t// {\"message\":\"the given movie already exists\"}",
-                        "schema": {
-                            "$ref": "#/definitions/api.JsonError"
-                        }
-                    },
-                    "500": {
-                        "description": "Error interno del servidor\"\t\t\t// {\"message\":\"internal server error\"}",
-                        "schema": {
-                            "$ref": "#/definitions/api.JsonError"
-                        }
-                    }
-                }
-            }
-        },
-        "/movies/{id1}/genres": {
-            "get": {
-                "description": "Obtiene la lista de géneros asociados a una película específica.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Movies",
-                    "Genres"
-                ],
-                "summary": "Lista todos los géneros de una película",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID de la película",
-                        "name": "id1",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Lista de géneros exitosa",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/service.Genre"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Error de validación en el ID de la película",
+                        "description": "Error de duplicacion de recursos",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
                     },
                     "500": {
                         "description": "Error interno del servidor",
-                        "schema": {
-                            "$ref": "#/definitions/api.JsonError"
-                        }
-                    }
-                }
-            }
-        },
-        "/movies/{id1}/genres/{id2}": {
-            "get": {
-                "description": "Obtiene la información de un género específico asociado a una película, dado su ID de género.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Movies",
-                    "Genres"
-                ],
-                "summary": "Obtiene un género asociado a una película (Por su ID de género)",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID de la película",
-                        "name": "id1",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "ID del género",
-                        "name": "id2",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Género encontrado exitosamente",
-                        "schema": {
-                            "$ref": "#/definitions/service.Genre"
-                        }
-                    },
-                    "400": {
-                        "description": "Error de validación en el ID",
-                        "schema": {
-                            "$ref": "#/definitions/api.JsonError"
-                        }
-                    },
-                    "404": {
-                        "description": "Género no encontrado para esa película",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
@@ -234,7 +457,7 @@
                 "tags": [
                     "Movies"
                 ],
-                "summary": "Obtener una película",
+                "summary": "Obtiene una película",
                 "parameters": [
                     {
                         "type": "integer",
@@ -252,19 +475,19 @@
                         }
                     },
                     "400": {
-                        "description": "Error de validación de los parámetros\" // {\"message\":\"invalid path identifier\"}",
+                        "description": "Error de validación de los parámetros",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
                     },
                     "404": {
-                        "description": "Error por película no encontrada\" \t\t// {\"message\":\"invalid movie identifier\"}",
+                        "description": "Error por película no encontrada",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
                     },
                     "500": {
-                        "description": "Error interno del servidor\"\t\t\t// {\"message\":\"internal server error\"}",
+                        "description": "Error interno del servidor",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
@@ -309,25 +532,25 @@
                         }
                     },
                     "400": {
-                        "description": "Error de validación de los parámetros\" // {\"message\":\"invalid path identifier\"}",
+                        "description": "Error de validación de los parámetros",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
                     },
                     "404": {
-                        "description": "Error por película no encontrada\"\t\t// {\"message\":\"invalid movie identifier\"}",
+                        "description": "Error por película no encontrada",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
                     },
                     "409": {
-                        "description": "Error de duplicacion de recursos\" \t\t// {\"message\":\"the given movie already exists\"}",
+                        "description": "Error de duplicación de recursos",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
                     },
                     "500": {
-                        "description": "Error interno del servidor\"\t\t\t// {\"message\":\"internal server error\"}",
+                        "description": "Error interno del servidor",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
@@ -360,19 +583,248 @@
                         "description": "Película eliminada exitosamente"
                     },
                     "400": {
-                        "description": "Error de validación de los parámetros\" // {\"message\":\"invalid path identifier\"}",
+                        "description": "Error de validación de los parámetros",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
                     },
                     "404": {
-                        "description": "Error por película no encontrada\"\t\t// {\"message\":\"invalid movie identifier\"}",
+                        "description": "Error por película no encontrada",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
                     },
                     "500": {
-                        "description": "Error interno del servidor\"\t\t\t// {\"message\":\"internal server error\"}",
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            }
+        },
+        "/movies/{id}/genres": {
+            "get": {
+                "description": "Obtiene la lista de géneros asociados a una película dada por ID, con paginación.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Lista géneros de una película paginados",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Número de página",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Cantidad de filas por página",
+                        "name": "rows",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la película",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de géneros exitosa",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/service.Genre"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            }
+        },
+        "/movies/{movieID}/genres": {
+            "post": {
+                "description": "Agrega un género dado por ID a una película también dada por ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Agrega un género a una película",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la película",
+                        "name": "movieID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "ID del género",
+                        "name": "genreID",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.AddCategoryInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Género agregado exitosamente"
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "Error de película o género no encontrado",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "409": {
+                        "description": "Error de duplicación de recursos",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            }
+        },
+        "/movies/{movieID}/genres/{genreID}": {
+            "get": {
+                "description": "Verifica si una película dada por ID tiene un determinado género también dado por ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Verifica que la película tiene asociado un género",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la película",
+                        "name": "movieID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID del género",
+                        "name": "genreID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Existe la relación entre la película y el género"
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "Error de relación inexistente entre la película y el género",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Borra un género dado por ID asociado a una película dada también por ID permanentemente.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Borra un género de una película",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la película",
+                        "name": "movieID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID del género",
+                        "name": "genreID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Género borrado exitosamente"
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "Error de relación inexistente entre la película y el género",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
                         "schema": {
                             "$ref": "#/definitions/api.JsonError"
                         }
@@ -386,6 +838,29 @@
             "type": "object",
             "properties": {
                 "message": {
+                    "type": "string",
+                    "example": "error message"
+                }
+            }
+        },
+        "service.AddCategoryInput": {
+            "type": "object",
+            "required": [
+                "genre_id"
+            ],
+            "properties": {
+                "genre_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "service.AddGenreInput": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
                     "type": "string"
                 }
             }
@@ -423,10 +898,12 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "terror"
                 }
             }
         },
@@ -443,7 +920,7 @@
                 },
                 "poster_url": {
                     "type": "string",
-                    "example": "https://imgs.search.brave.com/8beLkj9LsaTyqIIEdbEELICTyQJkSQnTz6UQfl4x5oI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLmVi/YXlpbWcuY29tL2lt/YWdlcy9nL3hwNEFB/ZVN3cGNwb2xKRFQv/cy1sMjI1LmpwZw"
+                    "example": "https://www.amazon.nl/Lord-Strings-J-Khan/dp/B000BU9TAQ"
                 },
                 "released_at": {
                     "type": "string",
@@ -459,11 +936,29 @@
                 }
             }
         },
+        "service.UpdateGenreInput": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "service.UpdateMovieInput": {
             "type": "object",
+            "required": [
+                "duration_minutes",
+                "released_at",
+                "synopsis",
+                "title"
+            ],
             "properties": {
                 "duration_minutes": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 1
                 },
                 "poster_url": {
                     "type": "string"
@@ -472,10 +967,12 @@
                     "type": "string"
                 },
                 "synopsis": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 5000
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255
                 }
             }
         }

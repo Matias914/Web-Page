@@ -9,10 +9,9 @@ import (
 	"context"
 )
 
-const addCategory = `-- name: AddCategory :one
+const addCategory = `-- name: AddCategory :exec
 INSERT INTO categories (genre_id, movie_id)
 VALUES ($1, $2)
-RETURNING genre_id, movie_id
 `
 
 type AddCategoryParams struct {
@@ -20,16 +19,15 @@ type AddCategoryParams struct {
 	MovieID int64 `json:"movie_id"`
 }
 
-func (q *Queries) AddCategory(ctx context.Context, arg AddCategoryParams) (Category, error) {
-	row := q.db.QueryRowContext(ctx, addCategory, arg.GenreID, arg.MovieID)
-	var i Category
-	err := row.Scan(&i.GenreID, &i.MovieID)
-	return i, err
+func (q *Queries) AddCategory(ctx context.Context, arg AddCategoryParams) error {
+	_, err := q.db.ExecContext(ctx, addCategory, arg.GenreID, arg.MovieID)
+	return err
 }
 
-const deleteCategory = `-- name: DeleteCategory :exec
+const deleteCategory = `-- name: DeleteCategory :one
 DELETE FROM categories
 WHERE genre_id = $1 AND movie_id = $2
+RETURNING genre_id, movie_id
 `
 
 type DeleteCategoryParams struct {
@@ -37,7 +35,27 @@ type DeleteCategoryParams struct {
 	MovieID int64 `json:"movie_id"`
 }
 
-func (q *Queries) DeleteCategory(ctx context.Context, arg DeleteCategoryParams) error {
-	_, err := q.db.ExecContext(ctx, deleteCategory, arg.GenreID, arg.MovieID)
-	return err
+func (q *Queries) DeleteCategory(ctx context.Context, arg DeleteCategoryParams) (Category, error) {
+	row := q.db.QueryRowContext(ctx, deleteCategory, arg.GenreID, arg.MovieID)
+	var i Category
+	err := row.Scan(&i.GenreID, &i.MovieID)
+	return i, err
+}
+
+const getCategory = `-- name: GetCategory :one
+SELECT genre_id, movie_id
+FROM categories
+WHERE genre_id = $1 AND movie_id = $2
+`
+
+type GetCategoryParams struct {
+	GenreID int32 `json:"genre_id"`
+	MovieID int64 `json:"movie_id"`
+}
+
+func (q *Queries) GetCategory(ctx context.Context, arg GetCategoryParams) (Category, error) {
+	row := q.db.QueryRowContext(ctx, getCategory, arg.GenreID, arg.MovieID)
+	var i Category
+	err := row.Scan(&i.GenreID, &i.MovieID)
+	return i, err
 }

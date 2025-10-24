@@ -3,7 +3,22 @@ definitions:
   api.JsonError:
     properties:
       message:
+        example: error message
         type: string
+    type: object
+  service.AddCategoryInput:
+    properties:
+      genre_id:
+        type: integer
+    required:
+    - genre_id
+    type: object
+  service.AddGenreInput:
+    properties:
+      name:
+        type: string
+    required:
+    - name
     type: object
   service.AddMovieInput:
     properties:
@@ -29,8 +44,10 @@ definitions:
   service.Genre:
     properties:
       id:
+        example: 1
         type: integer
       name:
+        example: terror
         type: string
     type: object
   service.Movie:
@@ -42,7 +59,7 @@ definitions:
         example: 1
         type: integer
       poster_url:
-        example: https://imgs.search.brave.com/8beLkj9LsaTyqIIEdbEELICTyQJkSQnTz6UQfl4x5oI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLmVi/YXlpbWcuY29tL2lt/YWdlcy9nL3hwNEFB/ZVN3cGNwb2xKRFQv/cy1sMjI1LmpwZw
+        example: https://www.amazon.nl/Lord-Strings-J-Khan/dp/B000BU9TAQ
         type: string
       released_at:
         example: "2025-10-30T00:00:00Z"
@@ -54,18 +71,33 @@ definitions:
         example: Lord of the Strings
         type: string
     type: object
+  service.UpdateGenreInput:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
   service.UpdateMovieInput:
     properties:
       duration_minutes:
+        minimum: 1
         type: integer
       poster_url:
         type: string
       released_at:
         type: string
       synopsis:
+        maxLength: 5000
         type: string
       title:
+        maxLength: 255
         type: string
+    required:
+    - duration_minutes
+    - released_at
+    - synopsis
+    - title
     type: object
 host: localhost:8080
 info:
@@ -81,6 +113,224 @@ info:
   title: API de Películas UNICEN
   version: "1.0"
 paths:
+  /genres:
+    get:
+      consumes:
+      - application/json
+      description: Obtiene una lista de géneros, ordenada por fecha de estreno descendente,
+        con paginación.
+      parameters:
+      - description: Número de página
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Cantidad de filas por página
+        in: query
+        name: rows
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de géneros exitosa
+          schema:
+            items:
+              $ref: '#/definitions/service.Genre'
+            type: array
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Lista géneros paginados
+      tags:
+      - Genres
+    post:
+      consumes:
+      - application/json
+      description: Agrega un nuevo género al catálogo.
+      parameters:
+      - description: Número de página
+        in: body
+        name: movie
+        required: true
+        schema:
+          $ref: '#/definitions/service.AddGenreInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Género agregado exitosamente
+          schema:
+            $ref: '#/definitions/service.Genre'
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "409":
+          description: Error de duplicacion de recursos
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Agrega un género
+      tags:
+      - Genres
+  /genres/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Borra un género dado por ID permanentemente del catálogo.
+      parameters:
+      - description: ID del género a eliminar
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Género eliminada exitosamente
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "404":
+          description: Error por género no encontrado
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Borra un género
+      tags:
+      - Genres
+    get:
+      consumes:
+      - application/json
+      description: Obtiene toda la información asociada a un género dado por ID.
+      parameters:
+      - description: ID del género a obtener
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Género obtenida exitosamente
+          schema:
+            $ref: '#/definitions/service.Genre'
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "404":
+          description: Error por género no encontrado
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Obtiene un género
+      tags:
+      - Genres
+    put:
+      consumes:
+      - application/json
+      description: Actualiza toda la información de un género dado por ID. Todos los
+        campos son requeridos.
+      parameters:
+      - description: ID del género a actualizar
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Número de página
+        in: body
+        name: movie
+        required: true
+        schema:
+          $ref: '#/definitions/service.UpdateGenreInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Género actualizada exitosamente
+          schema:
+            $ref: '#/definitions/service.Genre'
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "404":
+          description: Error por género no encontrado
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "409":
+          description: Error de duplicación de recursos
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Actualiza los datos de un género
+      tags:
+      - Genres
+  /genres/{id}/movies:
+    get:
+      consumes:
+      - application/json
+      description: Obtiene la lista de películas asociadas a un género dado por ID,
+        con paginación.
+      parameters:
+      - description: Número de página
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Cantidad de filas por página
+        in: query
+        name: rows
+        required: true
+        type: integer
+      - description: ID del género
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de películas exitosa
+          schema:
+            items:
+              $ref: '#/definitions/service.Genre'
+            type: array
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Lista películas de un género paginadas
+      tags:
+      - Categories
   /movies:
     get:
       consumes:
@@ -108,13 +358,11 @@ paths:
               $ref: '#/definitions/service.Movie'
             type: array
         "400":
-          description: Error de validación de los parámetros" // {"message":"invalid
-            page number"}
+          description: Error de validación de los parámetros
           schema:
             $ref: '#/definitions/api.JsonError'
         "500":
-          description: "Error interno del servidor\" \t\t\t// {\"message\":\"internal
-            server error\"}"
+          description: Error interno del servidor
           schema:
             $ref: '#/definitions/api.JsonError'
       summary: Lista películas paginadas
@@ -140,18 +388,15 @@ paths:
           schema:
             $ref: '#/definitions/service.Movie'
         "400":
-          description: Error de validación de los parámetros" // {"message":"invalid
-            page number"}
+          description: Error de validación de los parámetros
           schema:
             $ref: '#/definitions/api.JsonError'
         "409":
-          description: "Error de duplicacion de recursos\" \t\t// {\"message\":\"the
-            given movie already exists\"}"
+          description: Error de duplicacion de recursos
           schema:
             $ref: '#/definitions/api.JsonError'
         "500":
-          description: "Error interno del servidor\"\t\t\t// {\"message\":\"internal
-            server error\"}"
+          description: Error interno del servidor
           schema:
             $ref: '#/definitions/api.JsonError'
       summary: Agrega una película
@@ -174,18 +419,15 @@ paths:
         "204":
           description: Película eliminada exitosamente
         "400":
-          description: Error de validación de los parámetros" // {"message":"invalid
-            path identifier"}
+          description: Error de validación de los parámetros
           schema:
             $ref: '#/definitions/api.JsonError'
         "404":
-          description: "Error por película no encontrada\"\t\t// {\"message\":\"invalid
-            movie identifier\"}"
+          description: Error por película no encontrada
           schema:
             $ref: '#/definitions/api.JsonError'
         "500":
-          description: "Error interno del servidor\"\t\t\t// {\"message\":\"internal
-            server error\"}"
+          description: Error interno del servidor
           schema:
             $ref: '#/definitions/api.JsonError'
       summary: Borra una película
@@ -209,21 +451,18 @@ paths:
           schema:
             $ref: '#/definitions/service.Movie'
         "400":
-          description: Error de validación de los parámetros" // {"message":"invalid
-            path identifier"}
+          description: Error de validación de los parámetros
           schema:
             $ref: '#/definitions/api.JsonError'
         "404":
-          description: "Error por película no encontrada\" \t\t// {\"message\":\"invalid
-            movie identifier\"}"
+          description: Error por película no encontrada
           schema:
             $ref: '#/definitions/api.JsonError'
         "500":
-          description: "Error interno del servidor\"\t\t\t// {\"message\":\"internal
-            server error\"}"
+          description: Error interno del servidor
           schema:
             $ref: '#/definitions/api.JsonError'
-      summary: Obtener una película
+      summary: Obtiene una película
       tags:
       - Movies
     put:
@@ -251,37 +490,44 @@ paths:
           schema:
             $ref: '#/definitions/service.Movie'
         "400":
-          description: Error de validación de los parámetros" // {"message":"invalid
-            path identifier"}
+          description: Error de validación de los parámetros
           schema:
             $ref: '#/definitions/api.JsonError'
         "404":
-          description: "Error por película no encontrada\"\t\t// {\"message\":\"invalid
-            movie identifier\"}"
+          description: Error por película no encontrada
           schema:
             $ref: '#/definitions/api.JsonError'
         "409":
-          description: "Error de duplicacion de recursos\" \t\t// {\"message\":\"the
-            given movie already exists\"}"
+          description: Error de duplicación de recursos
           schema:
             $ref: '#/definitions/api.JsonError'
         "500":
-          description: "Error interno del servidor\"\t\t\t// {\"message\":\"internal
-            server error\"}"
+          description: Error interno del servidor
           schema:
             $ref: '#/definitions/api.JsonError'
       summary: Actualiza los datos de una película
       tags:
       - Movies
-  /movies/{id1}/genres:
+  /movies/{id}/genres:
     get:
       consumes:
       - application/json
-      description: Obtiene la lista de géneros asociados a una película específica.
+      description: Obtiene la lista de géneros asociados a una película dada por ID,
+        con paginación.
       parameters:
+      - description: Número de página
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Cantidad de filas por página
+        in: query
+        name: rows
+        required: true
+        type: integer
       - description: ID de la película
         in: path
-        name: id1
+        name: id
         required: true
         type: integer
       produces:
@@ -294,51 +540,128 @@ paths:
               $ref: '#/definitions/service.Genre'
             type: array
         "400":
-          description: Error de validación en el ID de la película
+          description: Error de validación de los parámetros
           schema:
             $ref: '#/definitions/api.JsonError'
         "500":
           description: Error interno del servidor
           schema:
             $ref: '#/definitions/api.JsonError'
-      summary: Lista todos los géneros de una película
+      summary: Lista géneros de una película paginados
       tags:
-      - Movies
-      - Genres
-  /movies/{id1}/genres/{id2}:
-    get:
+      - Categories
+  /movies/{movieID}/genres:
+    post:
       consumes:
       - application/json
-      description: Obtiene la información de un género específico asociado a una película,
-        dado su ID de género.
+      description: Agrega un género dado por ID a una película también dada por ID.
       parameters:
       - description: ID de la película
         in: path
-        name: id1
+        name: movieID
+        required: true
+        type: integer
+      - description: ID del género
+        in: body
+        name: genreID
+        required: true
+        schema:
+          $ref: '#/definitions/service.AddCategoryInput'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Género agregado exitosamente
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "404":
+          description: Error de película o género no encontrado
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "409":
+          description: Error de duplicación de recursos
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Agrega un género a una película
+      tags:
+      - Categories
+  /movies/{movieID}/genres/{genreID}:
+    delete:
+      consumes:
+      - application/json
+      description: Borra un género dado por ID asociado a una película dada también
+        por ID permanentemente.
+      parameters:
+      - description: ID de la película
+        in: path
+        name: movieID
         required: true
         type: integer
       - description: ID del género
         in: path
-        name: id2
+        name: genreID
         required: true
         type: integer
       produces:
       - application/json
       responses:
-        "200":
-          description: Género encontrado exitosamente
-          schema:
-            $ref: '#/definitions/service.Genre'
+        "204":
+          description: Género borrado exitosamente
         "400":
-          description: Error de validación en el ID
+          description: Error de validación de los parámetros
           schema:
             $ref: '#/definitions/api.JsonError'
         "404":
-          description: Género no encontrado para esa película
+          description: Error de relación inexistente entre la película y el género
           schema:
             $ref: '#/definitions/api.JsonError'
-      summary: Obtiene un género asociado a una película (Por su ID de género)
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Borra un género de una película
       tags:
-      - Movies
-      - Genres
+      - Categories
+    get:
+      consumes:
+      - application/json
+      description: Verifica si una película dada por ID tiene un determinado género
+        también dado por ID.
+      parameters:
+      - description: ID de la película
+        in: path
+        name: movieID
+        required: true
+        type: integer
+      - description: ID del género
+        in: path
+        name: genreID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Existe la relación entre la película y el género
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "404":
+          description: Error de relación inexistente entre la película y el género
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Verifica que la película tiene asociado un género
+      tags:
+      - Categories
 swagger: "2.0"

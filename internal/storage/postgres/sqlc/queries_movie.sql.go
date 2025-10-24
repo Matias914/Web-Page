@@ -134,29 +134,40 @@ func (q *Queries) ListCelebrityMovies(ctx context.Context, arg ListCelebrityMovi
 
 const listGenreMovies = `-- name: ListGenreMovies :many
 SELECT mov.id, mov.title, mov.synopsis, mov.released_at, mov.poster_url, mov.duration_minutes
-FROM categories AS cat
-JOIN movies AS mov
-ON (mov.id = cat.movie_id)
-WHERE cat.genre_id = $1
+FROM genres AS gen
+LEFT JOIN categories AS cat
+ON (cat.genre_id = gen.id)
+LEFT JOIN movies AS mov
+ON (cat.movie_id = mov.id)
+WHERE gen.id = $1
 LIMIT $2
 OFFSET $3
 `
 
 type ListGenreMoviesParams struct {
-	GenreID int32 `json:"genre_id"`
-	Limit   int32 `json:"limit"`
-	Offset  int32 `json:"offset"`
+	ID     int32 `json:"id"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) ListGenreMovies(ctx context.Context, arg ListGenreMoviesParams) ([]Movie, error) {
-	rows, err := q.db.QueryContext(ctx, listGenreMovies, arg.GenreID, arg.Limit, arg.Offset)
+type ListGenreMoviesRow struct {
+	ID              sql.NullInt64  `json:"id"`
+	Title           sql.NullString `json:"title"`
+	Synopsis        sql.NullString `json:"synopsis"`
+	ReleasedAt      sql.NullTime   `json:"released_at"`
+	PosterUrl       sql.NullString `json:"poster_url"`
+	DurationMinutes sql.NullInt32  `json:"duration_minutes"`
+}
+
+func (q *Queries) ListGenreMovies(ctx context.Context, arg ListGenreMoviesParams) ([]ListGenreMoviesRow, error) {
+	rows, err := q.db.QueryContext(ctx, listGenreMovies, arg.ID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Movie
+	var items []ListGenreMoviesRow
 	for rows.Next() {
-		var i Movie
+		var i ListGenreMoviesRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Title,

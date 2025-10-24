@@ -7,6 +7,7 @@ package sqlc
 
 import (
 	"context"
+	"database/sql"
 )
 
 const addGenre = `-- name: AddGenre :one
@@ -82,29 +83,36 @@ func (q *Queries) ListGenres(ctx context.Context, arg ListGenresParams) ([]Genre
 
 const listMovieGenres = `-- name: ListMovieGenres :many
 SELECT gen.id, gen.name
-FROM categories AS cat
-JOIN genres AS gen
+FROM movies AS mov
+LEFT JOIN categories AS cat
+ON (cat.movie_id = mov.id)
+LEFT JOIN genres AS gen
 ON (cat.genre_id = gen.id)
-WHERE cat.movie_id = $1
+WHERE mov.id = $1
 LIMIT $2
 OFFSET $3
 `
 
 type ListMovieGenresParams struct {
-	MovieID int64 `json:"movie_id"`
-	Limit   int32 `json:"limit"`
-	Offset  int32 `json:"offset"`
+	ID     int64 `json:"id"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) ListMovieGenres(ctx context.Context, arg ListMovieGenresParams) ([]Genre, error) {
-	rows, err := q.db.QueryContext(ctx, listMovieGenres, arg.MovieID, arg.Limit, arg.Offset)
+type ListMovieGenresRow struct {
+	ID   sql.NullInt32  `json:"id"`
+	Name sql.NullString `json:"name"`
+}
+
+func (q *Queries) ListMovieGenres(ctx context.Context, arg ListMovieGenresParams) ([]ListMovieGenresRow, error) {
+	rows, err := q.db.QueryContext(ctx, listMovieGenres, arg.ID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Genre
+	var items []ListMovieGenresRow
 	for rows.Next() {
-		var i Genre
+		var i ListMovieGenresRow
 		if err := rows.Scan(&i.ID, &i.Name); err != nil {
 			return nil, err
 		}

@@ -32,10 +32,12 @@ OFFSET $2;
 
 -- name: ListGenreMovies :many
 SELECT mov.*
-FROM categories AS cat
-JOIN movies AS mov
-ON (mov.id = cat.movie_id)
-WHERE cat.genre_id = $1
+FROM genres AS gen
+LEFT JOIN categories AS cat
+ON (cat.genre_id = gen.id)
+LEFT JOIN movies AS mov
+ON (cat.movie_id = mov.id)
+WHERE gen.id = $1
 LIMIT $2
 OFFSET $3;
 

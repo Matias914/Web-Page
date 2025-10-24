@@ -9,11 +9,6 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
-var ErrMovieNotFound = errors.New("invalid movie identifier")
-var ErrMovieDuplicated = errors.New("the given movie already exists")
-var ErrMovieReferenced = errors.New("the given movie exists in other entities")
-var ErrInvalidMovie = errors.New("some movie fields were rejected")
-
 func (service *MovieService) adaptQueryResult(result sqlc.Movie) Movie {
 	posterUrl := ""
 	if result.PosterUrl.Valid {
@@ -55,6 +50,26 @@ func (service *MovieService) adaptNullablePoster(posterUrl string) sql.NullStrin
 		nullableposterUrl.Valid = true
 	}
 	return nullableposterUrl
+}
+
+func (service *MovieService) adaptNullableGenreMovies(results []sqlc.ListGenreMoviesRow) []Movie {
+	var movies = make([]Movie, len(results))
+	// Se sabe de antes que no pueden ser vacíos, de otra manera, habría una fila
+	for i, movie := range results {
+		posterUrl := ""
+		if movie.PosterUrl.Valid {
+			posterUrl = movie.PosterUrl.String
+		}
+		movies[i] = Movie{
+			ID:              int(movie.ID.Int64),
+			Title:           movie.Title.String,
+			Synopsis:        movie.Synopsis.String,
+			DurationMinutes: int(movie.DurationMinutes.Int32),
+			ReleasedAt:      movie.ReleasedAt.Time,
+			PosterUrl:       posterUrl,
+		}
+	}
+	return movies
 }
 
 // GetMoviesList retorna una lista de peliculas limitada. Se pueden pedir por páginas de cierto tamaño.
@@ -166,20 +181,26 @@ func (service *MovieService) DeleteMovie(ctx context.Context, id int) error {
 	return nil
 }
 
-// GetGenreMoviesList agrega una película a la base de datos. La URL del póster puede omitirse.
-// Si ocurre un error con la función es porque hay películas duplicadas, algún dato de la misma
-// no cumple con alguna de las restricciones de integridad u ocurrió un error inesperado.
+// GetGenreMoviesList retorna la lista de películas de un género limitada. Se pueden pedir por páginas
+// de cierto tamaño. Si ocurre un error con la función es porque el género no existe, el género u ocurrió
+// un error inesperado.
 func (service *MovieService) GetGenreMoviesList(ctx context.Context, genre int, page int, rows int) ([]Movie, error) {
 	offset := (page - 1) * rows
-	results, err := service.Queries.ListGenreMovies(ctx, sqlc.ListGenreMoviesParams{
-		GenreID: int32(genre),
-		Limit:   int32(rows),
-		Offset:  int32(offset),
+	result, err := service.Queries.ListGenreMovies(ctx, sqlc.ListGenreMoviesParams{
+		ID:     int32(genre),
+		Limit:  int32(rows),
+		Offset: int32(offset),
 	})
+	if len(result) == 0 {
+		return nil, ErrMovieNotFound
+	}
+	if len(result) == 1 && !result[0].ID.Valid {
+		return []Movie{}, nil
+	}
 	if err != nil {
 		return nil, err
 	}
-	return service.adaptQueryResults(results), nil
+	return service.adaptNullableGenreMovies(result), nil
 }
 
 // GetCelebrityMoviesList agrega una película a la base de datos. La URL del póster puede omitirse.

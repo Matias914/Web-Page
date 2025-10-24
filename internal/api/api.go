@@ -17,5 +17,5 @@ type API struct {
 }
 
 type JsonError struct {
-	Mssg string `json:"message"`
+	Mssg string `json:"message" example:"error message"`
 }

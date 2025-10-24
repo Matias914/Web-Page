@@ -23,13 +23,25 @@ func (api *API) GetRouter() *chi.Mux {
 				sub.Delete("/{id2}", api.handleDeleteMovieGenre)
 			})
 
-			sub.Route("/celebrities", func(sub chi.Router) {
-				sub.Get("/", api.handleGetMovieCelebrities)
-				sub.Post("/", api.handlePostMovieCelebrityRole)
-				sub.Get("/{id2}", api.handleGetMovieCelebrityRoles)
-				sub.Put("/{id2}", api.handlePutMovieCelebrityRoles)
-				sub.Delete("/{id2}", api.handleDeleteMovieCelebrityRole)
-			})
+			// sub.Route("/celebrities", func(sub chi.Router) {
+			// 	sub.Get("/", api.handleGetMovieCelebrities)
+			// 	sub.Post("/", api.handlePostMovieCelebrityRole)
+			// 	sub.Get("/{id2}", api.handleGetMovieCelebrityRoles)
+			// 	sub.Put("/{id2}", api.handlePutMovieCelebrityRoles)
+			// 	sub.Delete("/{id2}", api.handleDeleteMovieCelebrityRole)
+			// })
+		})
+	})
+
+	mux.Route("/genres", func(sub chi.Router) {
+		sub.Get("/", api.handleGetGenres)
+		sub.Post("/", api.handlePostGenre)
+
+		sub.Route("/{id1}", func(sub chi.Router) {
+			sub.Get("/", api.handleGetGenre)
+			sub.Put("/", api.handlePutGenre)
+			sub.Delete("/", api.handleDeleteGenre)
+			sub.Get("/movies", api.handleGetGenreMovies)
 		})
 	})
 

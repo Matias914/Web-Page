@@ -16,8 +16,8 @@ import (
 // @Param		page	query		int		true	"Número de página"
 // @Param       rows	query		int		true	"Cantidad de filas por página"
 // @Success     200		{array}		service.Movie	"Lista de películas exitosa"
-// @Failure		400		{object}	api.JsonError 	"Error de validación de los parámetros" // {"message":"invalid page number"}
-// @Failure		500		{object}	api.JsonError 	"Error interno del servidor" 			// {"message":"internal server error"}
+// @Failure		400		{object}	JsonError	 	"Error de validación de los parámetros"
+// @Failure		500		{object}	JsonError	 	"Error interno del servidor"
 // @Router		/movies [get]
 func (api *API) handleGetMovies(w http.ResponseWriter, r *http.Request) {
 	page, rows, err := api.handlePageAndRowsParsing(r)
@@ -40,9 +40,9 @@ func (api *API) handleGetMovies(w http.ResponseWriter, r *http.Request) {
 // @Produce		json
 // @Param		movie	body		service.AddMovieInput  true	"Número de página"
 // @Success     201		{object}	service.Movie				"Película agregada exitosamente"
-// @Failure		400		{object}	api.JsonError 				"Error de validación de los parámetros" // {"message":"invalid page number"}
-// @Failure		409		{object}	api.JsonError 				"Error de duplicacion de recursos" 		// {"message":"the given movie already exists"}
-// @Failure		500		{object}	api.JsonError 				"Error interno del servidor"			// {"message":"internal server error"}
+// @Failure		400		{object}	JsonError 					"Error de validación de los parámetros"
+// @Failure		409		{object}	JsonError 					"Error de duplicacion de recursos"
+// @Failure		500		{object}	JsonError 					"Error interno del servidor"
 // @Router		/movies [post]
 func (api *API) handlePostMovie(w http.ResponseWriter, r *http.Request) {
 	var movie service.AddMovieInput
@@ -54,7 +54,7 @@ func (api *API) handlePostMovie(w http.ResponseWriter, r *http.Request) {
 		api.handleErrorResponse(w, http.StatusBadRequest, err)
 		return
 	}
-	inserted, err := api.MovieService.AddMovie(r.Context(), movie)
+	result, err := api.MovieService.AddMovie(r.Context(), movie)
 	if err != nil {
 		switch {
 		case errors.Is(err, service.ErrInvalidMovie):
@@ -66,19 +66,19 @@ func (api *API) handlePostMovie(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	api.handleJsonResponse(w, http.StatusCreated, inserted)
+	api.handleJsonResponse(w, http.StatusCreated, result)
 }
 
-// @Summary		Obtener una película
+// @Summary		Obtiene una película
 // @Description	Obtiene toda la información asociada a una película dada por ID.
 // @Tags		Movies
 // @Accept		json
 // @Produce		json
 // @Param		id		path		int		true	"ID de la película a obtener"
 // @Success     200		{object}	service.Movie	"Película obtenida exitosamente"
-// @Failure     400		{object}	api.JsonError	"Error de validación de los parámetros" // {"message":"invalid path identifier"}
-// @Failure		404		{object}	api.JsonError 	"Error por película no encontrada" 		// {"message":"invalid movie identifier"}
-// @Failure		500		{object}	api.JsonError 	"Error interno del servidor"			// {"message":"internal server error"}
+// @Failure     400		{object}	JsonError		"Error de validación de los parámetros"
+// @Failure		404		{object}	JsonError	 	"Error por película no encontrada"
+// @Failure		500		{object}	JsonError	 	"Error interno del servidor"
 // @Router		/movies/{id} 		[get]
 func (api *API) handleGetMovie(w http.ResponseWriter, r *http.Request) {
 	id, err := api.handleSingleIdentifierParsing(r)
@@ -107,10 +107,10 @@ func (api *API) handleGetMovie(w http.ResponseWriter, r *http.Request) {
 // @Param		id		path		int		      			  true	"ID de la película a actualizar"
 // @Param		movie	body		service.UpdateMovieInput  true	"Número de página"
 // @Success     200		{object}	service.Movie					"Película actualizada exitosamente"
-// @Failure		400		{object}	api.JsonError 					"Error de validación de los parámetros" // {"message":"invalid path identifier"}
-// @Failure		404		{object}	api.JsonError 					"Error por película no encontrada"		// {"message":"invalid movie identifier"}
-// @Failure		409		{object}	api.JsonError 					"Error de duplicacion de recursos" 		// {"message":"the given movie already exists"}
-// @Failure		500		{object}	api.JsonError 					"Error interno del servidor"			// {"message":"internal server error"}
+// @Failure		400		{object}	JsonError	 					"Error de validación de los parámetros"
+// @Failure		404		{object}	JsonError	 					"Error por película no encontrada"
+// @Failure		409		{object}	JsonError	 					"Error de duplicación de recursos"
+// @Failure		500		{object}	JsonError	 					"Error interno del servidor"
 // @Router		/movies/{id} 		[put]
 func (api *API) handlePutMovie(w http.ResponseWriter, r *http.Request) {
 	id, err := api.handleSingleIdentifierParsing(r)
@@ -127,7 +127,7 @@ func (api *API) handlePutMovie(w http.ResponseWriter, r *http.Request) {
 		api.handleErrorResponse(w, http.StatusBadRequest, err)
 		return
 	}
-	updated, err := api.MovieService.UpdateMovie(r.Context(), id, movie)
+	result, err := api.MovieService.UpdateMovie(r.Context(), id, movie)
 	if err != nil {
 		switch {
 		case errors.Is(err, service.ErrInvalidMovie):
@@ -141,7 +141,7 @@ func (api *API) handlePutMovie(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	api.handleJsonResponse(w, http.StatusOK, updated)
+	api.handleJsonResponse(w, http.StatusOK, result)
 }
 
 // @Summary		Borra una película
@@ -149,11 +149,11 @@ func (api *API) handlePutMovie(w http.ResponseWriter, r *http.Request) {
 // @Tags		Movies
 // @Accept		json
 // @Produce		json
-// @Param		id		path		int		true	"ID de la película a eliminar"
-// @Success     204									"Película eliminada exitosamente"
-// @Failure		400		{object}	JsonError 	"Error de validación de los parámetros" // {"message":"invalid path identifier"}
-// @Failure		404		{object}	JsonError 	"Error por película no encontrada"		// {"message":"invalid movie identifier"}
-// @Failure		500		{object}	JsonError 	"Error interno del servidor"			// {"message":"internal server error"}
+// @Param		id		path   int	true		"ID de la película a eliminar"
+// @Success     204								"Película eliminada exitosamente"
+// @Failure		400		{object}	JsonError 	"Error de validación de los parámetros"
+// @Failure		404		{object}	JsonError 	"Error por película no encontrada"
+// @Failure		500		{object}	JsonError 	"Error interno del servidor"
 // @Router		/movies/{id} 		[delete]
 func (api *API) handleDeleteMovie(w http.ResponseWriter, r *http.Request) {
 	id, err := api.handleSingleIdentifierParsing(r)
@@ -164,6 +164,8 @@ func (api *API) handleDeleteMovie(w http.ResponseWriter, r *http.Request) {
 	err = api.MovieService.DeleteMovie(r.Context(), id)
 	if err != nil {
 		switch {
+		case errors.Is(err, service.ErrMovieReferenced):
+			api.handleErrorResponse(w, http.StatusBadRequest, err)
 		case errors.Is(err, service.ErrMovieNotFound):
 			api.handleErrorResponse(w, http.StatusNotFound, err)
 		default:
