@@ -102,6 +102,9 @@ func (service *ReviewService) UpdateReview(ctx context.Context, userID int, movi
 		MovieID: int64(movieID),
 		Comment: data.Comment,
 	})
+	if errors.Is(err, sql.ErrNoRows) {
+		return Review{}, ErrReviewNotFound
+	}
 	var pgErr *pgconn.PgError
 	if errors.As(err, &pgErr) {
 		switch pgErr.Code {

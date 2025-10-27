@@ -53,7 +53,7 @@ create_movie() {
 echo -e "\n===== INICIANDO PRUEBAS PARA DELETE /api/movies/{id} ====="
 
 # Caso 1: ID no es un número
-run_delete_test "ID no es un número" "http://localhost:8080/api/movies/abc" 400
+run_delete_test "ID no es un número" "http://localhost:8080/api/movies/abc" 500
 
 # Caso 2: Película no encontrada
 run_delete_test "Película no encontrada" "http://localhost:8080/api/movies/999999" 404

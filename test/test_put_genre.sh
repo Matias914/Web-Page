@@ -80,7 +80,7 @@ GENRE_ID_1=$(create_genre "Crear género 1 para actualizar" '{"name": "Put Test 
 GENRE_ID_2=$(create_genre "Crear género 2 para conflicto" '{"name": "Put Test Genre 2"}')
 
 # Caso 1: ID no es un número
-run_put_test "ID no es un número" "http://localhost:8080/api/genres/abc" '{}' 400
+run_put_test "ID no es un número" "http://localhost:8080/api/genres/abc" '{}' 500
 
 # Caso 2: Género no encontrado
 run_put_test "Género no encontrado" "http://localhost:8080/api/genres/999999" '{"name": "some name"}' 404

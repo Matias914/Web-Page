@@ -2,29 +2,28 @@
 
 FAILED=0
 
+# Función para hacer una solicitud DELETE y mostrar los resultados
 run_delete_test() {
-
     TEST_NAME="$1"
     URL="$2"
     EXPECTED_STATUS="$3"
     COMMAND="curl -s -o /dev/null -w '%{http_code}' -X DELETE '$URL'"
-
     HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "$URL")
 
     if [[ "$HTTP_STATUS" -ne "$EXPECTED_STATUS" ]]; then
         echo "----------------------------------------------------"
         echo "Test: $TEST_NAME"
-        echo "Comando: $COMMAND" # Ahora se imprime el comando correctamente
+        echo "Comando: $COMMAND"
         echo "FALLÓ - Se esperaba $EXPECTED_STATUS ❌"
         echo "Resultado: $HTTP_STATUS"
         FAILED=1
     fi
 }
 
-create_genre() {
+create_user() {
     echo "----------------------------------------------------" >&2
     echo "Acción: $1" >&2
-    URL="http://localhost:8080/api/genres"
+    URL="http://localhost:8080/api/users"
     DATA="$2"
 
     BODY_AND_STATUS=$(curl -s -w "
@@ -34,40 +33,38 @@ create_genre() {
     BODY=$(echo "$BODY_AND_STATUS" | sed '$d')
 
     if [ "$HTTP_STATUS" -eq 201 ]; then
-       GENRE_ID=$(echo "$BODY" | jq -r '.id')
+       USER_ID=$(echo "$BODY" | jq -r '.id')
 
-       if [ -z "$GENRE_ID" ] || [ "$GENRE_ID" == "null" ]; then
+       if [ -z "$USER_ID" ] || [ "$USER_ID" == "null" ]; then
             echo "Error: Creación OK (201), pero ID no encontrado en la respuesta JSON. Body: $BODY" >&2
             FAILED=1
        fi
 
-       echo "Género creado con ID: $GENRE_ID" >&2
-       echo "$GENRE_ID"
-       echo "----------------------------------------------------" >&2
+       echo "Usuario creado con ID: $USER_ID" >&2
+       echo "$USER_ID"
        return 0
     else
-       echo "Error al crear el género. Status: $HTTP_STATUS, Body: $BODY" >&2
-       echo "----------------------------------------------------" >&2
+       echo "Error al crear el usuario. Status: $HTTP_STATUS, Body: $BODY" >&2
        FAILED=1
     fi
 }
 
 echo -e "
-===== INICIANDO PRUEBAS PARA DELETE /api/genres/{id} ====="
+===== INICIANDO PRUEBAS PARA DELETE /api/users/{id} ====="
 
 # Caso 1: ID no es un número
-run_delete_test "ID no es un número" "http://localhost:8080/api/genres/abc" 500
+run_delete_test "ID no es un número" "http://localhost:8080/api/users/abc" 500
 
-# Caso 2: Género no encontrado
-run_delete_test "Género no encontrado" "http://localhost:8080/api/genres/9999" 404
+# Caso 2: Usuario no encontrado
+run_delete_test "Usuario no encontrado" "http://localhost:8080/api/users/999999" 404
 
 # Caso 3: Borrado exitoso
-GENRE_ID=$(create_genre "Crear género para borrar" '{"name": "Delete Test Genre"}')
-if [ ! -z "$GENRE_ID" ]; then
-    run_delete_test "Borrado exitoso" "http://localhost:8080/api/genres/$GENRE_ID" 204
+USER_ID=$(create_user "Crear usuario para borrar" '{"username": "delete_me", "password": "p", "mail": "delete@me.com"}')
+if [ ! -z "$USER_ID" ]; then
+    run_delete_test "Borrado exitoso" "http://localhost:8080/api/users/$USER_ID" 204
 fi
 
 if [[ "$FAILED" -eq 0 ]]; then
-    echo -e "Todas las pruebas para DELETE /api/genres/{id} pasaron exitosamente. ✅
+    echo -e "Todas las pruebas para DELETE /api/users/{id} pasaron exitosamente. ✅
 "
 fi

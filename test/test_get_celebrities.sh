@@ -11,7 +11,7 @@ run_get_test() {
 
     if [[ ! "$HTTP_STATUS" -eq "$EXPECTED_STATUS" ]]; then
         echo "Test: $1"
-        echo "FALLÓ - Se esperaba $EXPECTED_STATUS ❌"
+        echo "FALLÓ - Se esperaba $EXPECTED_STATUS"
         echo "Comando: $COMMAND"
         echo "Resultado: $HTTP_STATUS"
         echo "----------------------------------------------------"
@@ -19,24 +19,26 @@ run_get_test() {
     fi
 }
 
-echo -e "\n===== INICIANDO PRUEBAS PARA GET /api/genres ====="
+echo -e "
+===== INICIANDO PRUEBAS PARA GET /api/celebrities ====="
 
 # Caso 1: Paginación correcta
-run_get_test "Paginación correcta (page=1, rows=5)" "http://localhost:8080/api/genres?page=1&rows=5" 200
+run_get_test "Paginación correcta (page=1, rows=5)" "http://localhost:8080/api/celebrities?page=1&rows=5" 200
 
 # Caso 2: Número de página inválido (no es un número)
-run_get_test "Número de página inválido (page=abc)" "http://localhost:8080/api/genres?page=abc&rows=5" 500
+run_get_test "Número de página inválido (page=abc)" "http://localhost:8080/api/celebrities?page=abc&rows=5" 500
 
 # Caso 3: Número de página inválido (menor a 1)
-run_get_test "Número de página inválido (page=0)" "http://localhost:8080/api/genres?page=0&rows=5" 500
+run_get_test "Número de página inválido (page=0)" "http://localhost:8080/api/celebrities?page=0&rows=5" 500
 
 # Caso 4: Filas por página inválidas (no es un número)
-run_get_test "Filas por página inválidas (rows=abc)" "http://localhost:8080/api/genres?page=1&rows=abc" 500
+run_get_test "Filas por página inválidas (rows=abc)" "http://localhost:8080/api/celebrities?page=1&rows=abc" 500
 
 # Caso 5: Filas por página inválidas (menor a 1)
-run_get_test "Filas por página inválidas (rows=0)" "http://localhost:8080/api/genres?page=1&rows=0" 500
+run_get_test "Filas por página inválidas (rows=0)" "http://localhost:8080/api/celebrities?page=1&rows=0" 500
 
 if [[ "$FAILED" -eq 0 ]]; then
     echo "----------------------------------------------------" >&2
-    echo -e "Todas las pruebas para GET /api/genres pasaron exitosamente. ✅ \n"
+    echo -e "Todas las pruebas para GET /api/celebrities pasaron exitosamente. ✅ 
+"
 fi

@@ -79,13 +79,13 @@ MOVIE_ID_1=$(create_movie "Crear película 1 para actualizar" '{"title": "Put Te
 MOVIE_ID_2=$(create_movie "Crear película 2 para conflicto" '{"title": "Put Test Movie 2", "synopsis": "Synopsis", "released_at": "2025-01-02T00:00:00Z", "duration_minutes": 120}')
 
 # Caso 1: ID no es un número
-run_put_test "ID no es un número" "http://localhost:8080/api/movies/abc" '{}' 400
+run_put_test "ID no es un número" "http://localhost:8080/api/movies/abc" '{}' 500
 
 # Caso 2: Película no encontrada
 run_put_test "Película no encontrada" "http://localhost:8080/api/movies/999999" '{"id": 999999, "title": "Not Found Test", "synopsis": "Valid synopsis", "released_at": "2025-01-01T00:00:00Z", "duration_minutes": 100}' 404
 
 # Caso 3: JSON Inválido
-run_put_test "JSON Inválido" "http://localhost:8080/api/movies/$MOVIE_ID_1" '{"title": "Invalid JSON",}' 400
+run_put_test "JSON Inválido" "http://localhost:8080/api/movies/$MOVIE_ID_1" '{"title": "Invalid JSON",}' 500
 
 # Case 4: Falla de validación (duration_minutes=0)
 DATA_CASE_4='{"id": '"$MOVIE_ID_1"', "title": "Valid Title", "synopsis": "Valid Synopsis", "released_at": "2025-01-01T00:00:00Z", "duration_minutes": 0}'

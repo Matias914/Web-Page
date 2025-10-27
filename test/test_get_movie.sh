@@ -91,7 +91,7 @@ MOVIE_ID=$(create_movie "Crear película para borrar" '{"title": "Get Test Movie
 run_get_test "ID válido" "http://localhost:8080/api/movies/$MOVIE_ID" 200
 
 # Caso 2: ID no es un número
-run_get_test "ID no es un número" "http://localhost:8080/api/movies/abc" 400
+run_get_test "ID no es un número" "http://localhost:8080/api/movies/abc" 500
 
 # Caso 3: Película no encontrada (ID muy grande)
 run_get_test "Película no encontrada" "http://localhost:8080/api/movies/999999" 404

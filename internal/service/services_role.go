@@ -100,6 +100,9 @@ func (service *RoleService) UpdateRole(ctx context.Context, movieID int, celebri
 		CelebrityID: int64(celebrityID),
 		Role:        data.Role,
 	})
+	if errors.Is(err, sql.ErrNoRows) {
+		return Role{}, ErrRoleNotFound
+	}
 	var pgErr *pgconn.PgError
 	if errors.As(err, &pgErr) {
 		switch pgErr.Code {

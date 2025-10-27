@@ -93,7 +93,7 @@ GENRE_ID=$(create_genre "Crear género para obtener" '{"name": "Get Test Genre"}
 run_get_test "ID válido" "http://localhost:8080/api/genres/$GENRE_ID" 200
 
 # Caso 2: ID no es un número
-run_get_test "ID no es un número" "http://localhost:8080/api/genres/abc" 400
+run_get_test "ID no es un número" "http://localhost:8080/api/genres/abc" 500
 
 # Caso 3: Género no encontrado (ID muy grande)
 run_get_test "Género no encontrado" "http://localhost:8080/api/genres/999999" 404

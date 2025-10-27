@@ -67,6 +67,8 @@ func (service *CelebrityService) AddCelebrity(ctx context.Context, celebrity Cel
 	var pgErr *pgconn.PgError
 	if errors.As(err, &pgErr) {
 		switch pgErr.Code {
+		case ErrCodeConstraintPK:
+			return Celebrity{}, ErrCelebrityDuplicated
 		case ErrCodeConstraintCHK:
 			return Celebrity{}, ErrInvalidCelebrity
 		}
