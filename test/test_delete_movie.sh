@@ -35,8 +35,8 @@ create_movie() {
        MOVIE_ID=$(echo "$BODY" | jq -r '.id')
 
        if [ -z "$MOVIE_ID" ] || [ "$MOVIE_ID" == "null" ]; then
-            echo "Error FATAL: Creación OK (201), pero ID no encontrado en la respuesta JSON. Body: $BODY" >&2
-            exit 1
+            echo "Error: Creación OK (201), pero ID no encontrado en la respuesta JSON. Body: $BODY" >&2
+            FAILED=1
        fi
 
        echo "Película creada con ID: $MOVIE_ID" >&2
@@ -44,9 +44,9 @@ create_movie() {
        echo "----------------------------------------------------" >&2
        return 0
     else
-       echo "Error FATAL al crear la película. Status: $HTTP_STATUS, Body: $BODY" >&2
+       echo "Error al crear la película. Status: $HTTP_STATUS, Body: $BODY" >&2
        echo "----------------------------------------------------" >&2
-       exit 1
+       FAILED=1
     fi
 }
 
@@ -67,4 +67,3 @@ fi
 if [[ "$FAILED" -eq 0 ]]; then
     echo -e "Todas las pruebas para DELETE /api/movies/{id} pasaron exitosamente. ✅ \n"
 fi
-

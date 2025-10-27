@@ -1,8 +1,6 @@
 package api
 
 import (
-	"encoding/json"
-	"errors"
 	"net/http"
 
 	"github.com/Matias914/Web-Page/internal/service"
@@ -20,17 +18,7 @@ import (
 // @Failure		500		{object}	JsonError	 	"Error interno del servidor"
 // @Router		/movies [get]
 func (api *API) handleGetMovies(w http.ResponseWriter, r *http.Request) {
-	page, rows, err := api.handlePageAndRowsParsing(r)
-	if err != nil {
-		api.handleErrorResponse(w, http.StatusBadRequest, err)
-		return
-	}
-	movies, err := api.MovieService.GetMoviesList(r.Context(), page, rows)
-	if err != nil {
-		api.handleErrorResponse(w, http.StatusInternalServerError, err)
-		return
-	}
-	api.handleJsonResponse(w, http.StatusOK, movies)
+	instanceGetRequestTemplate(w, r, api, api.MovieService.GetMoviesList)
 }
 
 // @Summary		Agrega una película
@@ -38,35 +26,14 @@ func (api *API) handleGetMovies(w http.ResponseWriter, r *http.Request) {
 // @Tags		Movies
 // @Accept		json
 // @Produce		json
-// @Param		movie	body		service.AddMovieInput  true	"Número de página"
+// @Param		movie	body		service.MovieData  true		"Datos de la película"
 // @Success     201		{object}	service.Movie				"Película agregada exitosamente"
 // @Failure		400		{object}	JsonError 					"Error de validación de los parámetros"
 // @Failure		409		{object}	JsonError 					"Error de duplicacion de recursos"
 // @Failure		500		{object}	JsonError 					"Error interno del servidor"
 // @Router		/movies [post]
 func (api *API) handlePostMovie(w http.ResponseWriter, r *http.Request) {
-	var movie service.AddMovieInput
-	if err := json.NewDecoder(r.Body).Decode(&movie); err != nil {
-		api.handleErrorResponse(w, http.StatusBadRequest, err)
-		return
-	}
-	if err := api.ValidationService.Validate(movie); err != nil {
-		api.handleErrorResponse(w, http.StatusBadRequest, err)
-		return
-	}
-	result, err := api.MovieService.AddMovie(r.Context(), movie)
-	if err != nil {
-		switch {
-		case errors.Is(err, service.ErrInvalidMovie):
-			api.handleErrorResponse(w, http.StatusBadRequest, err)
-		case errors.Is(err, service.ErrMovieDuplicated):
-			api.handleErrorResponse(w, http.StatusConflict, err)
-		default:
-			api.handleErrorResponse(w, http.StatusInternalServerError, err)
-		}
-		return
-	}
-	api.handleJsonResponse(w, http.StatusCreated, result)
+	instancePostRequestTemplate(w, r, api, service.MovieData{}, api.MovieService.AddMovie)
 }
 
 // @Summary		Obtiene una película
@@ -74,29 +41,14 @@ func (api *API) handlePostMovie(w http.ResponseWriter, r *http.Request) {
 // @Tags		Movies
 // @Accept		json
 // @Produce		json
-// @Param		id		path		int		true	"ID de la película a obtener"
+// @Param		ID		path		int		true	"ID de la película a obtener"
 // @Success     200		{object}	service.Movie	"Película obtenida exitosamente"
 // @Failure     400		{object}	JsonError		"Error de validación de los parámetros"
 // @Failure		404		{object}	JsonError	 	"Error por película no encontrada"
 // @Failure		500		{object}	JsonError	 	"Error interno del servidor"
-// @Router		/movies/{id} 		[get]
+// @Router		/movies/{ID} 		[get]
 func (api *API) handleGetMovie(w http.ResponseWriter, r *http.Request) {
-	id, err := api.handleSingleIdentifierParsing(r)
-	if err != nil {
-		api.handleErrorResponse(w, http.StatusBadRequest, err)
-		return
-	}
-	movie, err := api.MovieService.GetMovie(r.Context(), id)
-	if err != nil {
-		switch {
-		case errors.Is(err, service.ErrMovieNotFound):
-			api.handleErrorResponse(w, http.StatusNotFound, err)
-		default:
-			api.handleErrorResponse(w, http.StatusInternalServerError, err)
-		}
-		return
-	}
-	api.handleJsonResponse(w, http.StatusOK, movie)
+	instanceGetIDRequestTemplate(w, r, api, api.MovieService.GetMovie)
 }
 
 // @Summary		Actualiza los datos de una película
@@ -104,44 +56,16 @@ func (api *API) handleGetMovie(w http.ResponseWriter, r *http.Request) {
 // @Tags		Movies
 // @Accept		json
 // @Produce		json
-// @Param		id		path		int		      			  true	"ID de la película a actualizar"
-// @Param		movie	body		service.UpdateMovieInput  true	"Número de página"
-// @Success     200		{object}	service.Movie					"Película actualizada exitosamente"
-// @Failure		400		{object}	JsonError	 					"Error de validación de los parámetros"
-// @Failure		404		{object}	JsonError	 					"Error por película no encontrada"
-// @Failure		409		{object}	JsonError	 					"Error de duplicación de recursos"
-// @Failure		500		{object}	JsonError	 					"Error interno del servidor"
-// @Router		/movies/{id} 		[put]
+// @Param		ID		path		int		      	   true	"ID de la película a actualizar"
+// @Param		movie	body		service.MovieData  true	"Datos actualizables de la película"
+// @Success     200		{object}	service.Movie			"Película actualizada exitosamente"
+// @Failure		400		{object}	JsonError	 			"Error de validación de los parámetros"
+// @Failure		404		{object}	JsonError	 			"Error por película no encontrada"
+// @Failure		409		{object}	JsonError	 			"Error de duplicación de recursos"
+// @Failure		500		{object}	JsonError	 			"Error interno del servidor"
+// @Router		/movies/{ID} 		[put]
 func (api *API) handlePutMovie(w http.ResponseWriter, r *http.Request) {
-	id, err := api.handleSingleIdentifierParsing(r)
-	if err != nil {
-		api.handleErrorResponse(w, http.StatusBadRequest, err)
-		return
-	}
-	var movie service.UpdateMovieInput
-	if err := json.NewDecoder(r.Body).Decode(&movie); err != nil {
-		api.handleErrorResponse(w, http.StatusBadRequest, err)
-		return
-	}
-	if err := api.ValidationService.Validate(movie); err != nil {
-		api.handleErrorResponse(w, http.StatusBadRequest, err)
-		return
-	}
-	result, err := api.MovieService.UpdateMovie(r.Context(), id, movie)
-	if err != nil {
-		switch {
-		case errors.Is(err, service.ErrInvalidMovie):
-			api.handleErrorResponse(w, http.StatusBadRequest, err)
-		case errors.Is(err, service.ErrMovieDuplicated):
-			api.handleErrorResponse(w, http.StatusConflict, err)
-		case errors.Is(err, service.ErrMovieNotFound):
-			api.handleErrorResponse(w, http.StatusNotFound, err)
-		default:
-			api.handleErrorResponse(w, http.StatusInternalServerError, err)
-		}
-		return
-	}
-	api.handleJsonResponse(w, http.StatusOK, result)
+	instancePutIDRequestTemplate(w, r, api, service.MovieData{}, api.MovieService.UpdateMovie)
 }
 
 // @Summary		Borra una película
@@ -149,29 +73,12 @@ func (api *API) handlePutMovie(w http.ResponseWriter, r *http.Request) {
 // @Tags		Movies
 // @Accept		json
 // @Produce		json
-// @Param		id		path   int	true		"ID de la película a eliminar"
+// @Param		ID		path   int	true		"ID de la película a eliminar"
 // @Success     204								"Película eliminada exitosamente"
 // @Failure		400		{object}	JsonError 	"Error de validación de los parámetros"
 // @Failure		404		{object}	JsonError 	"Error por película no encontrada"
 // @Failure		500		{object}	JsonError 	"Error interno del servidor"
-// @Router		/movies/{id} 		[delete]
+// @Router		/movies/{ID} 		[delete]
 func (api *API) handleDeleteMovie(w http.ResponseWriter, r *http.Request) {
-	id, err := api.handleSingleIdentifierParsing(r)
-	if err != nil {
-		api.handleErrorResponse(w, http.StatusBadRequest, err)
-		return
-	}
-	err = api.MovieService.DeleteMovie(r.Context(), id)
-	if err != nil {
-		switch {
-		case errors.Is(err, service.ErrMovieReferenced):
-			api.handleErrorResponse(w, http.StatusBadRequest, err)
-		case errors.Is(err, service.ErrMovieNotFound):
-			api.handleErrorResponse(w, http.StatusNotFound, err)
-		default:
-			api.handleErrorResponse(w, http.StatusInternalServerError, err)
-		}
-		return
-	}
-	api.handleJsonResponse(w, http.StatusNoContent, nil)
+	instanceDeleteIDRequestTemplate(w, r, api, api.MovieService.DeleteMovie)
 }

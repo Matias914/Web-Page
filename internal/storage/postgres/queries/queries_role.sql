@@ -14,6 +14,25 @@ SET role = $3
 WHERE movie_id = $1 AND celebrity_id = $2
 RETURNING *;
 
--- name: DeleteRole :exec
+-- name: DeleteRole :one
 DELETE FROM roles
-WHERE movie_id = $1 AND celebrity_id = $2;
+WHERE movie_id = $1 AND celebrity_id = $2
+RETURNING *;
+
+-- name: ListCelebrityRoles :many
+SELECT rol.*
+FROM celebrities AS cel
+LEFT JOIN roles AS rol
+ON (rol.celebrity_id = cel.id)
+WHERE cel.id = $1
+LIMIT $2
+OFFSET $3;
+
+-- name: ListMovieRoles :many
+SELECT rol.*
+FROM movies AS mov
+LEFT JOIN roles AS rol
+ON (rol.movie_id = mov.id)
+WHERE mov.id = $1
+LIMIT $2
+OFFSET $3;

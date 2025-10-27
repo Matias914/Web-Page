@@ -43,16 +43,16 @@ create_movie() {
        MOVIE_ID=$(echo "$BODY" | jq -r '.id')
 
        if [ -z "$MOVIE_ID" ] || [ "$MOVIE_ID" == "null" ]; then
-            echo "Error FATAL: Creación OK (201), pero ID no encontrado en la respuesta JSON. Body: $BODY" >&2
-            exit 1
+            echo "Error: Creación OK (201), pero ID no encontrado en la respuesta JSON. Body: $BODY" >&2
+            FAILED=1
        fi
 
        echo "Película creada con ID: $MOVIE_ID" >&2
        echo "$MOVIE_ID"
        return 0
     else
-       echo "Error FATAL al crear la película. Status: $HTTP_STATUS, Body: $BODY" >&2
-       exit 1
+       echo "Error al crear la película. Status: $HTTP_STATUS, Body: $BODY" >&2
+       FAILED=1
     fi
 }
 
@@ -62,9 +62,9 @@ delete_movie() {
     echo "----------------------------------------------------"
     echo "Acción: Eliminando película con ID $MOVIE_ID"
     URL="http://localhost:8080/api/movies/$MOVIE_ID"
-    
+
     HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "$URL")
-    
+
     if [ "$HTTP_STATUS" -eq 204 ]; then
         echo "Película eliminada exitosamente"
     else
@@ -75,14 +75,14 @@ delete_movie() {
 echo -e "\n===== INICIANDO PRUEBAS PARA PUT /api/movies/{id} ====="
 
 # Crear películas para las pruebas
-MOVIE_ID_1=$(create_movie "Crear película 1 para actualizar" '{"title": "Update Test Movie 1", "synopsis": "Synopsis", "released_at": "2025-01-01T00:00:00Z", "duration_minutes": 110}')
-MOVIE_ID_2=$(create_movie "Crear película 2 para conflicto" '{"title": "Update Test Movie 2", "synopsis": "Synopsis", "released_at": "2025-01-02T00:00:00Z", "duration_minutes": 120}')
+MOVIE_ID_1=$(create_movie "Crear película 1 para actualizar" '{"title": "Put Test Movie 1", "synopsis": "Synopsis", "released_at": "2025-01-01T00:00:00Z", "duration_minutes": 110}')
+MOVIE_ID_2=$(create_movie "Crear película 2 para conflicto" '{"title": "Put Test Movie 2", "synopsis": "Synopsis", "released_at": "2025-01-02T00:00:00Z", "duration_minutes": 120}')
 
 # Caso 1: ID no es un número
 run_put_test "ID no es un número" "http://localhost:8080/api/movies/abc" '{}' 400
 
 # Caso 2: Película no encontrada
-run_put_test "Película no encontrada" "http://localhost:8080/api/movies/999999" '{}' 404
+run_put_test "Película no encontrada" "http://localhost:8080/api/movies/999999" '{"id": 999999, "title": "Not Found Test", "synopsis": "Valid synopsis", "released_at": "2025-01-01T00:00:00Z", "duration_minutes": 100}' 404
 
 # Caso 3: JSON Inválido
 run_put_test "JSON Inválido" "http://localhost:8080/api/movies/$MOVIE_ID_1" '{"title": "Invalid JSON",}' 400
@@ -92,7 +92,7 @@ DATA_CASE_4='{"id": '"$MOVIE_ID_1"', "title": "Valid Title", "synopsis": "Valid 
 run_put_test "Falla de validación" "http://localhost:8080/api/movies/$MOVIE_ID_1" "$DATA_CASE_4" 400
 
 # Caso 5: Conflicto de duplicados
-CONFLICT_DATA='{"id": '"$MOVIE_ID_1"', "title": "Update Test Movie 2", "synopsis": "Synopsis", "released_at": "2025-01-02T00:00:00Z", "duration_minutes": 120}'
+CONFLICT_DATA='{"id": '"$MOVIE_ID_1"', "title": "Put Test Movie 2", "synopsis": "Synopsis", "released_at": "2025-01-02T00:00:00Z", "duration_minutes": 120}'
 run_put_test "Conflicto de duplicados" "http://localhost:8080/api/movies/$MOVIE_ID_1" "$CONFLICT_DATA" 409
 
 # Limpieza
@@ -100,5 +100,6 @@ delete_movie "$MOVIE_ID_1"
 delete_movie "$MOVIE_ID_2"
 
 if [[ "$FAILED" -eq 0 ]]; then
+    echo "----------------------------------------------------" >&2
     echo -e "Todas las pruebas para PUT /api/movies/{id} pasaron exitosamente. ✅ \n"
 fi

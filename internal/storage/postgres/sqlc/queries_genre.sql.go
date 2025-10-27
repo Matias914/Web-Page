@@ -23,14 +23,17 @@ func (q *Queries) AddGenre(ctx context.Context, name string) (Genre, error) {
 	return i, err
 }
 
-const deleteGenre = `-- name: DeleteGenre :exec
+const deleteGenre = `-- name: DeleteGenre :one
 DELETE FROM genres
 WHERE id = $1
+RETURNING id, name
 `
 
-func (q *Queries) DeleteGenre(ctx context.Context, id int32) error {
-	_, err := q.db.ExecContext(ctx, deleteGenre, id)
-	return err
+func (q *Queries) DeleteGenre(ctx context.Context, id int32) (Genre, error) {
+	row := q.db.QueryRowContext(ctx, deleteGenre, id)
+	var i Genre
+	err := row.Scan(&i.ID, &i.Name)
+	return i, err
 }
 
 const getGenre = `-- name: GetGenre :one

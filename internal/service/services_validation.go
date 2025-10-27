@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -29,4 +30,12 @@ func NewValidationService() (ValidationService, error) {
 
 func (s *ValidationService) Validate(data interface{}) error {
 	return s.validate.Struct(data)
+}
+
+func (s *ValidationService) IsValidationError(err error) bool {
+	var validationErrors validator.ValidationErrors
+	if errors.As(err, &validationErrors) {
+		return true
+	}
+	return false
 }

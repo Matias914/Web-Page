@@ -14,9 +14,10 @@ SET name = $2
 WHERE id = $1
 RETURNING *;
 
--- name: DeleteGenre :exec
+-- name: DeleteGenre :one
 DELETE FROM genres
-WHERE id = $1;
+WHERE id = $1
+RETURNING *;
 
 -- name: ListGenres :many
 SELECT *

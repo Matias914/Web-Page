@@ -6,40 +6,35 @@ definitions:
         example: error message
         type: string
     type: object
-  service.AddCategoryInput:
+  service.CategoryData:
     properties:
       genre_id:
         type: integer
     required:
     - genre_id
     type: object
-  service.AddGenreInput:
+  service.Celebrity:
     properties:
-      name:
+      birth_date:
+        example: "1969-12-28T00:00:00Z"
         type: string
-    required:
-    - name
-    type: object
-  service.AddMovieInput:
-    properties:
-      duration_minutes:
-        minimum: 1
+      id:
+        example: 1
         type: integer
-      poster_url:
+      name:
+        example: Linus Torvalds
         type: string
-      released_at:
+    type: object
+  service.CelebrityData:
+    properties:
+      birth_date:
         type: string
-      synopsis:
-        maxLength: 5000
-        type: string
-      title:
+      name:
         maxLength: 255
         type: string
     required:
-    - duration_minutes
-    - released_at
-    - synopsis
-    - title
+    - birth_date
+    - name
     type: object
   service.Genre:
     properties:
@@ -47,8 +42,16 @@ definitions:
         example: 1
         type: integer
       name:
-        example: terror
+        example: horror
         type: string
+    type: object
+  service.GenreData:
+    properties:
+      name:
+        maxLength: 255
+        type: string
+    required:
+    - name
     type: object
   service.Movie:
     properties:
@@ -71,17 +74,9 @@ definitions:
         example: Lord of the Strings
         type: string
     type: object
-  service.UpdateGenreInput:
-    properties:
-      name:
-        type: string
-    required:
-    - name
-    type: object
-  service.UpdateMovieInput:
+  service.MovieData:
     properties:
       duration_minutes:
-        minimum: 1
         type: integer
       poster_url:
         type: string
@@ -99,6 +94,150 @@ definitions:
     - synopsis
     - title
     type: object
+  service.Rating:
+    properties:
+      created_at:
+        example: "2025-10-30T00:00:00Z"
+        type: string
+      movie_id:
+        example: 2
+        type: integer
+      rating:
+        example: 5
+        type: integer
+      user_id:
+        example: 1
+        type: integer
+    type: object
+  service.RatingData:
+    properties:
+      movie_id:
+        type: integer
+      rating:
+        maximum: 10
+        type: integer
+    required:
+    - movie_id
+    - rating
+    type: object
+  service.Review:
+    properties:
+      comment:
+        example: 'Seriously... Who made this? '
+        type: string
+      created_at:
+        example: "2025-10-30T00:00:00Z"
+        type: string
+      movie_id:
+        example: 2
+        type: integer
+      user_id:
+        example: 1
+        type: integer
+    type: object
+  service.ReviewData:
+    properties:
+      comment:
+        maxLength: 255
+        type: string
+      movie_id:
+        type: integer
+    required:
+    - comment
+    - movie_id
+    type: object
+  service.Role:
+    properties:
+      celebrity_id:
+        example: 1
+        type: integer
+      movie_id:
+        example: 2
+        type: integer
+      role:
+        example: Tech Guy
+        type: string
+    type: object
+  service.RoleData:
+    properties:
+      celebrity_id:
+        type: integer
+      role:
+        maxLength: 255
+        type: string
+    required:
+    - celebrity_id
+    - role
+    type: object
+  service.UpdatableRatingData:
+    properties:
+      rating:
+        type: integer
+    required:
+    - rating
+    type: object
+  service.UpdatableReviewData:
+    properties:
+      comment:
+        maxLength: 255
+        type: string
+    required:
+    - comment
+    type: object
+  service.UpdatableRoleData:
+    properties:
+      role:
+        maxLength: 255
+        type: string
+    required:
+    - role
+    type: object
+  service.UpdatableUserData:
+    properties:
+      mail:
+        maxLength: 255
+        type: string
+      username:
+        maxLength: 255
+        type: string
+    required:
+    - mail
+    - username
+    type: object
+  service.User:
+    properties:
+      created_at:
+        example: "2025-10-30T00:00:00Z"
+        type: string
+      id:
+        example: 1
+        type: integer
+      mail:
+        example: smokeseller@gmail.com
+        type: string
+      password:
+        example: notofyourbusiness
+        type: string
+      username:
+        example: thescrummaster1
+        type: string
+    type: object
+  service.UserData:
+    properties:
+      mail:
+        maxLength: 255
+        type: string
+      password:
+        maxLength: 255
+        type: string
+      username:
+        maxLength: 255
+        type: string
+    required:
+    - mail
+    - password
+    - username
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -113,6 +252,225 @@ info:
   title: API de Películas UNICEN
   version: "1.0"
 paths:
+  /celebrities:
+    get:
+      consumes:
+      - application/json
+      description: Obtiene una lista de celebridades con paginación.
+      parameters:
+      - description: Número de página
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Cantidad de filas por página
+        in: query
+        name: rows
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de celebridads exitosa
+          schema:
+            items:
+              $ref: '#/definitions/service.Celebrity'
+            type: array
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Lista celebridades paginadas
+      tags:
+      - Celebrities
+    post:
+      consumes:
+      - application/json
+      description: Agrega una nueva celebridad al catálogo.
+      parameters:
+      - description: Datos de la celebridad
+        in: body
+        name: celebrity
+        required: true
+        schema:
+          $ref: '#/definitions/service.CelebrityData'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Celebridad agregada exitosamente
+          schema:
+            $ref: '#/definitions/service.Celebrity'
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "409":
+          description: Error de duplicacion de recursos
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Agrega una celebridad
+      tags:
+      - Celebrities
+  /celebrities/{ID}:
+    delete:
+      consumes:
+      - application/json
+      description: Borra una celebridad dada por ID permanentemente de la base de
+        datos.
+      parameters:
+      - description: ID de la celebridad a eliminar
+        in: path
+        name: ID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Celebridad eliminada exitosamente
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "404":
+          description: Error por celebridad no encontrada
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Borra una celebridad
+      tags:
+      - Celebrities
+    get:
+      consumes:
+      - application/json
+      description: Obtiene toda la información asociada a una celebridad dada por
+        ID.
+      parameters:
+      - description: ID de la celebridad a obtener
+        in: path
+        name: ID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Celebridad obtenida exitosamente
+          schema:
+            $ref: '#/definitions/service.Celebrity'
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "404":
+          description: Error por celebridad no encontrada
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Obtiene una celebridad
+      tags:
+      - Celebrities
+    put:
+      consumes:
+      - application/json
+      description: Actualiza toda la información de una celebridad dado por ID. Todos
+        los campos son requeridos.
+      parameters:
+      - description: ID de la celebridad a actualizar
+        in: path
+        name: ID
+        required: true
+        type: integer
+      - description: Datos actualizables de la celebridad
+        in: body
+        name: celebrity
+        required: true
+        schema:
+          $ref: '#/definitions/service.CelebrityData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Celebridad actualizada exitosamente
+          schema:
+            $ref: '#/definitions/service.Celebrity'
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "404":
+          description: Error por celebridad no encontrada
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "409":
+          description: Error de duplicación de recursos
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Actualiza los datos de una celebridad
+      tags:
+      - Celebrities
+  /celebrities/{celebrityID}/roles:
+    get:
+      consumes:
+      - application/json
+      description: Obtiene la lista de roles asociados a una celebridad dada por ID,
+        con paginación.
+      parameters:
+      - description: Número de página
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Cantidad de filas por página
+        in: query
+        name: rows
+        required: true
+        type: integer
+      - description: ID de la celebridad
+        in: path
+        name: celebrityID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de roles exitosa
+          schema:
+            items:
+              $ref: '#/definitions/service.Role'
+            type: array
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Lista los roles de una celebridad paginados
+      tags:
+      - Roles
   /genres:
     get:
       consumes:
@@ -155,12 +513,12 @@ paths:
       - application/json
       description: Agrega un nuevo género al catálogo.
       parameters:
-      - description: Número de página
+      - description: Datos del género
         in: body
-        name: movie
+        name: genre
         required: true
         schema:
-          $ref: '#/definitions/service.AddGenreInput'
+          $ref: '#/definitions/service.GenreData'
       produces:
       - application/json
       responses:
@@ -183,7 +541,7 @@ paths:
       summary: Agrega un género
       tags:
       - Genres
-  /genres/{id}:
+  /genres/{ID}:
     delete:
       consumes:
       - application/json
@@ -191,14 +549,14 @@ paths:
       parameters:
       - description: ID del género a eliminar
         in: path
-        name: id
+        name: ID
         required: true
         type: integer
       produces:
       - application/json
       responses:
         "204":
-          description: Género eliminada exitosamente
+          description: Género eliminado exitosamente
         "400":
           description: Error de validación de los parámetros
           schema:
@@ -221,7 +579,7 @@ paths:
       parameters:
       - description: ID del género a obtener
         in: path
-        name: id
+        name: ID
         required: true
         type: integer
       produces:
@@ -254,20 +612,20 @@ paths:
       parameters:
       - description: ID del género a actualizar
         in: path
-        name: id
+        name: ID
         required: true
         type: integer
-      - description: Número de página
+      - description: Datos actualizables del género
         in: body
-        name: movie
+        name: genre
         required: true
         schema:
-          $ref: '#/definitions/service.UpdateGenreInput'
+          $ref: '#/definitions/service.GenreData'
       produces:
       - application/json
       responses:
         "200":
-          description: Género actualizada exitosamente
+          description: Género actualizado exitosamente
           schema:
             $ref: '#/definitions/service.Genre'
         "400":
@@ -289,7 +647,7 @@ paths:
       summary: Actualiza los datos de un género
       tags:
       - Genres
-  /genres/{id}/movies:
+  /genres/{genreID}/categories:
     get:
       consumes:
       - application/json
@@ -308,7 +666,7 @@ paths:
         type: integer
       - description: ID del género
         in: path
-        name: id
+        name: genreID
         required: true
         type: integer
       produces:
@@ -318,7 +676,7 @@ paths:
           description: Lista de películas exitosa
           schema:
             items:
-              $ref: '#/definitions/service.Genre'
+              $ref: '#/definitions/service.Movie'
             type: array
         "400":
           description: Error de validación de los parámetros
@@ -374,12 +732,12 @@ paths:
       description: Agrega una nueva película al catálogo. La URL del póster puede
         omitirse.
       parameters:
-      - description: Número de página
+      - description: Datos de la película
         in: body
         name: movie
         required: true
         schema:
-          $ref: '#/definitions/service.AddMovieInput'
+          $ref: '#/definitions/service.MovieData'
       produces:
       - application/json
       responses:
@@ -402,7 +760,7 @@ paths:
       summary: Agrega una película
       tags:
       - Movies
-  /movies/{id}:
+  /movies/{ID}:
     delete:
       consumes:
       - application/json
@@ -410,7 +768,7 @@ paths:
       parameters:
       - description: ID de la película a eliminar
         in: path
-        name: id
+        name: ID
         required: true
         type: integer
       produces:
@@ -440,7 +798,7 @@ paths:
       parameters:
       - description: ID de la película a obtener
         in: path
-        name: id
+        name: ID
         required: true
         type: integer
       produces:
@@ -473,15 +831,15 @@ paths:
       parameters:
       - description: ID de la película a actualizar
         in: path
-        name: id
+        name: ID
         required: true
         type: integer
-      - description: Número de página
+      - description: Datos actualizables de la película
         in: body
         name: movie
         required: true
         schema:
-          $ref: '#/definitions/service.UpdateMovieInput'
+          $ref: '#/definitions/service.MovieData'
       produces:
       - application/json
       responses:
@@ -508,7 +866,7 @@ paths:
       summary: Actualiza los datos de una película
       tags:
       - Movies
-  /movies/{id}/genres:
+  /movies/{movieID}/categories:
     get:
       consumes:
       - application/json
@@ -527,7 +885,7 @@ paths:
         type: integer
       - description: ID de la película
         in: path
-        name: id
+        name: movieID
         required: true
         type: integer
       produces:
@@ -550,7 +908,6 @@ paths:
       summary: Lista géneros de una película paginados
       tags:
       - Categories
-  /movies/{movieID}/genres:
     post:
       consumes:
       - application/json
@@ -561,12 +918,12 @@ paths:
         name: movieID
         required: true
         type: integer
-      - description: ID del género
+      - description: Datos del género
         in: body
-        name: genreID
+        name: genre
         required: true
         schema:
-          $ref: '#/definitions/service.AddCategoryInput'
+          $ref: '#/definitions/service.CategoryData'
       produces:
       - application/json
       responses:
@@ -591,7 +948,7 @@ paths:
       summary: Agrega un género a una película
       tags:
       - Categories
-  /movies/{movieID}/genres/{genreID}:
+  /movies/{movieID}/categories/{genreID}:
     delete:
       consumes:
       - application/json
@@ -664,4 +1021,877 @@ paths:
       summary: Verifica que la película tiene asociado un género
       tags:
       - Categories
+  /movies/{movieID}/ratings:
+    get:
+      consumes:
+      - application/json
+      description: Obtiene la lista de ratings asociados a una película dada por ID,
+        con paginación.
+      parameters:
+      - description: Número de página
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Cantidad de filas por página
+        in: query
+        name: rows
+        required: true
+        type: integer
+      - description: ID de la película
+        in: path
+        name: movieID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de ratings exitosa
+          schema:
+            items:
+              $ref: '#/definitions/service.Rating'
+            type: array
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Lista los ratings de una película paginados
+      tags:
+      - Ratings
+  /movies/{movieID}/reviews:
+    get:
+      consumes:
+      - application/json
+      description: Obtiene la lista de reviews asociados a una película dada por ID,
+        con paginación.
+      parameters:
+      - description: Número de página
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Cantidad de filas por página
+        in: query
+        name: rows
+        required: true
+        type: integer
+      - description: ID de la película
+        in: path
+        name: movieID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de reviews exitosa
+          schema:
+            items:
+              $ref: '#/definitions/service.Review'
+            type: array
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Lista los reviews de una película paginados
+      tags:
+      - Reviews
+  /movies/{movieID}/roles:
+    get:
+      consumes:
+      - application/json
+      description: Obtiene la lista de roles asociados a una película dada por ID,
+        con paginación.
+      parameters:
+      - description: Número de página
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Cantidad de filas por página
+        in: query
+        name: rows
+        required: true
+        type: integer
+      - description: ID de la película
+        in: path
+        name: movieID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de roles exitosa
+          schema:
+            items:
+              $ref: '#/definitions/service.Role'
+            type: array
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Lista los roles de una película paginados
+      tags:
+      - Roles
+    post:
+      consumes:
+      - application/json
+      description: Agrega un rol de una celebridad dada por ID a una película también
+        dada por ID.
+      parameters:
+      - description: ID de la película
+        in: path
+        name: movieID
+        required: true
+        type: integer
+      - description: Datos del rol
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/service.RoleData'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Rol agregado exitosamente
+          schema:
+            $ref: '#/definitions/service.Role'
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "404":
+          description: Error por rol no encontrado
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "409":
+          description: Error de duplicación de recursos
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Agrega un rol de una celebridad en una película
+      tags:
+      - Roles
+  /movies/{movieID}/roles/{celebrityID}:
+    delete:
+      consumes:
+      - application/json
+      description: Borra un rol de una celebridad dada por ID en una película dada
+        también por ID permanentemente.
+      parameters:
+      - description: ID de la película
+        in: path
+        name: movieID
+        required: true
+        type: integer
+      - description: ID de la celebridad
+        in: path
+        name: celebrityID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Rol borrado exitosamente
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "404":
+          description: Error por rol no encontrado
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Borra un rol de una celebridad en una película
+      tags:
+      - Roles
+    get:
+      consumes:
+      - application/json
+      description: Obtiene el rol de una celebridad dada por ID en una película también
+        dada por ID.
+      parameters:
+      - description: ID de la película
+        in: path
+        name: movieID
+        required: true
+        type: integer
+      - description: ID de la celebridad
+        in: path
+        name: celebrityID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de roles exitosa
+          schema:
+            items:
+              $ref: '#/definitions/service.Role'
+            type: array
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "404":
+          description: Error por rol no encontrado
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Obtiene el rol de una celebridad en una película
+      tags:
+      - Roles
+    put:
+      consumes:
+      - application/json
+      description: Actualiza un rol de una celebridad dada por ID en una película
+        dada también por ID.
+      parameters:
+      - description: ID de la película
+        in: path
+        name: movieID
+        required: true
+        type: integer
+      - description: ID de la celebridad
+        in: path
+        name: celebrityID
+        required: true
+        type: integer
+      - description: Datos actualizables del rol
+        in: body
+        name: rol
+        required: true
+        schema:
+          $ref: '#/definitions/service.UpdatableRoleData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Rol actualizado exitosamente
+          schema:
+            $ref: '#/definitions/service.Role'
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "404":
+          description: Error por rating no encontrada
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Actualiza un rol de una celebridad en una película
+      tags:
+      - Roles
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Obtiene una lista de usuarios con paginación.
+      parameters:
+      - description: Número de página
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Cantidad de filas por página
+        in: query
+        name: rows
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de usuarios exitosa
+          schema:
+            items:
+              $ref: '#/definitions/service.User'
+            type: array
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Lista usuarios paginados
+      tags:
+      - Users
+    post:
+      consumes:
+      - application/json
+      description: Agrega un nuevo usuario a la base de datos.
+      parameters:
+      - description: Datos del usuario
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/service.UserData'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Usuario agregado exitosamente
+          schema:
+            $ref: '#/definitions/service.User'
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "409":
+          description: Error de duplicacion de recursos
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Agrega un usuario
+      tags:
+      - Users
+  /users/{ID}:
+    delete:
+      consumes:
+      - application/json
+      description: Borra un usuario dado por ID permanentemente de la base de datos.
+      parameters:
+      - description: ID del usuario a eliminar
+        in: path
+        name: ID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Usuario borrado exitosamente
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "404":
+          description: Error por usuario no encontrado
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Borra un usuario
+      tags:
+      - Users
+    get:
+      consumes:
+      - application/json
+      description: Obtiene toda la información asociada a un usuario dado por ID.
+      parameters:
+      - description: ID del usuario a obtener
+        in: path
+        name: ID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Usuario obtenida exitosamente
+          schema:
+            $ref: '#/definitions/service.User'
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "404":
+          description: Error por usuario no encontrado
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Obtiene un usuario
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: Actualiza toda la información de un usuario dado por ID. Todos
+        los campos son requeridos.
+      parameters:
+      - description: ID del usuario a actualizar
+        in: path
+        name: ID
+        required: true
+        type: integer
+      - description: Datos actualizables del usuario
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/service.UpdatableUserData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Usuario actualizado exitosamente
+          schema:
+            $ref: '#/definitions/service.User'
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "404":
+          description: Error por usuario no encontrado
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "409":
+          description: Error de duplicación de recursos
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Actualiza los datos de un usuario
+      tags:
+      - Users
+  /users/{userID}/ratings:
+    get:
+      consumes:
+      - application/json
+      description: Obtiene la lista de ratings asociados a un usuario dada por ID,
+        con paginación.
+      parameters:
+      - description: Número de página
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Cantidad de filas por página
+        in: query
+        name: rows
+        required: true
+        type: integer
+      - description: ID del usuario
+        in: path
+        name: userID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de ratings exitosa
+          schema:
+            items:
+              $ref: '#/definitions/service.Rating'
+            type: array
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Lista los ratings de un usuario paginados
+      tags:
+      - Ratings
+    post:
+      consumes:
+      - application/json
+      description: Agrega un rating de un usuario dado por ID a una película también
+        dada por ID.
+      parameters:
+      - description: ID del usuario
+        in: path
+        name: userID
+        required: true
+        type: integer
+      - description: Datos del rating
+        in: body
+        name: rating
+        required: true
+        schema:
+          $ref: '#/definitions/service.RatingData'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Rating agregada exitosamente
+          schema:
+            $ref: '#/definitions/service.Rating'
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "404":
+          description: Error por rating no encontrada
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "409":
+          description: Error de duplicación de recursos
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Agrega un rating de un usuario sobre una película
+      tags:
+      - Ratings
+  /users/{userID}/ratings/{movieID}:
+    delete:
+      consumes:
+      - application/json
+      description: Borra un rating de un usuario dado por ID sobre una película dada
+        también por ID permanentemente.
+      parameters:
+      - description: ID del usuario
+        in: path
+        name: userID
+        required: true
+        type: integer
+      - description: ID de la película
+        in: path
+        name: movieID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Rating borrada exitosamente
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "404":
+          description: Error por rating no encontrada
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Borra un rating de un usuario sobre una película
+      tags:
+      - Ratings
+    get:
+      consumes:
+      - application/json
+      description: Obtiene un rating de un usuario dado por ID sobre una película
+        también dada por ID.
+      parameters:
+      - description: ID del usuario
+        in: path
+        name: userID
+        required: true
+        type: integer
+      - description: ID de la película
+        in: path
+        name: movieID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Rating obtenida exitosamente
+          schema:
+            $ref: '#/definitions/service.Rating'
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "404":
+          description: Error por rating no encontrada
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Obtiene un rating de un usuario sobre una película
+      tags:
+      - Ratings
+    put:
+      consumes:
+      - application/json
+      description: Actualiza un rating de un usuario dado por ID sobre una película
+        dada también por ID.
+      parameters:
+      - description: ID del usuario
+        in: path
+        name: userID
+        required: true
+        type: integer
+      - description: ID de la película
+        in: path
+        name: movieID
+        required: true
+        type: integer
+      - description: Datos actualizables del rating
+        in: body
+        name: rating
+        required: true
+        schema:
+          $ref: '#/definitions/service.UpdatableRatingData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Rating actualizada exitosamente
+          schema:
+            $ref: '#/definitions/service.Rating'
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "404":
+          description: Error por rating no encontrada
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Actualiza un rating de un usuario sobre una película
+      tags:
+      - Ratings
+  /users/{userID}/reviews:
+    get:
+      consumes:
+      - application/json
+      description: Obtiene la lista de reviews asociados a un usuario dada por ID,
+        con paginación.
+      parameters:
+      - description: Número de página
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Cantidad de filas por página
+        in: query
+        name: rows
+        required: true
+        type: integer
+      - description: ID del usuario
+        in: path
+        name: userID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de reviews exitosa
+          schema:
+            items:
+              $ref: '#/definitions/service.Review'
+            type: array
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Lista los reviews de un usuario paginados
+      tags:
+      - Reviews
+    post:
+      consumes:
+      - application/json
+      description: Agrega una review de un usuario dado por ID a una película también
+        dada por ID.
+      parameters:
+      - description: ID del usuario
+        in: path
+        name: userID
+        required: true
+        type: integer
+      - description: Datos de la review
+        in: body
+        name: review
+        required: true
+        schema:
+          $ref: '#/definitions/service.ReviewData'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Review agregada exitosamente
+          schema:
+            $ref: '#/definitions/service.Review'
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "404":
+          description: Error por review no encontrada
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "409":
+          description: Error de duplicación de recursos
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Agrega una review de un usuario sobre una película
+      tags:
+      - Reviews
+  /users/{userID}/reviews/{movieID}:
+    delete:
+      consumes:
+      - application/json
+      description: Borra una review de un usuario dado por ID sobre una película dada
+        también por ID permanentemente.
+      parameters:
+      - description: ID del usuario
+        in: path
+        name: userID
+        required: true
+        type: integer
+      - description: ID de la película
+        in: path
+        name: movieID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Review borrada exitosamente
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "404":
+          description: Error por review no encontrada
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Borra una review de un usuario sobre una película
+      tags:
+      - Reviews
+    get:
+      consumes:
+      - application/json
+      description: Obtiene una review de un usuario dado por ID sobre una película
+        también dada por ID.
+      parameters:
+      - description: ID del usuario
+        in: path
+        name: userID
+        required: true
+        type: integer
+      - description: ID de la película
+        in: path
+        name: movieID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Review obtenida exitosamente
+          schema:
+            $ref: '#/definitions/service.Review'
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "404":
+          description: Error por review no encontrada
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Obtiene una review de un usuario sobre una película
+      tags:
+      - Reviews
+    put:
+      consumes:
+      - application/json
+      description: Actualiza una review de un usuario dado por ID sobre una película
+        dada también por ID.
+      parameters:
+      - description: ID del usuario
+        in: path
+        name: userID
+        required: true
+        type: integer
+      - description: ID de la película
+        in: path
+        name: movieID
+        required: true
+        type: integer
+      - description: Datos actualizables de la review
+        in: body
+        name: review
+        required: true
+        schema:
+          $ref: '#/definitions/service.UpdatableReviewData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Review actualizada exitosamente
+          schema:
+            $ref: '#/definitions/service.Review'
+        "400":
+          description: Error de validación de los parámetros
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "404":
+          description: Error por review no encontrada
+          schema:
+            $ref: '#/definitions/api.JsonError'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/api.JsonError'
+      summary: Actualiza una review de un usuario sobre una película
+      tags:
+      - Reviews
 swagger: "2.0"

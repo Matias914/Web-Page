@@ -34,16 +34,16 @@ create_movie() {
        MOVIE_ID=$(echo "$BODY" | jq -r '.id')
 
        if [ -z "$MOVIE_ID" ] || [ "$MOVIE_ID" == "null" ]; then
-            echo "Error FATAL: Creación OK (201), pero ID no encontrado en la respuesta JSON. Body: $BODY" >&2
-            exit 1
+            echo "Error: Creación OK (201), pero ID no encontrado en la respuesta JSON. Body: $BODY" >&2
+            FAILED=1
        fi
 
        echo "Película creada con ID: $MOVIE_ID" >&2
        echo "$MOVIE_ID"
        return 0
     else
-       echo "Error FATAL al crear la película. Status: $HTTP_STATUS, Body: $BODY" >&2
-       exit 1
+       echo "Error al crear la película. Status: $HTTP_STATUS, Body: $BODY" >&2
+       FAILED=1
     fi
 }
 
@@ -53,9 +53,9 @@ delete_movie() {
     echo "----------------------------------------------------"
     echo "Acción: Eliminando película con ID $MOVIE_ID"
     URL="http://localhost:8080/api/movies/$MOVIE_ID"
-    
+
     HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "$URL")
-    
+
     if [ "$HTTP_STATUS" -eq 204 ]; then
         echo "Película eliminada exitosamente"
         echo "----------------------------------------------------" >&2
@@ -70,10 +70,10 @@ echo -e "\n===== INICIANDO PRUEBAS PARA POST /api/movies ===="
 # run_post_test "JSON Inválido" "http://localhost:8080/api/movies" '{"title": "Test Movie",,}' 400
 
 # Caso 2: Campo requerido faltante (title)
-run_post_test "Campo requerido faltante (title)" "http://localhost:8080/api/movies" '{"synopsis": "Test Synopsis", "released_at": "2023-01-01T00:00:00Z", "duration_minutes": 120}' 400
+run_post_test "Campo requerido faltante (title)" "http://localhost:8080/api/movies" '{"synopsis": "Post Test Synopsis", "released_at": "2023-01-01T00:00:00Z", "duration_minutes": 120}' 400
 
 # Caso 3: Falla de validación (duration_minutes=0)
-run_post_test "Falla de validación (duration_minutes=0)" "http://localhost:8080/api/movies" '{"title": "Test Movie", "synopsis": "Test Synopsis", "released_at": "2023-01-01T00:00:00Z", "duration_minutes": 0}' 400
+run_post_test "Falla de validación (duration_minutes=0)" "http://localhost:8080/api/movies" '{"title": "Post Test Movie", "synopsis": "Test Synopsis", "released_at": "2023-01-01T00:00:00Z", "duration_minutes": 0}' 400
 
 # Caso 4: Crear una película para probar duplicados
 MOVIE_DATA='{"title": "Duplicate Test Movie", "synopsis": "Synopsis", "released_at": "2024-01-01T00:00:00Z", "duration_minutes": 100}'
@@ -90,4 +90,3 @@ fi
 if [[ "$FAILED" -eq 0 ]]; then
     echo -e "Todas las pruebas para POST /api/movies pasaron exitosamente. ✅ \n"
 fi
-

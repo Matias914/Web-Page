@@ -7,6 +7,7 @@ package sqlc
 
 import (
 	"context"
+	"database/sql"
 )
 
 const addRole = `-- name: AddRole :one
@@ -28,9 +29,10 @@ func (q *Queries) AddRole(ctx context.Context, arg AddRoleParams) (Role, error) 
 	return i, err
 }
 
-const deleteRole = `-- name: DeleteRole :exec
+const deleteRole = `-- name: DeleteRole :one
 DELETE FROM roles
 WHERE movie_id = $1 AND celebrity_id = $2
+RETURNING celebrity_id, movie_id, role
 `
 
 type DeleteRoleParams struct {
@@ -38,9 +40,11 @@ type DeleteRoleParams struct {
 	CelebrityID int64 `json:"celebrity_id"`
 }
 
-func (q *Queries) DeleteRole(ctx context.Context, arg DeleteRoleParams) error {
-	_, err := q.db.ExecContext(ctx, deleteRole, arg.MovieID, arg.CelebrityID)
-	return err
+func (q *Queries) DeleteRole(ctx context.Context, arg DeleteRoleParams) (Role, error) {
+	row := q.db.QueryRowContext(ctx, deleteRole, arg.MovieID, arg.CelebrityID)
+	var i Role
+	err := row.Scan(&i.CelebrityID, &i.MovieID, &i.Role)
+	return i, err
 }
 
 const getRole = `-- name: GetRole :one
@@ -59,6 +63,96 @@ func (q *Queries) GetRole(ctx context.Context, arg GetRoleParams) (Role, error) 
 	var i Role
 	err := row.Scan(&i.CelebrityID, &i.MovieID, &i.Role)
 	return i, err
+}
+
+const listCelebrityRoles = `-- name: ListCelebrityRoles :many
+SELECT rol.celebrity_id, rol.movie_id, rol.role
+FROM celebrities AS cel
+LEFT JOIN roles AS rol
+ON (rol.celebrity_id = cel.id)
+WHERE cel.id = $1
+LIMIT $2
+OFFSET $3
+`
+
+type ListCelebrityRolesParams struct {
+	ID     int64 `json:"id"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+type ListCelebrityRolesRow struct {
+	CelebrityID sql.NullInt64  `json:"celebrity_id"`
+	MovieID     sql.NullInt64  `json:"movie_id"`
+	Role        sql.NullString `json:"role"`
+}
+
+func (q *Queries) ListCelebrityRoles(ctx context.Context, arg ListCelebrityRolesParams) ([]ListCelebrityRolesRow, error) {
+	rows, err := q.db.QueryContext(ctx, listCelebrityRoles, arg.ID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListCelebrityRolesRow
+	for rows.Next() {
+		var i ListCelebrityRolesRow
+		if err := rows.Scan(&i.CelebrityID, &i.MovieID, &i.Role); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listMovieRoles = `-- name: ListMovieRoles :many
+SELECT rol.celebrity_id, rol.movie_id, rol.role
+FROM movies AS mov
+LEFT JOIN roles AS rol
+ON (rol.movie_id = mov.id)
+WHERE mov.id = $1
+LIMIT $2
+OFFSET $3
+`
+
+type ListMovieRolesParams struct {
+	ID     int64 `json:"id"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+type ListMovieRolesRow struct {
+	CelebrityID sql.NullInt64  `json:"celebrity_id"`
+	MovieID     sql.NullInt64  `json:"movie_id"`
+	Role        sql.NullString `json:"role"`
+}
+
+func (q *Queries) ListMovieRoles(ctx context.Context, arg ListMovieRolesParams) ([]ListMovieRolesRow, error) {
+	rows, err := q.db.QueryContext(ctx, listMovieRoles, arg.ID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListMovieRolesRow
+	for rows.Next() {
+		var i ListMovieRolesRow
+		if err := rows.Scan(&i.CelebrityID, &i.MovieID, &i.Role); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const updateRole = `-- name: UpdateRole :one

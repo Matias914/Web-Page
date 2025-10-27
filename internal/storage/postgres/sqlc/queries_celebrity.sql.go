@@ -7,6 +7,7 @@ package sqlc
 
 import (
 	"context"
+	"database/sql"
 	"time"
 )
 
@@ -28,14 +29,17 @@ func (q *Queries) AddCelebrity(ctx context.Context, arg AddCelebrityParams) (Cel
 	return i, err
 }
 
-const deleteCelebrity = `-- name: DeleteCelebrity :exec
+const deleteCelebrity = `-- name: DeleteCelebrity :one
 DELETE FROM celebrities
 WHERE id = $1
+RETURNING id, name, birth_date
 `
 
-func (q *Queries) DeleteCelebrity(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, deleteCelebrity, id)
-	return err
+func (q *Queries) DeleteCelebrity(ctx context.Context, id int64) (Celebrity, error) {
+	row := q.db.QueryRowContext(ctx, deleteCelebrity, id)
+	var i Celebrity
+	err := row.Scan(&i.ID, &i.Name, &i.BirthDate)
+	return i, err
 }
 
 const getCelebrity = `-- name: GetCelebrity :one
@@ -88,30 +92,38 @@ func (q *Queries) ListCelebrities(ctx context.Context, arg ListCelebritiesParams
 
 const listMovieCelebrities = `-- name: ListMovieCelebrities :many
 SELECT cel.id, cel.name, cel.birth_date
-FROM roles AS rol
-JOIN celebrities AS cel
+FROM movies AS mov
+LEFT JOIN roles AS rol
+ON (mov.id = rol.movie_id)
+LEFT JOIN celebrities AS cel
 ON (cel.id = rol.celebrity_id)
-WHERE rol.movie_id = $1
+WHERE mov.id = $1
 ORDER BY cel.name
 LIMIT $2
 OFFSET $3
 `
 
 type ListMovieCelebritiesParams struct {
-	MovieID int64 `json:"movie_id"`
-	Limit   int32 `json:"limit"`
-	Offset  int32 `json:"offset"`
+	ID     int64 `json:"id"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) ListMovieCelebrities(ctx context.Context, arg ListMovieCelebritiesParams) ([]Celebrity, error) {
-	rows, err := q.db.QueryContext(ctx, listMovieCelebrities, arg.MovieID, arg.Limit, arg.Offset)
+type ListMovieCelebritiesRow struct {
+	ID        sql.NullInt64  `json:"id"`
+	Name      sql.NullString `json:"name"`
+	BirthDate sql.NullTime   `json:"birth_date"`
+}
+
+func (q *Queries) ListMovieCelebrities(ctx context.Context, arg ListMovieCelebritiesParams) ([]ListMovieCelebritiesRow, error) {
+	rows, err := q.db.QueryContext(ctx, listMovieCelebrities, arg.ID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Celebrity
+	var items []ListMovieCelebritiesRow
 	for rows.Next() {
-		var i Celebrity
+		var i ListMovieCelebritiesRow
 		if err := rows.Scan(&i.ID, &i.Name, &i.BirthDate); err != nil {
 			return nil, err
 		}

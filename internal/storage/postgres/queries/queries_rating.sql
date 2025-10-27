@@ -14,26 +14,27 @@ SET rating = $3
 WHERE user_id = $1 AND movie_id = $2
 RETURNING *;
 
--- name: DeleteRating :exec
+-- name: DeleteRating :one
 DELETE FROM ratings
-WHERE user_id = $1 AND movie_id = $2;
+WHERE user_id = $1 AND movie_id = $2
+RETURNING *;
 
 -- name: ListMovieRatings :many
 SELECT rat.*
-FROM ratings AS rat
-JOIN users AS usr
-ON (usr.id = rat.user_id)
-WHERE rat.movie_id = $1
+FROM movies AS mov
+LEFT JOIN ratings AS rat
+ON (rat.movie_id = mov.id)
+WHERE mov.id = $1
 ORDER BY rat.rating DESC
 LIMIT $2
 OFFSET $3;
 
 -- name: ListUserRatings :many
 SELECT rat.*
-FROM ratings AS rat
-JOIN movies AS mov
-ON (mov.id = rat.movie_id)
-WHERE rat.user_id = $1
+FROM users AS usr
+LEFT JOIN ratings AS rat
+ON (rat.user_id = usr.id)
+WHERE usr.id = $1
 ORDER BY rat.created_at DESC
 LIMIT $2
 OFFSET $3;

@@ -4,20 +4,20 @@ FROM users
 WHERE id = $1;
 
 -- name: AddUser :one
-INSERT INTO users (username, mail)
-VALUES ($1, $2)
+INSERT INTO users (username, password, mail)
+VALUES ($1, $2, $3)
 RETURNING *;
 
 -- name: UpdateUser :one
 UPDATE users
-SET username = $2,
-    mail = $3
+SET username = $2, mail = $3
 WHERE id = $1
 RETURNING *;
 
--- name: DeleteUser :exec
+-- name: DeleteUser :one
 DELETE FROM users
-WHERE id = $1;
+WHERE id = $1
+RETURNING *;
 
 -- name: ListUsers :many
 SELECT *

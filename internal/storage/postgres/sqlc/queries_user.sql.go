@@ -10,18 +10,19 @@ import (
 )
 
 const addUser = `-- name: AddUser :one
-INSERT INTO users (username, mail)
-VALUES ($1, $2)
+INSERT INTO users (username, password, mail)
+VALUES ($1, $2, $3)
 RETURNING id, username, password, mail, created_at
 `
 
 type AddUserParams struct {
 	Username string `json:"username"`
+	Password string `json:"password"`
 	Mail     string `json:"mail"`
 }
 
 func (q *Queries) AddUser(ctx context.Context, arg AddUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, addUser, arg.Username, arg.Mail)
+	row := q.db.QueryRowContext(ctx, addUser, arg.Username, arg.Password, arg.Mail)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -33,14 +34,23 @@ func (q *Queries) AddUser(ctx context.Context, arg AddUserParams) (User, error) 
 	return i, err
 }
 
-const deleteUser = `-- name: DeleteUser :exec
+const deleteUser = `-- name: DeleteUser :one
 DELETE FROM users
 WHERE id = $1
+RETURNING id, username, password, mail, created_at
 `
 
-func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, deleteUser, id)
-	return err
+func (q *Queries) DeleteUser(ctx context.Context, id int64) (User, error) {
+	row := q.db.QueryRowContext(ctx, deleteUser, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Password,
+		&i.Mail,
+		&i.CreatedAt,
+	)
+	return i, err
 }
 
 const getUser = `-- name: GetUser :one
@@ -105,8 +115,7 @@ func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, e
 
 const updateUser = `-- name: UpdateUser :one
 UPDATE users
-SET username = $2,
-    mail = $3
+SET username = $2, mail = $3
 WHERE id = $1
 RETURNING id, username, password, mail, created_at
 `

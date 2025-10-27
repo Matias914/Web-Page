@@ -40,8 +40,8 @@ func (service *GenreService) adaptNullableMovieGenres(results []sqlc.ListMovieGe
 	return genres
 }
 
-// GetGenresList retorna una lista de géneros limitada. Se pueden pedir por páginas de cierto tamaño.
-// Si ocurre un error con la función es porque hubo un error inesperado.
+// GetGenresList retorna una lista de géneros limitada. Los resultados se piden por páginas de
+// cierto tamaño. Si ocurre un error con la función es porque hubo un error inesperado.
 func (service *GenreService) GetGenresList(ctx context.Context, page int, rows int) ([]Genre, error) {
 	offset := (page - 1) * rows
 	result, err := service.Queries.ListGenres(ctx, sqlc.ListGenresParams{
@@ -57,14 +57,15 @@ func (service *GenreService) GetGenresList(ctx context.Context, page int, rows i
 // AddGenre agrega un género a la base de datos. Por una cuestión de consistencia, se agregan en
 // minúsculas. Si ocurre un error con la función es porque hay géneros duplicados, algún dato
 // del mismo no cumple con alguna de las restricciones de integridad u ocurrió un error inesperado.
-func (service *GenreService) AddGenre(ctx context.Context, genre AddGenreInput) (Genre, error) {
+func (service *GenreService) AddGenre(ctx context.Context, genre GenreData) (Genre, error) {
 	result, err := service.Queries.AddGenre(ctx, strings.ToLower(genre.Name))
 	var pgErr *pgconn.PgError
 	if errors.As(err, &pgErr) {
 		switch pgErr.Code {
-		case "23505":
+		// por las claves alternativas
+		case ErrCodeConstraintPK:
 			return Genre{}, ErrGenreDuplicated
-		case "23514":
+		case ErrCodeConstraintCHK:
 			return Genre{}, ErrInvalidGenre
 		default:
 			return Genre{}, err
@@ -92,7 +93,7 @@ func (service *GenreService) GetGenre(ctx context.Context, id int) (Genre, error
 // UpdateGenre actualiza todos los datos de un género. Si ocurre un error con la función
 // es porque hay géneros duplicados, algún dato del mismo no cumple con alguna de las
 // restricciones de integridad u ocurrió un error inesperado.
-func (service *GenreService) UpdateGenre(ctx context.Context, id int, genre UpdateGenreInput) (Genre, error) {
+func (service *GenreService) UpdateGenre(ctx context.Context, id int, genre GenreData) (Genre, error) {
 	result, err := service.Queries.UpdateGenre(ctx, sqlc.UpdateGenreParams{
 		ID:   int32(id),
 		Name: genre.Name,
@@ -100,9 +101,10 @@ func (service *GenreService) UpdateGenre(ctx context.Context, id int, genre Upda
 	var pgErr *pgconn.PgError
 	if errors.As(err, &pgErr) {
 		switch pgErr.Code {
-		case "23505":
+		// por las claves alternativas
+		case ErrCodeConstraintPK:
 			return Genre{}, ErrGenreDuplicated
-		case "23514":
+		case ErrCodeConstraintCHK:
 			return Genre{}, ErrInvalidGenre
 		default:
 			return Genre{}, err
@@ -120,7 +122,20 @@ func (service *GenreService) UpdateGenre(ctx context.Context, id int, genre Upda
 // DeleteGenre elimina un género de la base de datos dado su ID. Si ocurre un error con
 // la función es porque el género no existe u ocurrió un error inesperado.
 func (service *GenreService) DeleteGenre(ctx context.Context, id int) error {
-	if err := service.Queries.DeleteGenre(ctx, int32(id)); err != nil {
+	_, err := service.Queries.DeleteGenre(ctx, int32(id))
+	if errors.Is(err, sql.ErrNoRows) {
+		return ErrGenreNotFound
+	}
+	var pgErr *pgconn.PgError
+	if errors.As(err, &pgErr) {
+		switch pgErr.Code {
+		case ErrCodeConstraintFK:
+			return ErrGenreReferenced
+		default:
+			return err
+		}
+	}
+	if err != nil {
 		return err
 	}
 	return nil
@@ -128,22 +143,22 @@ func (service *GenreService) DeleteGenre(ctx context.Context, id int) error {
 
 // GetMovieGenresList retorna la lista de géneros de una película limitada. Se pueden pedir por páginas
 // de cierto tamaño. Si ocurre un error con la función es porque la película no existe u ocurrió un error
-// inesperado.
+// inesperado. Los resultados se piden por páginas de cierto tamaño.
 func (service *GenreService) GetMovieGenresList(ctx context.Context, movie int, page int, rows int) ([]Genre, error) {
 	offset := (page - 1) * rows
-	result, err := service.Queries.ListMovieGenres(ctx, sqlc.ListMovieGenresParams{
+	results, err := service.Queries.ListMovieGenres(ctx, sqlc.ListMovieGenresParams{
 		ID:     int64(movie),
 		Limit:  int32(rows),
 		Offset: int32(offset),
 	})
-	if len(result) == 0 {
+	if len(results) == 0 {
 		return nil, ErrMovieNotFound
 	}
-	if len(result) == 1 && !result[0].ID.Valid {
+	if len(results) == 1 && !results[0].ID.Valid {
 		return []Genre{}, nil
 	}
 	if err != nil {
 		return nil, err
 	}
-	return service.adaptNullableMovieGenres(result), nil
+	return service.adaptNullableMovieGenres(results), nil
 }

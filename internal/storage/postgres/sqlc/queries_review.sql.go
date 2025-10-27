@@ -7,6 +7,7 @@ package sqlc
 
 import (
 	"context"
+	"database/sql"
 	"time"
 )
 
@@ -40,9 +41,10 @@ func (q *Queries) AddReview(ctx context.Context, arg AddReviewParams) (Review, e
 	return i, err
 }
 
-const deleteReview = `-- name: DeleteReview :exec
+const deleteReview = `-- name: DeleteReview :one
 DELETE FROM reviews
 WHERE user_id = $1 AND movie_id = $2
+RETURNING user_id, movie_id, comment, created_at
 `
 
 type DeleteReviewParams struct {
@@ -50,9 +52,16 @@ type DeleteReviewParams struct {
 	MovieID int64 `json:"movie_id"`
 }
 
-func (q *Queries) DeleteReview(ctx context.Context, arg DeleteReviewParams) error {
-	_, err := q.db.ExecContext(ctx, deleteReview, arg.UserID, arg.MovieID)
-	return err
+func (q *Queries) DeleteReview(ctx context.Context, arg DeleteReviewParams) (Review, error) {
+	row := q.db.QueryRowContext(ctx, deleteReview, arg.UserID, arg.MovieID)
+	var i Review
+	err := row.Scan(
+		&i.UserID,
+		&i.MovieID,
+		&i.Comment,
+		&i.CreatedAt,
+	)
+	return i, err
 }
 
 const getReview = `-- name: GetReview :one
@@ -80,29 +89,36 @@ func (q *Queries) GetReview(ctx context.Context, arg GetReviewParams) (Review, e
 
 const listMovieReviews = `-- name: ListMovieReviews :many
 SELECT rev.user_id, rev.movie_id, rev.comment, rev.created_at
-FROM reviews AS rev
-JOIN users AS usr
-ON (rev.user_id = usr.id)
-WHERE rev.movie_id = $1
+FROM movies AS mov
+LEFT JOIN reviews AS rev
+ON (rev.movie_id = mov.id)
+WHERE mov.id = $1
 LIMIT $2
 OFFSET $3
 `
 
 type ListMovieReviewsParams struct {
-	MovieID int64 `json:"movie_id"`
-	Limit   int32 `json:"limit"`
-	Offset  int32 `json:"offset"`
+	ID     int64 `json:"id"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) ListMovieReviews(ctx context.Context, arg ListMovieReviewsParams) ([]Review, error) {
-	rows, err := q.db.QueryContext(ctx, listMovieReviews, arg.MovieID, arg.Limit, arg.Offset)
+type ListMovieReviewsRow struct {
+	UserID    sql.NullInt64  `json:"user_id"`
+	MovieID   sql.NullInt64  `json:"movie_id"`
+	Comment   sql.NullString `json:"comment"`
+	CreatedAt sql.NullTime   `json:"created_at"`
+}
+
+func (q *Queries) ListMovieReviews(ctx context.Context, arg ListMovieReviewsParams) ([]ListMovieReviewsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listMovieReviews, arg.ID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Review
+	var items []ListMovieReviewsRow
 	for rows.Next() {
-		var i Review
+		var i ListMovieReviewsRow
 		if err := rows.Scan(
 			&i.UserID,
 			&i.MovieID,
@@ -124,29 +140,36 @@ func (q *Queries) ListMovieReviews(ctx context.Context, arg ListMovieReviewsPara
 
 const listUserReviews = `-- name: ListUserReviews :many
 SELECT rev.user_id, rev.movie_id, rev.comment, rev.created_at
-FROM reviews AS rev
-JOIN users AS usr
+FROM users AS usr
+LEFT JOIN reviews AS rev
 ON (rev.user_id = usr.id)
-WHERE rev.user_id = $1
+WHERE usr.id = $1
 LIMIT $2
 OFFSET $3
 `
 
 type ListUserReviewsParams struct {
-	UserID int64 `json:"user_id"`
+	ID     int64 `json:"id"`
 	Limit  int32 `json:"limit"`
 	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) ListUserReviews(ctx context.Context, arg ListUserReviewsParams) ([]Review, error) {
-	rows, err := q.db.QueryContext(ctx, listUserReviews, arg.UserID, arg.Limit, arg.Offset)
+type ListUserReviewsRow struct {
+	UserID    sql.NullInt64  `json:"user_id"`
+	MovieID   sql.NullInt64  `json:"movie_id"`
+	Comment   sql.NullString `json:"comment"`
+	CreatedAt sql.NullTime   `json:"created_at"`
+}
+
+func (q *Queries) ListUserReviews(ctx context.Context, arg ListUserReviewsParams) ([]ListUserReviewsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listUserReviews, arg.ID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Review
+	var items []ListUserReviewsRow
 	for rows.Next() {
-		var i Review
+		var i ListUserReviewsRow
 		if err := rows.Scan(
 			&i.UserID,
 			&i.MovieID,

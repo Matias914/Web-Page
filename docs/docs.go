@@ -24,6 +24,329 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/celebrities": {
+            "get": {
+                "description": "Obtiene una lista de celebridades con paginación.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Celebrities"
+                ],
+                "summary": "Lista celebridades paginadas",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Número de página",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Cantidad de filas por página",
+                        "name": "rows",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de celebridads exitosa",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/service.Celebrity"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Agrega una nueva celebridad al catálogo.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Celebrities"
+                ],
+                "summary": "Agrega una celebridad",
+                "parameters": [
+                    {
+                        "description": "Datos de la celebridad",
+                        "name": "celebrity",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.CelebrityData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Celebridad agregada exitosamente",
+                        "schema": {
+                            "$ref": "#/definitions/service.Celebrity"
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "409": {
+                        "description": "Error de duplicacion de recursos",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            }
+        },
+        "/celebrities/{ID}": {
+            "get": {
+                "description": "Obtiene toda la información asociada a una celebridad dada por ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Celebrities"
+                ],
+                "summary": "Obtiene una celebridad",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la celebridad a obtener",
+                        "name": "ID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Celebridad obtenida exitosamente",
+                        "schema": {
+                            "$ref": "#/definitions/service.Celebrity"
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "Error por celebridad no encontrada",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Actualiza toda la información de una celebridad dado por ID. Todos los campos son requeridos.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Celebrities"
+                ],
+                "summary": "Actualiza los datos de una celebridad",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la celebridad a actualizar",
+                        "name": "ID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Datos actualizables de la celebridad",
+                        "name": "celebrity",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.CelebrityData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Celebridad actualizada exitosamente",
+                        "schema": {
+                            "$ref": "#/definitions/service.Celebrity"
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "Error por celebridad no encontrada",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "409": {
+                        "description": "Error de duplicación de recursos",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Borra una celebridad dada por ID permanentemente de la base de datos.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Celebrities"
+                ],
+                "summary": "Borra una celebridad",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la celebridad a eliminar",
+                        "name": "ID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Celebridad eliminada exitosamente"
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "Error por celebridad no encontrada",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            }
+        },
+        "/celebrities/{celebrityID}/roles": {
+            "get": {
+                "description": "Obtiene la lista de roles asociados a una celebridad dada por ID, con paginación.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Lista los roles de una celebridad paginados",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Número de página",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Cantidad de filas por página",
+                        "name": "rows",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la celebridad",
+                        "name": "celebrityID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de roles exitosa",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/service.Role"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            }
+        },
         "/genres": {
             "get": {
                 "description": "Obtiene una lista de géneros, ordenada por fecha de estreno descendente, con paginación.",
@@ -91,12 +414,12 @@ const docTemplate = `{
                 "summary": "Agrega un género",
                 "parameters": [
                     {
-                        "description": "Número de página",
-                        "name": "movie",
+                        "description": "Datos del género",
+                        "name": "genre",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/service.AddGenreInput"
+                            "$ref": "#/definitions/service.GenreData"
                         }
                     }
                 ],
@@ -128,7 +451,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/genres/{id}": {
+        "/genres/{ID}": {
             "get": {
                 "description": "Obtiene toda la información asociada a un género dado por ID.",
                 "consumes": [
@@ -145,7 +468,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "ID del género a obtener",
-                        "name": "id",
+                        "name": "ID",
                         "in": "path",
                         "required": true
                     }
@@ -193,23 +516,23 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "ID del género a actualizar",
-                        "name": "id",
+                        "name": "ID",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Número de página",
-                        "name": "movie",
+                        "description": "Datos actualizables del género",
+                        "name": "genre",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/service.UpdateGenreInput"
+                            "$ref": "#/definitions/service.GenreData"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Género actualizada exitosamente",
+                        "description": "Género actualizado exitosamente",
                         "schema": {
                             "$ref": "#/definitions/service.Genre"
                         }
@@ -256,14 +579,14 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "ID del género a eliminar",
-                        "name": "id",
+                        "name": "ID",
                         "in": "path",
                         "required": true
                     }
                 ],
                 "responses": {
                     "204": {
-                        "description": "Género eliminada exitosamente"
+                        "description": "Género eliminado exitosamente"
                     },
                     "400": {
                         "description": "Error de validación de los parámetros",
@@ -286,7 +609,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/genres/{id}/movies": {
+        "/genres/{genreID}/categories": {
             "get": {
                 "description": "Obtiene la lista de películas asociadas a un género dado por ID, con paginación.",
                 "consumes": [
@@ -317,7 +640,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "ID del género",
-                        "name": "id",
+                        "name": "genreID",
                         "in": "path",
                         "required": true
                     }
@@ -328,7 +651,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/service.Genre"
+                                "$ref": "#/definitions/service.Movie"
                             }
                         }
                     },
@@ -414,12 +737,12 @@ const docTemplate = `{
                 "summary": "Agrega una película",
                 "parameters": [
                     {
-                        "description": "Número de página",
+                        "description": "Datos de la película",
                         "name": "movie",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/service.AddMovieInput"
+                            "$ref": "#/definitions/service.MovieData"
                         }
                     }
                 ],
@@ -451,7 +774,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/movies/{id}": {
+        "/movies/{ID}": {
             "get": {
                 "description": "Obtiene toda la información asociada a una película dada por ID.",
                 "consumes": [
@@ -468,7 +791,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "ID de la película a obtener",
-                        "name": "id",
+                        "name": "ID",
                         "in": "path",
                         "required": true
                     }
@@ -516,17 +839,17 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "ID de la película a actualizar",
-                        "name": "id",
+                        "name": "ID",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Número de página",
+                        "description": "Datos actualizables de la película",
                         "name": "movie",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/service.UpdateMovieInput"
+                            "$ref": "#/definitions/service.MovieData"
                         }
                     }
                 ],
@@ -579,7 +902,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "ID de la película a eliminar",
-                        "name": "id",
+                        "name": "ID",
                         "in": "path",
                         "required": true
                     }
@@ -609,7 +932,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/movies/{id}/genres": {
+        "/movies/{movieID}/categories": {
             "get": {
                 "description": "Obtiene la lista de géneros asociados a una película dada por ID, con paginación.",
                 "consumes": [
@@ -640,7 +963,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "ID de la película",
-                        "name": "id",
+                        "name": "movieID",
                         "in": "path",
                         "required": true
                     }
@@ -668,9 +991,7 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/movies/{movieID}/genres": {
+            },
             "post": {
                 "description": "Agrega un género dado por ID a una película también dada por ID.",
                 "consumes": [
@@ -692,12 +1013,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "ID del género",
-                        "name": "genreID",
+                        "description": "Datos del género",
+                        "name": "genre",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/service.AddCategoryInput"
+                            "$ref": "#/definitions/service.CategoryData"
                         }
                     }
                 ],
@@ -732,7 +1053,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/movies/{movieID}/genres/{genreID}": {
+        "/movies/{movieID}/categories/{genreID}": {
             "get": {
                 "description": "Verifica si una película dada por ID tiene un determinado género también dado por ID.",
                 "consumes": [
@@ -837,6 +1158,1284 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/movies/{movieID}/ratings": {
+            "get": {
+                "description": "Obtiene la lista de ratings asociados a una película dada por ID, con paginación.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ratings"
+                ],
+                "summary": "Lista los ratings de una película paginados",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Número de página",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Cantidad de filas por página",
+                        "name": "rows",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la película",
+                        "name": "movieID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de ratings exitosa",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/service.Rating"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            }
+        },
+        "/movies/{movieID}/reviews": {
+            "get": {
+                "description": "Obtiene la lista de reviews asociados a una película dada por ID, con paginación.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Reviews"
+                ],
+                "summary": "Lista los reviews de una película paginados",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Número de página",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Cantidad de filas por página",
+                        "name": "rows",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la película",
+                        "name": "movieID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de reviews exitosa",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/service.Review"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            }
+        },
+        "/movies/{movieID}/roles": {
+            "get": {
+                "description": "Obtiene la lista de roles asociados a una película dada por ID, con paginación.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Lista los roles de una película paginados",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Número de página",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Cantidad de filas por página",
+                        "name": "rows",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la película",
+                        "name": "movieID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de roles exitosa",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/service.Role"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Agrega un rol de una celebridad dada por ID a una película también dada por ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Agrega un rol de una celebridad en una película",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la película",
+                        "name": "movieID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Datos del rol",
+                        "name": "role",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.RoleData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Rol agregado exitosamente",
+                        "schema": {
+                            "$ref": "#/definitions/service.Role"
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "Error por rol no encontrado",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "409": {
+                        "description": "Error de duplicación de recursos",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            }
+        },
+        "/movies/{movieID}/roles/{celebrityID}": {
+            "get": {
+                "description": "Obtiene el rol de una celebridad dada por ID en una película también dada por ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Obtiene el rol de una celebridad en una película",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la película",
+                        "name": "movieID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la celebridad",
+                        "name": "celebrityID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de roles exitosa",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/service.Role"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "Error por rol no encontrado",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Actualiza un rol de una celebridad dada por ID en una película dada también por ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Actualiza un rol de una celebridad en una película",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la película",
+                        "name": "movieID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la celebridad",
+                        "name": "celebrityID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Datos actualizables del rol",
+                        "name": "rol",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.UpdatableRoleData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rol actualizado exitosamente",
+                        "schema": {
+                            "$ref": "#/definitions/service.Role"
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "Error por rating no encontrada",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Borra un rol de una celebridad dada por ID en una película dada también por ID permanentemente.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Borra un rol de una celebridad en una película",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la película",
+                        "name": "movieID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la celebridad",
+                        "name": "celebrityID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Rol borrado exitosamente"
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "Error por rol no encontrado",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "description": "Obtiene una lista de usuarios con paginación.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Lista usuarios paginados",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Número de página",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Cantidad de filas por página",
+                        "name": "rows",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de usuarios exitosa",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/service.User"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Agrega un nuevo usuario a la base de datos.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Agrega un usuario",
+                "parameters": [
+                    {
+                        "description": "Datos del usuario",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.UserData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Usuario agregado exitosamente",
+                        "schema": {
+                            "$ref": "#/definitions/service.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "409": {
+                        "description": "Error de duplicacion de recursos",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{ID}": {
+            "get": {
+                "description": "Obtiene toda la información asociada a un usuario dado por ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Obtiene un usuario",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del usuario a obtener",
+                        "name": "ID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Usuario obtenida exitosamente",
+                        "schema": {
+                            "$ref": "#/definitions/service.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "Error por usuario no encontrado",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Actualiza toda la información de un usuario dado por ID. Todos los campos son requeridos.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Actualiza los datos de un usuario",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del usuario a actualizar",
+                        "name": "ID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Datos actualizables del usuario",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.UpdatableUserData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Usuario actualizado exitosamente",
+                        "schema": {
+                            "$ref": "#/definitions/service.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "Error por usuario no encontrado",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "409": {
+                        "description": "Error de duplicación de recursos",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Borra un usuario dado por ID permanentemente de la base de datos.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Borra un usuario",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del usuario a eliminar",
+                        "name": "ID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Usuario borrado exitosamente"
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "Error por usuario no encontrado",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userID}/ratings": {
+            "get": {
+                "description": "Obtiene la lista de ratings asociados a un usuario dada por ID, con paginación.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ratings"
+                ],
+                "summary": "Lista los ratings de un usuario paginados",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Número de página",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Cantidad de filas por página",
+                        "name": "rows",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID del usuario",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de ratings exitosa",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/service.Rating"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Agrega un rating de un usuario dado por ID a una película también dada por ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ratings"
+                ],
+                "summary": "Agrega un rating de un usuario sobre una película",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del usuario",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Datos del rating",
+                        "name": "rating",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.RatingData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Rating agregada exitosamente",
+                        "schema": {
+                            "$ref": "#/definitions/service.Rating"
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "Error por rating no encontrada",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "409": {
+                        "description": "Error de duplicación de recursos",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userID}/ratings/{movieID}": {
+            "get": {
+                "description": "Obtiene un rating de un usuario dado por ID sobre una película también dada por ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ratings"
+                ],
+                "summary": "Obtiene un rating de un usuario sobre una película",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del usuario",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la película",
+                        "name": "movieID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rating obtenida exitosamente",
+                        "schema": {
+                            "$ref": "#/definitions/service.Rating"
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "Error por rating no encontrada",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Actualiza un rating de un usuario dado por ID sobre una película dada también por ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ratings"
+                ],
+                "summary": "Actualiza un rating de un usuario sobre una película",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del usuario",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la película",
+                        "name": "movieID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Datos actualizables del rating",
+                        "name": "rating",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.UpdatableRatingData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rating actualizada exitosamente",
+                        "schema": {
+                            "$ref": "#/definitions/service.Rating"
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "Error por rating no encontrada",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Borra un rating de un usuario dado por ID sobre una película dada también por ID permanentemente.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ratings"
+                ],
+                "summary": "Borra un rating de un usuario sobre una película",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del usuario",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la película",
+                        "name": "movieID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Rating borrada exitosamente"
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "Error por rating no encontrada",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userID}/reviews": {
+            "get": {
+                "description": "Obtiene la lista de reviews asociados a un usuario dada por ID, con paginación.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Reviews"
+                ],
+                "summary": "Lista los reviews de un usuario paginados",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Número de página",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Cantidad de filas por página",
+                        "name": "rows",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID del usuario",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de reviews exitosa",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/service.Review"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Agrega una review de un usuario dado por ID a una película también dada por ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Reviews"
+                ],
+                "summary": "Agrega una review de un usuario sobre una película",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del usuario",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Datos de la review",
+                        "name": "review",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.ReviewData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Review agregada exitosamente",
+                        "schema": {
+                            "$ref": "#/definitions/service.Review"
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "Error por review no encontrada",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "409": {
+                        "description": "Error de duplicación de recursos",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userID}/reviews/{movieID}": {
+            "get": {
+                "description": "Obtiene una review de un usuario dado por ID sobre una película también dada por ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Reviews"
+                ],
+                "summary": "Obtiene una review de un usuario sobre una película",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del usuario",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la película",
+                        "name": "movieID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Review obtenida exitosamente",
+                        "schema": {
+                            "$ref": "#/definitions/service.Review"
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "Error por review no encontrada",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Actualiza una review de un usuario dado por ID sobre una película dada también por ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Reviews"
+                ],
+                "summary": "Actualiza una review de un usuario sobre una película",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del usuario",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la película",
+                        "name": "movieID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Datos actualizables de la review",
+                        "name": "review",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.UpdatableReviewData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Review actualizada exitosamente",
+                        "schema": {
+                            "$ref": "#/definitions/service.Review"
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "Error por review no encontrada",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Borra una review de un usuario dado por ID sobre una película dada también por ID permanentemente.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Reviews"
+                ],
+                "summary": "Borra una review de un usuario sobre una película",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del usuario",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la película",
+                        "name": "movieID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Review borrada exitosamente"
+                    },
+                    "400": {
+                        "description": "Error de validación de los parámetros",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "Error por review no encontrada",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/api.JsonError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -849,7 +2448,7 @@ const docTemplate = `{
                 }
             }
         },
-        "service.AddCategoryInput": {
+        "service.CategoryData": {
             "type": "object",
             "required": [
                 "genre_id"
@@ -860,41 +2459,34 @@ const docTemplate = `{
                 }
             }
         },
-        "service.AddGenreInput": {
+        "service.Celebrity": {
             "type": "object",
-            "required": [
-                "name"
-            ],
             "properties": {
+                "birth_date": {
+                    "type": "string",
+                    "example": "1969-12-28T00:00:00Z"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Linus Torvalds"
                 }
             }
         },
-        "service.AddMovieInput": {
+        "service.CelebrityData": {
             "type": "object",
             "required": [
-                "duration_minutes",
-                "released_at",
-                "synopsis",
-                "title"
+                "birth_date",
+                "name"
             ],
             "properties": {
-                "duration_minutes": {
-                    "type": "integer",
-                    "minimum": 1
-                },
-                "poster_url": {
+                "birth_date": {
                     "type": "string"
                 },
-                "released_at": {
-                    "type": "string"
-                },
-                "synopsis": {
-                    "type": "string",
-                    "maxLength": 5000
-                },
-                "title": {
+                "name": {
                     "type": "string",
                     "maxLength": 255
                 }
@@ -909,7 +2501,19 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string",
-                    "example": "terror"
+                    "example": "horror"
+                }
+            }
+        },
+        "service.GenreData": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "maxLength": 255
                 }
             }
         },
@@ -942,18 +2546,7 @@ const docTemplate = `{
                 }
             }
         },
-        "service.UpdateGenreInput": {
-            "type": "object",
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "service.UpdateMovieInput": {
+        "service.MovieData": {
             "type": "object",
             "required": [
                 "duration_minutes",
@@ -963,8 +2556,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "duration_minutes": {
-                    "type": "integer",
-                    "minimum": 1
+                    "type": "integer"
                 },
                 "poster_url": {
                     "type": "string"
@@ -977,6 +2569,212 @@ const docTemplate = `{
                     "maxLength": 5000
                 },
                 "title": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
+        "service.Rating": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2025-10-30T00:00:00Z"
+                },
+                "movie_id": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "rating": {
+                    "type": "integer",
+                    "example": 5
+                },
+                "user_id": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "service.RatingData": {
+            "type": "object",
+            "required": [
+                "movie_id",
+                "rating"
+            ],
+            "properties": {
+                "movie_id": {
+                    "type": "integer"
+                },
+                "rating": {
+                    "type": "integer",
+                    "maximum": 10
+                }
+            }
+        },
+        "service.Review": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "type": "string",
+                    "example": "Seriously... Who made this? "
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2025-10-30T00:00:00Z"
+                },
+                "movie_id": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "user_id": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "service.ReviewData": {
+            "type": "object",
+            "required": [
+                "comment",
+                "movie_id"
+            ],
+            "properties": {
+                "comment": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "movie_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "service.Role": {
+            "type": "object",
+            "properties": {
+                "celebrity_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "movie_id": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "role": {
+                    "type": "string",
+                    "example": "Tech Guy"
+                }
+            }
+        },
+        "service.RoleData": {
+            "type": "object",
+            "required": [
+                "celebrity_id",
+                "role"
+            ],
+            "properties": {
+                "celebrity_id": {
+                    "type": "integer"
+                },
+                "role": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
+        "service.UpdatableRatingData": {
+            "type": "object",
+            "required": [
+                "rating"
+            ],
+            "properties": {
+                "rating": {
+                    "type": "integer"
+                }
+            }
+        },
+        "service.UpdatableReviewData": {
+            "type": "object",
+            "required": [
+                "comment"
+            ],
+            "properties": {
+                "comment": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
+        "service.UpdatableRoleData": {
+            "type": "object",
+            "required": [
+                "role"
+            ],
+            "properties": {
+                "role": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
+        "service.UpdatableUserData": {
+            "type": "object",
+            "required": [
+                "mail",
+                "username"
+            ],
+            "properties": {
+                "mail": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
+        "service.User": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2025-10-30T00:00:00Z"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "mail": {
+                    "type": "string",
+                    "example": "smokeseller@gmail.com"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "notofyourbusiness"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "thescrummaster1"
+                }
+            }
+        },
+        "service.UserData": {
+            "type": "object",
+            "required": [
+                "mail",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "mail": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "username": {
                     "type": "string",
                     "maxLength": 255
                 }

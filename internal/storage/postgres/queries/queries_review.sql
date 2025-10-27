@@ -14,24 +14,25 @@ SET comment = $3
 WHERE user_id = $1 AND movie_id = $2
 RETURNING *;
 
--- name: DeleteReview :exec
+-- name: DeleteReview :one
 DELETE FROM reviews
-WHERE user_id = $1 AND movie_id = $2;
+WHERE user_id = $1 AND movie_id = $2
+RETURNING *;
 
 -- name: ListMovieReviews :many
 SELECT rev.*
-FROM reviews AS rev
-JOIN users AS usr
-ON (rev.user_id = usr.id)
-WHERE rev.movie_id = $1
+FROM movies AS mov
+LEFT JOIN reviews AS rev
+ON (rev.movie_id = mov.id)
+WHERE mov.id = $1
 LIMIT $2
 OFFSET $3;
 
 -- name: ListUserReviews :many
 SELECT rev.*
-FROM reviews AS rev
-JOIN users AS usr
+FROM users AS usr
+LEFT JOIN reviews AS rev
 ON (rev.user_id = usr.id)
-WHERE rev.user_id = $1
+WHERE usr.id = $1
 LIMIT $2
 OFFSET $3;
