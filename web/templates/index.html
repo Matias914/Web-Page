@@ -2,19 +2,56 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Home</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <title>WebPage | Inicio</title>
+    <link rel="stylesheet" href="/static/styles/index.css?v=1.1">
 </head>
 <body>
+<header class="navbar">
     <div class="container">
-        <h1>¡Bienvenido Joven Peliculero!</h1>
-        <p>
-            Esta página Web tiene una lista de películas para que los usuarios
-            rankeen y den sus opiniones. También pueden filtrar por catálogo ver
-            el portal de comentarios para conocer las opiniones más relevantes del
-            resto de usuarios. Se puede consultar, además, la información de las
-            películas que desee.
-        </p>
+        <h1 class="logo">🎬 WebPage</h1>
+        <nav>
+            <a href="#">Inicio</a>
+            <a href="#">Catálogo</a>
+            <a href="#">Opiniones</a>
+            <a href="#">Acerca de</a>
+        </nav>
     </div>
+</header>
+<main class="main-container">
+    <section class="card welcome-card">
+        <h2>¡Bienvenido, Joven Peliculero!</h2>
+        <p>
+            Explorá, calificá y compartí tus opiniones sobre películas. Descubrí las valoraciones de otros usuarios,
+            filtrá por catálogo y consultá toda la información de tus títulos favoritos.
+        </p>
+    </section>
+
+    <section class="card management-card">
+        <h2>Gestión rápida de entidades</h2>
+
+        <form id="formulario-entidad" class="entity-form">
+            <h3>Crear nueva entidad</h3>
+            <div class="input-group">
+                <input type="text" id="nombre-entidad" placeholder="Nombre de la entidad" required>
+                <input type="text" id="valor-entidad" placeholder="Valor (opcional)">
+                <button type="submit" class="primary-button">Añadir</button>
+            </div>
+        </form>
+
+        <div class="divider"></div>
+
+        <h3>Lista de entidades</h3>
+        <ul id="lista-entidades" class="entity-list">
+            <li>Ejemplo de Entidad 1</li>
+            <li>Ejemplo de Entidad 2</li>
+        </ul>
+    </section>
+</main>
+
+<footer class="footer">
+    © 2025 <strong>WebPage</strong> — Proyecto académico de Matías Ortiz
+</footer>
+
+<script src="/static/js/index.js" defer></script>
 </body>
 </html>

@@ -8,9 +8,8 @@ import (
 
 func (app *Application) GetRouter() *chi.Mux {
 	mux := chi.NewRouter()
-	fs := http.FileServer(http.Dir("./web/static/"))
-
-	mux.Handle("/static/*", fs)
+	fsr := http.FileServer(http.Dir("./web/static/"))
+	mux.Handle("/static/*", http.StripPrefix("/static/", fsr))
 
 	mux.HandleFunc("/", app.handleHome)
 	mux.NotFound(app.handleNotFound)
