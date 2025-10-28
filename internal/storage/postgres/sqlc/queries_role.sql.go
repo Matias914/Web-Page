@@ -22,6 +22,7 @@ type AddRoleParams struct {
 	Role        string `json:"role"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) AddRole(ctx context.Context, arg AddRoleParams) (Role, error) {
 	row := q.db.QueryRowContext(ctx, addRole, arg.MovieID, arg.CelebrityID, arg.Role)
 	var i Role
@@ -40,6 +41,7 @@ type DeleteRoleParams struct {
 	CelebrityID int64 `json:"celebrity_id"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) DeleteRole(ctx context.Context, arg DeleteRoleParams) (Role, error) {
 	row := q.db.QueryRowContext(ctx, deleteRole, arg.MovieID, arg.CelebrityID)
 	var i Role
@@ -58,6 +60,7 @@ type GetRoleParams struct {
 	CelebrityID int64 `json:"celebrity_id"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) GetRole(ctx context.Context, arg GetRoleParams) (Role, error) {
 	row := q.db.QueryRowContext(ctx, getRole, arg.MovieID, arg.CelebrityID)
 	var i Role
@@ -87,6 +90,7 @@ type ListCelebrityRolesRow struct {
 	Role        sql.NullString `json:"role"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) ListCelebrityRoles(ctx context.Context, arg ListCelebrityRolesParams) ([]ListCelebrityRolesRow, error) {
 	rows, err := q.db.QueryContext(ctx, listCelebrityRoles, arg.ID, arg.Limit, arg.Offset)
 	if err != nil {
@@ -132,6 +136,7 @@ type ListMovieRolesRow struct {
 	Role        sql.NullString `json:"role"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) ListMovieRoles(ctx context.Context, arg ListMovieRolesParams) ([]ListMovieRolesRow, error) {
 	rows, err := q.db.QueryContext(ctx, listMovieRoles, arg.ID, arg.Limit, arg.Offset)
 	if err != nil {
@@ -168,6 +173,7 @@ type UpdateRoleParams struct {
 	Role        string `json:"role"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) UpdateRole(ctx context.Context, arg UpdateRoleParams) (Role, error) {
 	row := q.db.QueryRowContext(ctx, updateRole, arg.MovieID, arg.CelebrityID, arg.Role)
 	var i Role

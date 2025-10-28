@@ -24,6 +24,7 @@ type AddReviewParams struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) AddReview(ctx context.Context, arg AddReviewParams) (Review, error) {
 	row := q.db.QueryRowContext(ctx, addReview,
 		arg.UserID,
@@ -52,6 +53,7 @@ type DeleteReviewParams struct {
 	MovieID int64 `json:"movie_id"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) DeleteReview(ctx context.Context, arg DeleteReviewParams) (Review, error) {
 	row := q.db.QueryRowContext(ctx, deleteReview, arg.UserID, arg.MovieID)
 	var i Review
@@ -75,6 +77,7 @@ type GetReviewParams struct {
 	MovieID int64 `json:"movie_id"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) GetReview(ctx context.Context, arg GetReviewParams) (Review, error) {
 	row := q.db.QueryRowContext(ctx, getReview, arg.UserID, arg.MovieID)
 	var i Review
@@ -110,6 +113,7 @@ type ListMovieReviewsRow struct {
 	CreatedAt sql.NullTime   `json:"created_at"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) ListMovieReviews(ctx context.Context, arg ListMovieReviewsParams) ([]ListMovieReviewsRow, error) {
 	rows, err := q.db.QueryContext(ctx, listMovieReviews, arg.ID, arg.Limit, arg.Offset)
 	if err != nil {
@@ -161,6 +165,7 @@ type ListUserReviewsRow struct {
 	CreatedAt sql.NullTime   `json:"created_at"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) ListUserReviews(ctx context.Context, arg ListUserReviewsParams) ([]ListUserReviewsRow, error) {
 	rows, err := q.db.QueryContext(ctx, listUserReviews, arg.ID, arg.Limit, arg.Offset)
 	if err != nil {
@@ -202,6 +207,7 @@ type UpdateReviewParams struct {
 	Comment string `json:"comment"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) UpdateReview(ctx context.Context, arg UpdateReviewParams) (Review, error) {
 	row := q.db.QueryRowContext(ctx, updateReview, arg.UserID, arg.MovieID, arg.Comment)
 	var i Review

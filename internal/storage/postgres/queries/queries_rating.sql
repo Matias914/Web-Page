@@ -1,24 +1,29 @@
+-- noinspection SqlResolve
 -- name: GetRating :one
 SELECT *
 FROM ratings
 WHERE user_id = $1 AND movie_id = $2;
 
+-- noinspection SqlResolve
 -- name: AddRating :one
 INSERT INTO ratings (user_id, movie_id, rating)
 VALUES ($1, $2, $3)
 RETURNING *;
 
+-- noinspection SqlResolve
 -- name: UpdateRating :one
 UPDATE ratings
 SET rating = $3
 WHERE user_id = $1 AND movie_id = $2
 RETURNING *;
 
+-- noinspection SqlResolve
 -- name: DeleteRating :one
 DELETE FROM ratings
 WHERE user_id = $1 AND movie_id = $2
 RETURNING *;
 
+-- noinspection SqlResolve
 -- name: ListMovieRatings :many
 SELECT rat.*
 FROM movies AS mov
@@ -29,6 +34,7 @@ ORDER BY rat.rating DESC
 LIMIT $2
 OFFSET $3;
 
+-- noinspection SqlResolve
 -- name: ListUserRatings :many
 SELECT rat.*
 FROM users AS usr

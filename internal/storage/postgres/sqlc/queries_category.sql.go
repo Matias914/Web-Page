@@ -19,6 +19,7 @@ type AddCategoryParams struct {
 	MovieID int64 `json:"movie_id"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) AddCategory(ctx context.Context, arg AddCategoryParams) error {
 	_, err := q.db.ExecContext(ctx, addCategory, arg.GenreID, arg.MovieID)
 	return err
@@ -35,6 +36,7 @@ type DeleteCategoryParams struct {
 	MovieID int64 `json:"movie_id"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) DeleteCategory(ctx context.Context, arg DeleteCategoryParams) (Category, error) {
 	row := q.db.QueryRowContext(ctx, deleteCategory, arg.GenreID, arg.MovieID)
 	var i Category
@@ -53,6 +55,7 @@ type GetCategoryParams struct {
 	MovieID int64 `json:"movie_id"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) GetCategory(ctx context.Context, arg GetCategoryParams) (Category, error) {
 	row := q.db.QueryRowContext(ctx, getCategory, arg.GenreID, arg.MovieID)
 	var i Category

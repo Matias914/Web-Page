@@ -16,6 +16,7 @@ VALUES ($1)
 RETURNING id, name
 `
 
+// noinspection SqlResolve
 func (q *Queries) AddGenre(ctx context.Context, name string) (Genre, error) {
 	row := q.db.QueryRowContext(ctx, addGenre, name)
 	var i Genre
@@ -29,6 +30,7 @@ WHERE id = $1
 RETURNING id, name
 `
 
+// noinspection SqlResolve
 func (q *Queries) DeleteGenre(ctx context.Context, id int32) (Genre, error) {
 	row := q.db.QueryRowContext(ctx, deleteGenre, id)
 	var i Genre
@@ -42,6 +44,7 @@ FROM genres
 WHERE id = $1
 `
 
+// noinspection SqlResolve
 func (q *Queries) GetGenre(ctx context.Context, id int32) (Genre, error) {
 	row := q.db.QueryRowContext(ctx, getGenre, id)
 	var i Genre
@@ -61,6 +64,7 @@ type ListGenresParams struct {
 	Offset int32 `json:"offset"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) ListGenres(ctx context.Context, arg ListGenresParams) ([]Genre, error) {
 	rows, err := q.db.QueryContext(ctx, listGenres, arg.Limit, arg.Offset)
 	if err != nil {
@@ -107,6 +111,7 @@ type ListMovieGenresRow struct {
 	Name sql.NullString `json:"name"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) ListMovieGenres(ctx context.Context, arg ListMovieGenresParams) ([]ListMovieGenresRow, error) {
 	rows, err := q.db.QueryContext(ctx, listMovieGenres, arg.ID, arg.Limit, arg.Offset)
 	if err != nil {
@@ -142,6 +147,7 @@ type UpdateGenreParams struct {
 	Name string `json:"name"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) UpdateGenre(ctx context.Context, arg UpdateGenreParams) (Genre, error) {
 	row := q.db.QueryRowContext(ctx, updateGenre, arg.ID, arg.Name)
 	var i Genre

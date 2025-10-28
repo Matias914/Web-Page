@@ -25,6 +25,7 @@ type AddMovieParams struct {
 	PosterUrl       sql.NullString `json:"poster_url"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) AddMovie(ctx context.Context, arg AddMovieParams) (Movie, error) {
 	row := q.db.QueryRowContext(ctx, addMovie,
 		arg.Title,
@@ -51,6 +52,7 @@ WHERE id = $1
 RETURNING id, title, synopsis, released_at, poster_url, duration_minutes
 `
 
+// noinspection SqlResolve
 func (q *Queries) DeleteMovie(ctx context.Context, id int64) (Movie, error) {
 	row := q.db.QueryRowContext(ctx, deleteMovie, id)
 	var i Movie
@@ -71,6 +73,7 @@ FROM movies
 WHERE id = $1
 `
 
+// noinspection SqlResolve
 func (q *Queries) GetMovie(ctx context.Context, id int64) (Movie, error) {
 	row := q.db.QueryRowContext(ctx, getMovie, id)
 	var i Movie
@@ -102,6 +105,7 @@ type ListCelebrityMoviesParams struct {
 	Offset      int32 `json:"offset"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) ListCelebrityMovies(ctx context.Context, arg ListCelebrityMoviesParams) ([]Movie, error) {
 	rows, err := q.db.QueryContext(ctx, listCelebrityMovies, arg.CelebrityID, arg.Limit, arg.Offset)
 	if err != nil {
@@ -159,6 +163,7 @@ type ListGenreMoviesRow struct {
 	DurationMinutes sql.NullInt32  `json:"duration_minutes"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) ListGenreMovies(ctx context.Context, arg ListGenreMoviesParams) ([]ListGenreMoviesRow, error) {
 	rows, err := q.db.QueryContext(ctx, listGenreMovies, arg.ID, arg.Limit, arg.Offset)
 	if err != nil {
@@ -202,6 +207,7 @@ type ListMoviesParams struct {
 	Offset int32 `json:"offset"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) ListMovies(ctx context.Context, arg ListMoviesParams) ([]Movie, error) {
 	rows, err := q.db.QueryContext(ctx, listMovies, arg.Limit, arg.Offset)
 	if err != nil {
@@ -252,6 +258,7 @@ type UpdateMovieParams struct {
 	PosterUrl       sql.NullString `json:"poster_url"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) UpdateMovie(ctx context.Context, arg UpdateMovieParams) (Movie, error) {
 	row := q.db.QueryRowContext(ctx, updateMovie,
 		arg.ID,

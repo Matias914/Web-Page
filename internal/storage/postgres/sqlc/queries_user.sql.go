@@ -21,6 +21,7 @@ type AddUserParams struct {
 	Mail     string `json:"mail"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) AddUser(ctx context.Context, arg AddUserParams) (User, error) {
 	row := q.db.QueryRowContext(ctx, addUser, arg.Username, arg.Password, arg.Mail)
 	var i User
@@ -40,6 +41,7 @@ WHERE id = $1
 RETURNING id, username, password, mail, created_at
 `
 
+// noinspection SqlResolve
 func (q *Queries) DeleteUser(ctx context.Context, id int64) (User, error) {
 	row := q.db.QueryRowContext(ctx, deleteUser, id)
 	var i User
@@ -59,6 +61,7 @@ FROM users
 WHERE id = $1
 `
 
+// noinspection SqlResolve
 func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUser, id)
 	var i User
@@ -84,6 +87,7 @@ type ListUsersParams struct {
 	Offset int32 `json:"offset"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error) {
 	rows, err := q.db.QueryContext(ctx, listUsers, arg.Limit, arg.Offset)
 	if err != nil {
@@ -126,6 +130,7 @@ type UpdateUserParams struct {
 	Mail     string `json:"mail"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
 	row := q.db.QueryRowContext(ctx, updateUser, arg.ID, arg.Username, arg.Mail)
 	var i User

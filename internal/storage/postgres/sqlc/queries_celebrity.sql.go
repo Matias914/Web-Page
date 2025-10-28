@@ -22,6 +22,7 @@ type AddCelebrityParams struct {
 	BirthDate time.Time `json:"birth_date"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) AddCelebrity(ctx context.Context, arg AddCelebrityParams) (Celebrity, error) {
 	row := q.db.QueryRowContext(ctx, addCelebrity, arg.Name, arg.BirthDate)
 	var i Celebrity
@@ -35,6 +36,7 @@ WHERE id = $1
 RETURNING id, name, birth_date
 `
 
+// noinspection SqlResolve
 func (q *Queries) DeleteCelebrity(ctx context.Context, id int64) (Celebrity, error) {
 	row := q.db.QueryRowContext(ctx, deleteCelebrity, id)
 	var i Celebrity
@@ -48,6 +50,7 @@ FROM celebrities
 WHERE id = $1
 `
 
+// noinspection SqlResolve
 func (q *Queries) GetCelebrity(ctx context.Context, id int64) (Celebrity, error) {
 	row := q.db.QueryRowContext(ctx, getCelebrity, id)
 	var i Celebrity
@@ -67,6 +70,7 @@ type ListCelebritiesParams struct {
 	Offset int32 `json:"offset"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) ListCelebrities(ctx context.Context, arg ListCelebritiesParams) ([]Celebrity, error) {
 	rows, err := q.db.QueryContext(ctx, listCelebrities, arg.Limit, arg.Offset)
 	if err != nil {
@@ -115,6 +119,7 @@ type ListMovieCelebritiesRow struct {
 	BirthDate sql.NullTime   `json:"birth_date"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) ListMovieCelebrities(ctx context.Context, arg ListMovieCelebritiesParams) ([]ListMovieCelebritiesRow, error) {
 	rows, err := q.db.QueryContext(ctx, listMovieCelebrities, arg.ID, arg.Limit, arg.Offset)
 	if err != nil {
@@ -151,6 +156,7 @@ type UpdateCelebrityParams struct {
 	BirthDate time.Time `json:"birth_date"`
 }
 
+// noinspection SqlResolve
 func (q *Queries) UpdateCelebrity(ctx context.Context, arg UpdateCelebrityParams) (Celebrity, error) {
 	row := q.db.QueryRowContext(ctx, updateCelebrity, arg.ID, arg.Name, arg.BirthDate)
 	var i Celebrity

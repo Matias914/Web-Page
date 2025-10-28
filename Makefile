@@ -12,7 +12,6 @@ DOCKER  ?= docker
 DOCKERC ?= docker compose
 ATLAS   ?= atlas
 SWAG    ?= swag
-HURL	?= hurl
 
 # Variables del Proyecto
 APP_NAME := App Web en Go
@@ -165,7 +164,7 @@ run: build
 
 test:
 	@echo "🧪  Ejecutando pruebas..."
-	@$(HURL) --verbose --very-verbose test/movie.hurl
+	@bash test/run_all_tests.sh
 
 tidy:
 	@echo "📦  Ordenando dependencias de Go..."

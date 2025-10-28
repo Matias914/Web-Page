@@ -1,13 +1,16 @@
+-- noinspection SqlResolve
 -- name: GetMovie :one
 SELECT *
 FROM movies
 WHERE id = $1;
 
+-- noinspection SqlResolve
 -- name: AddMovie :one
 INSERT INTO movies (title, synopsis, released_at, duration_minutes, poster_url)
 VALUES ($1, $2, $3, $4, $5)
 RETURNING *;
 
+-- noinspection SqlResolve
 -- name: UpdateMovie :one
 UPDATE movies
 SET title = $2,
@@ -18,11 +21,13 @@ SET title = $2,
 WHERE id = $1
 RETURNING *;
 
+-- noinspection SqlResolve
 -- name: DeleteMovie :one
 DELETE FROM movies
 WHERE id = $1
 RETURNING *;
 
+-- noinspection SqlResolve
 -- name: ListMovies :many
 SELECT *
 FROM movies
@@ -30,6 +35,7 @@ ORDER BY released_at DESC
 LIMIT $1
 OFFSET $2;
 
+-- noinspection SqlResolve
 -- name: ListGenreMovies :many
 SELECT mov.*
 FROM genres AS gen
@@ -41,6 +47,7 @@ WHERE gen.id = $1
 LIMIT $2
 OFFSET $3;
 
+-- noinspection SqlResolve
 -- name: ListCelebrityMovies :many
 SELECT mov.*
 FROM roles AS rol
