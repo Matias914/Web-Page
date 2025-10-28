@@ -12,6 +12,8 @@ func (app *Application) GetRouter() *chi.Mux {
 	mux.Handle("/static/*", http.StripPrefix("/static/", fsr))
 
 	mux.HandleFunc("/", app.handleHome)
+	mux.HandleFunc("/catalog", app.handleCatalog)
+	mux.HandleFunc("/management", app.handleManagement)
 	mux.NotFound(app.handleNotFound)
 	return mux
 }

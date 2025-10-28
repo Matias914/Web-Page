@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>WebPage | Películas</title>
+    <link rel="stylesheet" href="/static/styles/index.css?v=1.0">
+    <link rel="stylesheet" href="/static/styles/management.css?v=1.0">
+</head>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <h1 class="logo">🎬 WebPage</h1>
+            <nav>
+                <a href="/">Inicio</a>
+                <a href="/catalog">Películas</a>
+                <a href="/management">Control</a>
+            </nav>
+        </div>
+    </header>
+    <div id="notification-banner" class="notification"></div>
+    <main class="main-container">
+        <div class="card management-card">
+            <h2>Gestión de Entidades</h2>
+            <div id="entity-selector" class="entity-selector">
+                <button class="entity-btn active" data-entity="movies">Películas</button>
+                <button class="entity-btn" data-entity="genres">Géneros</button>
+                <button class="entity-btn" data-entity="celebrities">Celebridades</button>
+            </div>
+            <form id="entity-form" class="entity-form">
+                <h3 id="form-title"></h3>
+                <div id="form-fields" class="input-group">
+                    <!-- Los campos del formulario se generarán aquí dinámicamente -->
+                </div>
+                <button type="submit" id="form-submit-button" class="primary-button">Añadir</button>
+            </form>
+            <div class="divider"></div>
+            <h3 id="list-title"></h3>
+            <ul id="entity-list" class="entity-list">
+                <!-- Los elementos se cargarán aquí dinámicamente -->
+            </ul>
+        </div>
+    </main>
+    <footer class="footer">
+        © 2025 <strong>WebPage</strong> — Proyecto académico de Leon Nicolas y Ortiz Matías
+    </footer>
+</body>
+<script src="/static/js/management.js?v=1.0" defer></script>
+</html>

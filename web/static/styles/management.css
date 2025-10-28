@@ -1,0 +1,285 @@
+/* Ajuste para que la card de gestión sea más ancha que la de "bienvenida" */
+.management-card {
+    max-width: 900px;
+}
+
+.card h3 {
+    margin-bottom: 1rem;
+    color: #ffda33;
+    font-size: 1.1rem;
+}
+
+/* FORM */
+.entity-form {
+    width: 100%;
+}
+
+.entity-form .input-group {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+input {
+    flex: 1;
+    min-width: 150px;
+    padding: 0.8rem;
+    border-radius: 8px;
+    outline: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 1px solid rgba(255, 204, 0, 0.2);
+    transition: all 0.3s;
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+input:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 204, 0, 0.5);
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.2);
+}
+
+.primary-button {
+    background: linear-gradient(135deg, #ffcc00, #ffda33);
+    border: none;
+    border-radius: 8px;
+    padding: 0.8rem 1.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    color: #1e1e2f;
+    transition: all 0.3s;
+    margin-top: 1rem;
+    box-shadow: 0 4px 15px rgba(255, 204, 0, 0.3);
+}
+
+.primary-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 204, 0, 0.5);
+}
+
+.primary-button:active {
+    transform: translateY(0);
+}
+
+/* ENTITY LIST */
+.divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 204, 0, 0.3), transparent);
+    margin: 1.5rem 0;
+}
+
+.entity-list {
+    list-style: none;
+    margin-top: 1rem;
+}
+
+.entity-list li {
+    background: rgba(255, 204, 0, 0.1);
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 8px;
+    border-left: 3px solid #ffcc00;
+    transition: all 0.3s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.entity-list li:hover {
+    background: rgba(255, 204, 0, 0.2);
+    transform: translateX(4px);
+}
+
+/* === STYLES FOR DYNAMIC ENTITIES === */
+
+.hidden {
+    display: none !important;
+}
+
+.view-title {
+    color: #ffcc00;
+    font-size: 2rem;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+/* NOTA: Estos estilos de catálogo están aquí porque
+   tu HTML de "management" también incluye la sección #catalog-view
+*/
+
+/* Entity Selector (Tabs) */
+.entity-selector {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 204, 0, 0.2);
+    padding-bottom: 1rem;
+}
+
+.entity-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+    font-weight: 500;
+    color: #ccc;
+    transition: all 0.3s ease;
+}
+
+.entity-btn:hover {
+    background: rgba(255, 204, 0, 0.1);
+    color: #ffcc00;
+}
+
+/*
+ * Se aplican estilos distintos a la entidad que tiene el atributo de active
+ * - Usamos un color amarillo para resaltarla
+ */
+.entity-btn.active {
+    color: #1e1e2f;
+    background: #ffcc00;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(255, 204, 0, 0.3);
+}
+
+/* Dynamic Form Fields */
+#form-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    width: 100%;
+}
+
+#form-fields input,
+#form-fields textarea {
+    width: 100%;
+    flex-basis: calc(50% - 0.5rem); /* Two columns layout */
+}
+
+#form-fields textarea {
+    min-height: 80px;
+    resize: vertical;
+    font-family: 'Poppins', sans-serif;
+    padding: 0.8rem;
+    border-radius: 8px;
+    outline: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 1px solid rgba(255, 204, 0, 0.2);
+    transition: all 0.3s;
+}
+
+#form-fields textarea:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 204, 0, 0.5);
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.2);
+}
+
+
+/* Make title and synopsis take full width */
+#form-fields #field-title,
+#form-fields #field-synopsis {
+    flex-basis: 100%;
+}
+
+
+/* List Item Buttons */
+.entity-list li > span {
+    flex-grow: 1;
+    word-break: break-word;
+}
+
+/*
+ * Se aplican estilos a los botones asociados a los items de las listas dinamicas
+ * - Se usa flex para mostrar los botones de "delete" y "update" horizontalmente
+ */
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+/*
+ * Dado que comparten algunos estilos y otros no, es que separan las decoraciones
+ * según si es de borrado, de edición o ambos a la vez.
+ */
+.edit-btn, .delete-btn {
+    background: transparent;
+    border: 1px solid;
+    border-radius: 6px;
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    color: #fff;
+}
+
+.edit-btn {
+    border-color: #6c757d;
+}
+
+.edit-btn:hover {
+    background: #6c757d;
+    color: #fff;
+}
+
+.delete-btn {
+    border-color: #dc3545;
+}
+
+.delete-btn:hover {
+    background: #dc3545;
+    color: #fff;
+}
+
+/*
+ * Se aplican estilos para las notificaciones
+ * - Inicialmente estan escondidas (opacidad cero)
+ */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    background-color: #28a745;
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    visibility: hidden;
+}
+
+/*
+ * Se definen atributos para las notificacioes
+ * - El "show" le aplica una opacidad del 100% (se hace visible)
+ * - El "error" le aplica un color rojo a la notificacion
+ */
+.notification.show {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+}
+
+.notification.error {
+    background-color: #dc3545;
+}
+
+
+/*
+ * Se aplican estilos solo para casos donde el medio de display es pequeño (telefonos, tablets)
+ */
+@media (max-width: 768px) {
+    .entity-form .input-group {
+        flex-direction: column;
+    }
+}

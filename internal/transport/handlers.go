@@ -15,3 +15,15 @@ func (app *Application) handleNotFound(w http.ResponseWriter, r *http.Request) {
 		app.handleServerError(w, err)
 	}
 }
+
+func (app *Application) handleCatalog(w http.ResponseWriter, r *http.Request) {
+	if err := app.handleResponse(w, http.StatusOK, "catalog", nil); err != nil {
+		app.handleServerError(w, err)
+	}
+}
+
+func (app *Application) handleManagement(w http.ResponseWriter, r *http.Request) {
+	if err := app.handleResponse(w, http.StatusOK, "management", nil); err != nil {
+		app.handleServerError(w, err)
+	}
+}

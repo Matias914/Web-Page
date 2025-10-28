@@ -1,0 +1,79 @@
+/* === ESTILOS SÓLO PARA LA PÁGINA DE PELÍCULAS === */
+
+.view-title {
+    color: #ffcc00;
+    font-size: 2rem;
+    width: 100%;
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.catalog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 2rem;
+    width: 100%;
+    /* NOTA: Estos estilos probablemente deberían estar 
+       en .main-container o en <main> en tu index.css
+       para que el contenido se centre.
+    */
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.movie-card {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 204, 0, 0.1);
+    transition: all 0.4s ease;
+}
+
+.movie-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 204, 0, 0.3);
+    border-color: rgba(255, 204, 0, 0.4);
+}
+
+.movie-card img {
+    width: 100%;
+    height: 330px;
+    object-fit: cover;
+    display: block;
+}
+
+.movie-card-content {
+    padding: 1rem;
+}
+
+.movie-card-content h3 {
+    color: #ffda33;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.movie-card-content p {
+    color: #e0e0e0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    height: 6.75em; /* 5 lines approx */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/*
+ * Se aplican estilos solo para casos donde el medio de display es pequeño (telefonos, tablets)
+ */
+@media (max-width: 768px) {
+    .catalog-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+        padding: 0 1rem;
+    }
+}

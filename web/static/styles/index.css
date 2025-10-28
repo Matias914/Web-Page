@@ -1,3 +1,7 @@
+/*
+ * Establece caracteristicas globales de toda la pagina:
+ * - Con border-box se obliga a establecer un valor de margen y padding
+ */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -5,25 +9,42 @@
     font-family: 'Poppins', sans-serif;
 }
 
+/*
+ * Aplica estilos al body:
+ * - Usamos flex para una disposicion vertical de la pagina (header, main y footer)
+ * - Con linear-gradient se establece una fondo con un degradado de izquierda a derecha
+ * - Con color se establece el color de texto blanco por defecto
+ */
 body {
-    background: linear-gradient(135deg, #1e1e2f, #2a2a40);
+    background: linear-gradient(135deg, black, #2a2a40);
     color: #fff;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
-/* HEADER */
+/*
+ * Aplica estilos a la barra de navegacion:
+ * - Con backdrop-filter se genera el difuminado que hace semitransparente al encabezado
+ * - Con box-shadow se establece un sombreado a las lineas encabezado
+ * - Con sticky y top 0 el encabezado se mantiene en la parte superior de la pantalla mientras se hace scroll down
+ * - Con z-index se hace que la barra de navegacion este en primer plano y no sea superpuesta por otro elemento
+ * - Con border-bottom se genera una línea debajo del encabezado
+ */
 .navbar {
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(12px);
-    box-shadow: 0 8px 32px rgba(255, 204, 0, 0.15), 0 2px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 8px 32px rgba(190, 49, 225, 0.15), 0 2px 10px rgba(0, 0, 0, 0.5);
     position: sticky;
     top: 0;
     z-index: 10;
     border-bottom: 2px solid rgba(255, 204, 0, 0.2);
 }
 
+/*
+ * Aplica estilos al contenedor que esta dentro de navbar:
+ * - Ahora usamos flex en horizontal para ubicar el logo y las secciones
+ */
 .navbar .container {
     display: flex;
     justify-content: space-between;
@@ -34,14 +55,19 @@ body {
     width: 100%;
 }
 
-.logo {
+/*
+ * Aplica estilos al logo que esta dentro de navbar:
+ * - Con -webkit-background-clip se establece que el background tiene que tener la forma del texto
+ * - Con -webkit-text-fill-color se establece que el texto sea transparente (se deja el fondo)
+ */
+.navbar .logo {
     font-weight: 700;
     font-size: 1.6rem;
-    background: linear-gradient(135deg, #ffcc00, #ffda33);
+    background: linear-gradient(45deg, #ffcc00, #d6c67c);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-shadow: 0 0 20px rgba(255, 204, 0, 0.3);
+    text-shadow: 0 0 20px rgba(255, 215, 39, 0.51);
 }
 
 .navbar nav {
@@ -49,6 +75,10 @@ body {
     gap: 2rem;
 }
 
+/*
+ * Se establecen las secciones de la navbar como dinamicas
+ * por medio de un after y un tiempo de transicion.
+ */
 .navbar a {
     color: #fff;
     text-decoration: none;
@@ -87,6 +117,15 @@ body {
     flex: 1;
 }
 
+.home {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    border-radius: 8px;
+}
+
 /* CARDS */
 .card {
     background: rgba(255, 255, 255, 0.08);
@@ -112,139 +151,49 @@ body {
     font-size: 1.5rem;
 }
 
-.card h3 {
-    margin-bottom: 1rem;
-    color: #ffda33;
-    font-size: 1.1rem;
-}
-
 .card p {
     line-height: 1.6;
     color: #e0e0e0;
 }
 
-/* FORM */
-.entity-form {
-    width: 100%;
-}
-
-.entity-form .input-group {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
-    flex-wrap: wrap;
-}
-
-input {
-    flex: 1;
-    min-width: 150px;
-    padding: 0.8rem;
-    border-radius: 8px;
-    outline: none;
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    border: 1px solid rgba(255, 204, 0, 0.2);
-    transition: all 0.3s;
-}
-
-input::placeholder {
-    color: rgba(255, 255, 255, 0.5);
-}
-
-input:focus {
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 204, 0, 0.5);
-    box-shadow: 0 0 15px rgba(255, 204, 0, 0.2);
-}
-
-.primary-button {
-    background: linear-gradient(135deg, #ffcc00, #ffda33);
-    border: none;
-    border-radius: 8px;
-    padding: 0.8rem 1.5rem;
-    cursor: pointer;
-    font-weight: 600;
-    color: #1e1e2f;
-    transition: all 0.3s;
-    box-shadow: 0 4px 15px rgba(255, 204, 0, 0.3);
-}
-
-.primary-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 204, 0, 0.5);
-}
-
-.primary-button:active {
-    transform: translateY(0);
-}
-
-/* ENTITY LIST */
-.divider {
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 204, 0, 0.3), transparent);
-    margin: 1.5rem 0;
-}
-
-.entity-list {
-    list-style: none;
-    margin-top: 1rem;
-}
-
-.entity-list li {
-    background: rgba(255, 204, 0, 0.1);
-    padding: 1rem;
-    margin-bottom: 0.5rem;
-    border-radius: 8px;
-    border-left: 3px solid #ffcc00;
-    transition: all 0.3s;
-}
-
-.entity-list li:hover {
-    background: rgba(255, 204, 0, 0.2);
-    transform: translateX(4px);
-}
-
-/* FOOTER */
+/*
+ * Aplica estilos al pie de pagina:
+ * - Usamos los mismos criterios que para el encabezado
+ */
 .footer {
     text-align: center;
     padding: 2rem;
     background: rgba(0, 0, 0, 0.6);
     border-top: 2px solid rgba(255, 204, 0, 0.2);
-    box-shadow: 0 -8px 32px rgba(255, 204, 0, 0.1), 0 -2px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 8px 32px rgba(190, 49, 225, 0.15), 0 2px 10px rgba(0, 0, 0, 0.5);
     color: #ccc;
     font-size: 0.9rem;
 }
 
+/*
+ * Aplica estilos para remarcar las letras con amarillo (WebPage)
+ */
 .footer strong {
     color: #ffcc00;
 }
 
-/* RESPONSIVE */
+/*
+ * Se aplican estilos solo para casos donde el medio de display es pequeño (telefonos, tablets)
+ */
 @media (max-width: 768px) {
     .navbar .container {
         flex-direction: column;
         gap: 1rem;
         padding: 1rem;
     }
-
     .navbar nav {
         gap: 1rem;
         justify-content: center;
     }
-
     .main-container {
         padding: 2rem 1rem;
     }
-
     .card {
         max-width: 100%;
-    }
-
-    .entity-form .input-group {
-        flex-direction: column;
-    }
-
-    input {
-        min-width: 100%;
     }
 }
