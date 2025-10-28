@@ -22,7 +22,7 @@ run_get_test() {
 create_celebrity() {
     echo "----------------------------------------------------" >&2
     echo "Acción: $1" >&2
-    URL="http://localhost:8080/api/celebrities"
+    URL="$APP_TEST_URL/api/celebrities"
     DATA="$2"
 
     BODY_AND_STATUS=$(curl -s -w "
@@ -53,7 +53,7 @@ delete_celebrity() {
     CELEBRITY_ID="$1"
     echo "----------------------------------------------------"
     echo "Acción: Eliminando celebridad con ID $CELEBRITY_ID"
-    URL="http://localhost:8080/api/celebrities/$CELEBRITY_ID"
+    URL="$APP_TEST_URL/api/celebrities/$CELEBRITY_ID"
 
     HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "$URL")
 
@@ -69,15 +69,15 @@ echo -e "
 ===== INICIANDO PRUEBAS PARA GET /api/celebrities/{id} ====="
 
 # Caso 1: ID no es un número
-run_get_test "ID no es un número" "http://localhost:8080/api/celebrities/abc" 500
+run_get_test "ID no es un número" "$APP_TEST_URL/api/celebrities/abc" 500
 
 # Caso 2: Celebridad no encontrada
-run_get_test "Celebridad no encontrada" "http://localhost:8080/api/celebrities/999999" 404
+run_get_test "Celebridad no encontrada" "$APP_TEST_URL/api/celebrities/999999" 404
 
 # Caso 3: Obtención exitosa
 CELEBRITY_ID=$(create_celebrity "Crear celebridad para obtener" '{"name": "Get Test Celebrity", "birth_date": "1992-02-02T00:00:00Z"}')
 if [ ! -z "$CELEBRITY_ID" ]; then
-    run_get_test "Obtención exitosa" "http://localhost:8080/api/celebrities/$CELEBRITY_ID" 200
+    run_get_test "Obtención exitosa" "$APP_TEST_URL/api/celebrities/$CELEBRITY_ID" 200
     delete_celebrity "$CELEBRITY_ID"
 fi
 

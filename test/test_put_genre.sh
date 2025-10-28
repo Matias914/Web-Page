@@ -32,7 +32,7 @@ run_put_test() {
 create_genre() {
     echo "----------------------------------------------------" >&2
     echo "Acción: $1" >&2
-    URL="http://localhost:8080/api/genres"
+    URL="$APP_TEST_URL/api/genres"
     DATA="$2"
 
     BODY_AND_STATUS=$(curl -s -w "\n%{http_code}" -X POST -H "Content-Type: application/json" -d "$DATA" "$URL")
@@ -61,7 +61,7 @@ delete_genre() {
     GENRE_ID="$1"
     echo "----------------------------------------------------"
     echo "Acción: Eliminando género con ID $GENRE_ID"
-    URL="http://localhost:8080/api/genres/$GENRE_ID"
+    URL="$APP_TEST_URL/api/genres/$GENRE_ID"
 
     HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "$URL")
 
@@ -80,17 +80,17 @@ GENRE_ID_1=$(create_genre "Crear género 1 para actualizar" '{"name": "Put Test 
 GENRE_ID_2=$(create_genre "Crear género 2 para conflicto" '{"name": "Put Test Genre 2"}')
 
 # Caso 1: ID no es un número
-run_put_test "ID no es un número" "http://localhost:8080/api/genres/abc" '{}' 500
+run_put_test "ID no es un número" "$APP_TEST_URL/api/genres/abc" '{}' 500
 
 # Caso 2: Género no encontrado
-run_put_test "Género no encontrado" "http://localhost:8080/api/genres/999999" '{"name": "some name"}' 404
+run_put_test "Género no encontrado" "$APP_TEST_URL/api/genres/999999" '{"name": "some name"}' 404
 
 # Caso 3: JSON Inválido
-run_put_test "JSON Inválido" "http://localhost:8080/api/genres/$GENRE_ID_1" '{"name": ""}' 400
+run_put_test "JSON Inválido" "$APP_TEST_URL/api/genres/$GENRE_ID_1" '{"name": ""}' 400
 
 # Caso 4: Conflicto de duplicados
 CONFLICT_DATA='{"name": "put test genre 1"}'
-run_put_test "Conflicto de duplicados" "http://localhost:8080/api/genres/$GENRE_ID_2" "$CONFLICT_DATA" 409
+run_put_test "Conflicto de duplicados" "$APP_TEST_URL/api/genres/$GENRE_ID_2" "$CONFLICT_DATA" 409
 
 # Limpieza
 delete_genre "$GENRE_ID_1"

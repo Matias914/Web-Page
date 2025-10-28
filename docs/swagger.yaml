@@ -9,6 +9,7 @@ definitions:
   service.CategoryData:
     properties:
       genre_id:
+        example: 1
         type: integer
     required:
     - genre_id
@@ -28,8 +29,10 @@ definitions:
   service.CelebrityData:
     properties:
       birth_date:
+        example: "1969-12-28T00:00:00Z"
         type: string
       name:
+        example: Linus Torvalds
         maxLength: 255
         type: string
     required:
@@ -48,6 +51,7 @@ definitions:
   service.GenreData:
     properties:
       name:
+        example: horror
         maxLength: 255
         type: string
     required:
@@ -77,15 +81,20 @@ definitions:
   service.MovieData:
     properties:
       duration_minutes:
+        example: 255
         type: integer
       poster_url:
+        example: https://www.amazon.nl/Lord-Strings-J-Khan/dp/B000BU9TAQ
         type: string
       released_at:
+        example: "2025-10-30T00:00:00Z"
         type: string
       synopsis:
+        example: A man that can manipulate every string variable
         maxLength: 5000
         type: string
       title:
+        example: Lord of the Strings
         maxLength: 255
         type: string
     required:
@@ -112,8 +121,10 @@ definitions:
   service.RatingData:
     properties:
       movie_id:
+        example: 2
         type: integer
       rating:
+        example: 5
         maximum: 10
         type: integer
     required:
@@ -138,9 +149,11 @@ definitions:
   service.ReviewData:
     properties:
       comment:
+        example: Seriously... Who made this?
         maxLength: 255
         type: string
       movie_id:
+        example: 2
         type: integer
     required:
     - comment
@@ -161,8 +174,10 @@ definitions:
   service.RoleData:
     properties:
       celebrity_id:
+        example: 1
         type: integer
       role:
+        example: Tech Guy
         maxLength: 255
         type: string
     required:
@@ -172,6 +187,7 @@ definitions:
   service.UpdatableRatingData:
     properties:
       rating:
+        example: 5
         type: integer
     required:
     - rating
@@ -179,6 +195,7 @@ definitions:
   service.UpdatableReviewData:
     properties:
       comment:
+        example: Seriously... Who made this?
         maxLength: 255
         type: string
     required:
@@ -187,6 +204,7 @@ definitions:
   service.UpdatableRoleData:
     properties:
       role:
+        example: Tech Guy
         maxLength: 255
         type: string
     required:
@@ -195,9 +213,11 @@ definitions:
   service.UpdatableUserData:
     properties:
       mail:
+        example: smokeseller@gmail.com
         maxLength: 255
         type: string
       username:
+        example: thescrummaster1
         maxLength: 255
         type: string
     required:
@@ -225,12 +245,15 @@ definitions:
   service.UserData:
     properties:
       mail:
+        example: smokeseller@gmail.com
         maxLength: 255
         type: string
       password:
+        example: notofyourbusiness
         maxLength: 255
         type: string
       username:
+        example: thescrummaster1
         maxLength: 255
         type: string
     required:

@@ -24,7 +24,7 @@ run_put_test() {
 create_user() {
     echo "----------------------------------------------------" >&2
     echo "Acción: $1" >&2
-    URL="http://localhost:8080/api/users"
+    URL="$APP_TEST_URL/api/users"
     DATA="$2"
 
     BODY_AND_STATUS=$(curl -s -w "
@@ -55,13 +55,12 @@ delete_user() {
     USER_ID="$1"
     echo "----------------------------------------------------"
     echo "Acción: Eliminando usuario con ID $USER_ID"
-    URL="http://localhost:8080/api/users/$USER_ID"
+    URL="$APP_TEST_URL/api/users/$USER_ID"
 
     HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "$URL")
 
     if [ "$HTTP_STATUS" -eq 204 ]; then
         echo "Usuario eliminado exitosamente"
-        echo "----------------------------------------------------" >&2
     else
         echo "FALLÓ la eliminación - Se esperaba 204, se obtuvo $HTTP_STATUS"
     fi
@@ -71,15 +70,15 @@ echo -e "
 ===== INICIANDO PRUEBAS PARA PUT /api/users/{id} ====="
 
 # Caso 1: ID no es un número
-run_put_test "ID no es un número" "http://localhost:8080/api/users/abc" '{}' 500
+run_put_test "ID no es un número" "$APP_TEST_URL/api/users/abc" '{}' 500
 
 # Caso 2: Usuario no encontrado
-run_put_test "Usuario no encontrado" "http://localhost:8080/api/users/999999" '{"username": "not_found", "mail": "not@found.com"}' 404
+run_put_test "Usuario no encontrado" "$APP_TEST_URL/api/users/999999" '{"username": "not_found", "mail": "not@found.com"}' 404
 
 # Caso 3: JSON Inválido
 USER_ID_INV_JSON=$(create_user "Crear usuario para JSON inválido" '{"username": "inv_json_user", "password": "p", "mail": "ij@test.com"}')
 if [ ! -z "$USER_ID_INV_JSON" ]; then
-    run_put_test "JSON Inválido" "http://localhost:8080/api/users/$USER_ID_INV_JSON" '{"username": "updated",,}' 500
+    run_put_test "JSON Inválido" "$APP_TEST_URL/api/users/$USER_ID_INV_JSON" '{"username": "updated",,}' 500
     delete_user "$USER_ID_INV_JSON"
 fi
 
@@ -87,7 +86,7 @@ fi
 USER_ID_CONFLICT_1=$(create_user "Crear usuario 1 para conflicto" '{"username": "conflict1", "password": "p", "mail": "conflict1@test.com"}')
 USER_ID_CONFLICT_2=$(create_user "Crear usuario 2 para conflicto" '{"username": "conflict2", "password": "p", "mail": "conflict2@test.com"}')
 if [ ! -z "$USER_ID_CONFLICT_1" ] && [ ! -z "$USER_ID_CONFLICT_2" ]; then
-    run_put_test "Conflicto de duplicados" "http://localhost:8080/api/users/$USER_ID_CONFLICT_2" '{"username": "conflict1", "mail": "c2@test.com"}' 409
+    run_put_test "Conflicto de duplicados" "$APP_TEST_URL/api/users/$USER_ID_CONFLICT_2" '{"username": "conflict1", "mail": "c2@test.com"}' 409
     delete_user "$USER_ID_CONFLICT_1"
     delete_user "$USER_ID_CONFLICT_2"
 fi
@@ -95,11 +94,12 @@ fi
 # Caso 5: Actualización exitosa
 USER_ID_SUCCESS=$(create_user "Crear usuario para actualizar" '{"username": "update_me", "password": "p", "mail": "update@me.com"}')
 if [ ! -z "$USER_ID_SUCCESS" ]; then
-    run_put_test "Actualización exitosa" "http://localhost:8080/api/users/$USER_ID_SUCCESS" '{"username": "updated_user", "mail": "updated@me.com"}' 200
+    run_put_test "Actualización exitosa" "$APP_TEST_URL/api/users/$USER_ID_SUCCESS" '{"username": "updated_user", "mail": "updated@me.com"}' 200
     delete_user "$USER_ID_SUCCESS"
 fi
 
 if [[ "$FAILED" -eq 0 ]]; then
+  echo "----------------------------------------------------" >&2
     echo -e "Todas las pruebas para PUT /api/users/{id} pasaron exitosamente. ✅
 "
 fi

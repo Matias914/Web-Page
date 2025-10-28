@@ -20,7 +20,7 @@ run_get_test() {
 }
 
 create_movie() {
-    URL="http://localhost:8080/api/movies"
+    URL="$APP_TEST_URL/api/movies"
     DATA="$2"
     BODY_AND_STATUS=$(curl -s -w "
 %{http_code}" -X POST -H "Content-Type: application/json" -d "$DATA" "$URL")
@@ -34,7 +34,7 @@ create_movie() {
 }
 
 create_genre() {
-    URL="http://localhost:8080/api/genres"
+    URL="$APP_TEST_URL/api/genres"
     DATA="$2"
     BODY_AND_STATUS=$(curl -s -w "
 %{http_code}" -X POST -H "Content-Type: application/json" -d "$DATA" "$URL")
@@ -50,20 +50,20 @@ create_genre() {
 create_category() {
     MOVIE_ID="$1"
     GENRE_ID="$2"
-    URL="http://localhost:8080/api/movies/$MOVIE_ID/categories"
+    URL="$APP_TEST_URL/api/movies/$MOVIE_ID/categories"
     DATA='{"genre_id": '$GENRE_ID'}'
     curl -s -o /dev/null -X POST -H "Content-Type: application/json" -d "$DATA" "$URL"
 }
 
 delete_movie() {
     MOVIE_ID="$1"
-    URL="http://localhost:8080/api/movies/$MOVIE_ID"
+    URL="$APP_TEST_URL/api/movies/$MOVIE_ID"
     curl -s -o /dev/null -X DELETE "$URL"
 }
 
 delete_genre() {
     GENRE_ID="$1"
-    URL="http://localhost:8080/api/genres/$GENRE_ID"
+    URL="$APP_TEST_URL/api/genres/$GENRE_ID"
     curl -s -o /dev/null -X DELETE "$URL"
 }
 
@@ -77,19 +77,19 @@ GENRE_ID_NO_ASSOC=$(create_genre "" '{"name": "No Assoc Genre"}')
 create_category "$MOVIE_ID" "$GENRE_ID"
 
 # Caso 1: Obtención exitosa
-run_get_test "Obtención exitosa" "http://localhost:8080/api/movies/$MOVIE_ID/categories/$GENRE_ID" 204
+run_get_test "Obtención exitosa" "$APP_TEST_URL/api/movies/$MOVIE_ID/categories/$GENRE_ID" 204
 
 # Caso 2: Película no encontrada
-run_get_test "Película no encontrada" "http://localhost:8080/api/movies/999999/categories/$GENRE_ID" 404
+run_get_test "Película no encontrada" "$APP_TEST_URL/api/movies/999999/categories/$GENRE_ID" 404
 
 # Caso 3: Género no encontrado
-run_get_test "Género no encontrado" "http://localhost:8080/api/movies/$MOVIE_ID/categories/999999" 404
+run_get_test "Género no encontrado" "$APP_TEST_URL/api/movies/$MOVIE_ID/categories/999999" 404
 
 # Caso 4: Categoría no encontrada (no asociada)
-run_get_test "Categoría no encontrada" "http://localhost:8080/api/movies/$MOVIE_ID/categories/$GENRE_ID_NO_ASSOC" 404
+run_get_test "Categoría no encontrada" "$APP_TEST_URL/api/movies/$MOVIE_ID/categories/$GENRE_ID_NO_ASSOC" 404
 
 # Caso 5: ID de película inválido
-run_get_test "ID de película inválido" "http://localhost:8080/api/movies/abc/categories/$GENRE_ID" 500
+run_get_test "ID de película inválido" "$APP_TEST_URL/api/movies/abc/categories/$GENRE_ID" 500
 
 # Limpieza
 delete_movie "$MOVIE_ID"

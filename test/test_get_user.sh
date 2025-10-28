@@ -22,7 +22,7 @@ run_get_test() {
 create_user() {
     echo "----------------------------------------------------" >&2
     echo "Acción: $1" >&2
-    URL="http://localhost:8080/api/users"
+    URL="$APP_TEST_URL/api/users"
     DATA="$2"
 
     BODY_AND_STATUS=$(curl -s -w "
@@ -53,7 +53,7 @@ delete_user() {
     USER_ID="$1"
     echo "----------------------------------------------------"
     echo "Acción: Eliminando usuario con ID $USER_ID"
-    URL="http://localhost:8080/api/users/$USER_ID"
+    URL="$APP_TEST_URL/api/users/$USER_ID"
 
     HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "$URL")
 
@@ -69,15 +69,15 @@ echo -e "
 ===== INICIANDO PRUEBAS PARA GET /api/users/{id} ====="
 
 # Caso 1: ID no es un número
-run_get_test "ID no es un número" "http://localhost:8080/api/users/abc" 500
+run_get_test "ID no es un número" "$APP_TEST_URL/api/users/abc" 500
 
 # Caso 2: Usuario no encontrado
-run_get_test "Usuario no encontrado" "http://localhost:8080/api/users/999999" 404
+run_get_test "Usuario no encontrado" "$APP_TEST_URL/api/users/999999" 404
 
 # Caso 3: Obtención exitosa
 USER_ID=$(create_user "Crear usuario para obtener" '{"username": "get_user", "password": "password123", "mail": "get@test.com"}')
 if [ ! -z "$USER_ID" ]; then
-    run_get_test "Obtención exitosa" "http://localhost:8080/api/users/$USER_ID" 200
+    run_get_test "Obtención exitosa" "$APP_TEST_URL/api/users/$USER_ID" 200
     delete_user "$USER_ID"
 fi
 

@@ -24,7 +24,7 @@ run_delete_test() {
 create_genre() {
     echo "----------------------------------------------------" >&2
     echo "Acción: $1" >&2
-    URL="http://localhost:8080/api/genres"
+    URL="$APP_TEST_URL/api/genres"
     DATA="$2"
 
     BODY_AND_STATUS=$(curl -s -w "
@@ -56,15 +56,15 @@ echo -e "
 ===== INICIANDO PRUEBAS PARA DELETE /api/genres/{id} ====="
 
 # Caso 1: ID no es un número
-run_delete_test "ID no es un número" "http://localhost:8080/api/genres/abc" 500
+run_delete_test "ID no es un número" "$APP_TEST_URL/api/genres/abc" 500
 
 # Caso 2: Género no encontrado
-run_delete_test "Género no encontrado" "http://localhost:8080/api/genres/9999" 404
+run_delete_test "Género no encontrado" "$APP_TEST_URL/api/genres/9999" 404
 
 # Caso 3: Borrado exitoso
 GENRE_ID=$(create_genre "Crear género para borrar" '{"name": "Delete Test Genre"}')
 if [ ! -z "$GENRE_ID" ]; then
-    run_delete_test "Borrado exitoso" "http://localhost:8080/api/genres/$GENRE_ID" 204
+    run_delete_test "Borrado exitoso" "$APP_TEST_URL/api/genres/$GENRE_ID" 204
 fi
 
 if [[ "$FAILED" -eq 0 ]]; then

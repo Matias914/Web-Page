@@ -20,7 +20,7 @@ run_get_test() {
 }
 
 create_genre() {
-    URL="http://localhost:8080/api/genres"
+    URL="$APP_TEST_URL/api/genres"
     DATA="$2"
     BODY_AND_STATUS=$(curl -s -w "
 %{http_code}" -X POST -H "Content-Type: application/json" -d "$DATA" "$URL")
@@ -35,7 +35,7 @@ create_genre() {
 
 delete_genre() {
     GENRE_ID="$1"
-    URL="http://localhost:8080/api/genres/$GENRE_ID"
+    URL="$APP_TEST_URL/api/genres/$GENRE_ID"
     curl -s -o /dev/null -X DELETE "$URL"
 }
 
@@ -51,16 +51,16 @@ if [ -z "$GENRE_ID" ]; then
 fi
 
 # Caso 1: Obtención exitosa (incluso si está vacía)
-run_get_test "Obtención exitosa" "http://localhost:8080/api/genres/$GENRE_ID/categories?page=1&rows=5" 200
+run_get_test "Obtención exitosa" "$APP_TEST_URL/api/genres/$GENRE_ID/categories?page=1&rows=5" 200
 
 # Caso 2: ID de género no es un número
-run_get_test "ID de género no es un número" "http://localhost:8080/api/genres/abc/categories?page=1&rows=5" 500
+run_get_test "ID de género no es un número" "$APP_TEST_URL/api/genres/abc/categories?page=1&rows=5" 500
 
 # Caso 3: Género no encontrado
-run_get_test "Género no encontrado" "http://localhost:8080/api/genres/999999/categories?page=1&rows=5" 404
+run_get_test "Género no encontrado" "$APP_TEST_URL/api/genres/999999/categories?page=1&rows=5" 404
 
 # Caso 4: Paginación inválida
-run_get_test "Paginación inválida" "http://localhost:8080/api/genres/$GENRE_ID/categories?page=abc&rows=5" 500
+run_get_test "Paginación inválida" "$APP_TEST_URL/api/genres/$GENRE_ID/categories?page=abc&rows=5" 500
 
 # Limpieza
 delete_genre "$GENRE_ID"

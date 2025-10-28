@@ -20,7 +20,7 @@ run_get_test() {
 }
 
 create_movie() {
-    URL="http://localhost:8080/api/movies"
+    URL="$APP_TEST_URL/api/movies"
     DATA="$2"
     BODY_AND_STATUS=$(curl -s -w "
 %{http_code}" -X POST -H "Content-Type: application/json" -d "$DATA" "$URL")
@@ -34,7 +34,7 @@ create_movie() {
 }
 
 create_celebrity() {
-    URL="http://localhost:8080/api/celebrities"
+    URL="$APP_TEST_URL/api/celebrities"
     DATA="$2"
     BODY_AND_STATUS=$(curl -s -w "
 %{http_code}" -X POST -H "Content-Type: application/json" -d "$DATA" "$URL")
@@ -50,20 +50,20 @@ create_celebrity() {
 create_role() {
     MOVIE_ID="$1"
     CELEBRITY_ID="$2"
-    URL="http://localhost:8080/api/movies/$MOVIE_ID/roles"
+    URL="$APP_TEST_URL/api/movies/$MOVIE_ID/roles"
     DATA='{"celebrity_id": '$CELEBRITY_ID', "role": "Actor"}'
     curl -s -o /dev/null -X POST -H "Content-Type: application/json" -d "$DATA" "$URL"
 }
 
 delete_movie() {
     MOVIE_ID="$1"
-    URL="http://localhost:8080/api/movies/$MOVIE_ID"
+    URL="$APP_TEST_URL/api/movies/$MOVIE_ID"
     curl -s -o /dev/null -X DELETE "$URL"
 }
 
 delete_celebrity() {
     CELEBRITY_ID="$1"
-    URL="http://localhost:8080/api/celebrities/$CELEBRITY_ID"
+    URL="$APP_TEST_URL/api/celebrities/$CELEBRITY_ID"
     curl -s -o /dev/null -X DELETE "$URL"
 }
 
@@ -76,16 +76,16 @@ CELEBRITY_ID=$(create_celebrity "" '{"name": "Get Movie Role Celebrity", "birth_
 create_role "$MOVIE_ID" "$CELEBRITY_ID"
 
 # Caso 1: Obtención exitosa
-run_get_test "Obtención exitosa" "http://localhost:8080/api/movies/$MOVIE_ID/roles/$CELEBRITY_ID" 200
+run_get_test "Obtención exitosa" "$APP_TEST_URL/api/movies/$MOVIE_ID/roles/$CELEBRITY_ID" 200
 
 # Caso 2: Película no encontrada
-run_get_test "Película no encontrada" "http://localhost:8080/api/movies/999999/roles/$CELEBRITY_ID" 404
+run_get_test "Película no encontrada" "$APP_TEST_URL/api/movies/999999/roles/$CELEBRITY_ID" 404
 
 # Caso 3: Celebridad no encontrada
-run_get_test "Celebridad no encontrada" "http://localhost:8080/api/movies/$MOVIE_ID/roles/999999" 404
+run_get_test "Celebridad no encontrada" "$APP_TEST_URL/api/movies/$MOVIE_ID/roles/999999" 404
 
 # Caso 4: ID de película inválido
-run_get_test "ID de película inválido" "http://localhost:8080/api/movies/abc/roles/$CELEBRITY_ID" 500
+run_get_test "ID de película inválido" "$APP_TEST_URL/api/movies/abc/roles/$CELEBRITY_ID" 500
 
 # Limpieza
 delete_movie "$MOVIE_ID"

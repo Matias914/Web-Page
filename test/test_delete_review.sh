@@ -21,7 +21,7 @@ run_delete_test() {
 }
 
 create_user() {
-    URL="http://localhost:8080/api/users"
+    URL="$APP_TEST_URL/api/users"
     DATA="$2"
     BODY_AND_STATUS=$(curl -s -w "
 %{http_code}" -X POST -H "Content-Type: application/json" -d "$DATA" "$URL")
@@ -35,7 +35,7 @@ create_user() {
 }
 
 create_movie() {
-    URL="http://localhost:8080/api/movies"
+    URL="$APP_TEST_URL/api/movies"
     DATA="$2"
     BODY_AND_STATUS=$(curl -s -w "
 %{http_code}" -X POST -H "Content-Type: application/json" -d "$DATA" "$URL")
@@ -51,20 +51,20 @@ create_movie() {
 create_review() {
     USER_ID="$1"
     MOVIE_ID="$2"
-    URL="http://localhost:8080/api/users/$USER_ID/reviews"
+    URL="$APP_TEST_URL/api/users/$USER_ID/reviews"
     DATA='{"movie_id": '$MOVIE_ID', "comment": "A review to be deleted"}'
     curl -s -o /dev/null -X POST -H "Content-Type: application/json" -d "$DATA" "$URL"
 }
 
 delete_user() {
     USER_ID="$1"
-    URL="http://localhost:8080/api/users/$USER_ID"
+    URL="$APP_TEST_URL/api/users/$USER_ID"
     curl -s -o /dev/null -X DELETE "$URL"
 }
 
 delete_movie() {
     MOVIE_ID="$1"
-    URL="http://localhost:8080/api/movies/$MOVIE_ID"
+    URL="$APP_TEST_URL/api/movies/$MOVIE_ID"
     curl -s -o /dev/null -X DELETE "$URL"
 }
 
@@ -78,13 +78,13 @@ MOVIE_ID_NO_REVIEW=$(create_movie "" '{"title": "Delete Review Movie 2", "synops
 create_review "$USER_ID" "$MOVIE_ID"
 
 # Caso 1: Borrado exitoso
-run_delete_test "Borrado exitoso" "http://localhost:8080/api/users/$USER_ID/reviews/$MOVIE_ID" 204
+run_delete_test "Borrado exitoso" "$APP_TEST_URL/api/users/$USER_ID/reviews/$MOVIE_ID" 204
 
 # Caso 2: Review no encontrada
-run_delete_test "Review no encontrada" "http://localhost:8080/api/users/$USER_ID/reviews/$MOVIE_ID_NO_REVIEW" 404
+run_delete_test "Review no encontrada" "$APP_TEST_URL/api/users/$USER_ID/reviews/$MOVIE_ID_NO_REVIEW" 404
 
 # Caso 3: Usuario no encontrado
-run_delete_test "Usuario no encontrado" "http://localhost:8080/api/users/999999/reviews/$MOVIE_ID" 404
+run_delete_test "Usuario no encontrado" "$APP_TEST_URL/api/users/999999/reviews/$MOVIE_ID" 404
 
 # Limpieza
 delete_user "$USER_ID"

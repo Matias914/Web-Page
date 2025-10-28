@@ -2455,7 +2455,8 @@ const docTemplate = `{
             ],
             "properties": {
                 "genre_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -2484,11 +2485,13 @@ const docTemplate = `{
             ],
             "properties": {
                 "birth_date": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1969-12-28T00:00:00Z"
                 },
                 "name": {
                     "type": "string",
-                    "maxLength": 255
+                    "maxLength": 255,
+                    "example": "Linus Torvalds"
                 }
             }
         },
@@ -2513,7 +2516,8 @@ const docTemplate = `{
             "properties": {
                 "name": {
                     "type": "string",
-                    "maxLength": 255
+                    "maxLength": 255,
+                    "example": "horror"
                 }
             }
         },
@@ -2556,21 +2560,26 @@ const docTemplate = `{
             ],
             "properties": {
                 "duration_minutes": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 255
                 },
                 "poster_url": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://www.amazon.nl/Lord-Strings-J-Khan/dp/B000BU9TAQ"
                 },
                 "released_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2025-10-30T00:00:00Z"
                 },
                 "synopsis": {
                     "type": "string",
-                    "maxLength": 5000
+                    "maxLength": 5000,
+                    "example": "A man that can manipulate every string variable"
                 },
                 "title": {
                     "type": "string",
-                    "maxLength": 255
+                    "maxLength": 255,
+                    "example": "Lord of the Strings"
                 }
             }
         },
@@ -2603,11 +2612,13 @@ const docTemplate = `{
             ],
             "properties": {
                 "movie_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 2
                 },
                 "rating": {
                     "type": "integer",
-                    "maximum": 10
+                    "maximum": 10,
+                    "example": 5
                 }
             }
         },
@@ -2641,10 +2652,12 @@ const docTemplate = `{
             "properties": {
                 "comment": {
                     "type": "string",
-                    "maxLength": 255
+                    "maxLength": 255,
+                    "example": "Seriously... Who made this?"
                 },
                 "movie_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 2
                 }
             }
         },
@@ -2673,11 +2686,13 @@ const docTemplate = `{
             ],
             "properties": {
                 "celebrity_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "role": {
                     "type": "string",
-                    "maxLength": 255
+                    "maxLength": 255,
+                    "example": "Tech Guy"
                 }
             }
         },
@@ -2688,7 +2703,8 @@ const docTemplate = `{
             ],
             "properties": {
                 "rating": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 5
                 }
             }
         },
@@ -2700,7 +2716,8 @@ const docTemplate = `{
             "properties": {
                 "comment": {
                     "type": "string",
-                    "maxLength": 255
+                    "maxLength": 255,
+                    "example": "Seriously... Who made this?"
                 }
             }
         },
@@ -2712,7 +2729,8 @@ const docTemplate = `{
             "properties": {
                 "role": {
                     "type": "string",
-                    "maxLength": 255
+                    "maxLength": 255,
+                    "example": "Tech Guy"
                 }
             }
         },
@@ -2725,11 +2743,13 @@ const docTemplate = `{
             "properties": {
                 "mail": {
                     "type": "string",
-                    "maxLength": 255
+                    "maxLength": 255,
+                    "example": "smokeseller@gmail.com"
                 },
                 "username": {
                     "type": "string",
-                    "maxLength": 255
+                    "maxLength": 255,
+                    "example": "thescrummaster1"
                 }
             }
         },
@@ -2768,15 +2788,18 @@ const docTemplate = `{
             "properties": {
                 "mail": {
                     "type": "string",
-                    "maxLength": 255
+                    "maxLength": 255,
+                    "example": "smokeseller@gmail.com"
                 },
                 "password": {
                     "type": "string",
-                    "maxLength": 255
+                    "maxLength": 255,
+                    "example": "notofyourbusiness"
                 },
                 "username": {
                     "type": "string",
-                    "maxLength": 255
+                    "maxLength": 255,
+                    "example": "thescrummaster1"
                 }
             }
         }

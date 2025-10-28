@@ -23,7 +23,7 @@ run_delete_test() {
 create_celebrity() {
     echo "----------------------------------------------------" >&2
     echo "Acción: $1" >&2
-    URL="http://localhost:8080/api/celebrities"
+    URL="$APP_TEST_URL/api/celebrities"
     DATA="$2"
 
     BODY_AND_STATUS=$(curl -s -w "
@@ -53,15 +53,15 @@ echo -e "
 ===== INICIANDO PRUEBAS PARA DELETE /api/celebrities/{id} ====="
 
 # Caso 1: ID no es un número
-run_delete_test "ID no es un número" "http://localhost:8080/api/celebrities/abc" 500
+run_delete_test "ID no es un número" "$APP_TEST_URL/api/celebrities/abc" 500
 
 # Caso 2: Celebridad no encontrada
-run_delete_test "Celebridad no encontrada" "http://localhost:8080/api/celebrities/999999" 404
+run_delete_test "Celebridad no encontrada" "$APP_TEST_URL/api/celebrities/999999" 404
 
 # Caso 3: Borrado exitoso
 CELEBRITY_ID=$(create_celebrity "Crear celebridad para borrar" '{"name": "Delete Test Celebrity", "birth_date": "1998-08-08T00:00:00Z"}')
 if [ ! -z "$CELEBRITY_ID" ]; then
-    run_delete_test "Borrado exitoso" "http://localhost:8080/api/celebrities/$CELEBRITY_ID" 204
+    run_delete_test "Borrado exitoso" "$APP_TEST_URL/api/celebrities/$CELEBRITY_ID" 204
 fi
 
 if [[ "$FAILED" -eq 0 ]]; then

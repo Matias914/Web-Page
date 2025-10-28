@@ -21,7 +21,7 @@ run_post_test() {
 }
 
 create_movie() {
-    URL="http://localhost:8080/api/movies"
+    URL="$APP_TEST_URL/api/movies"
     DATA="$2"
     BODY_AND_STATUS=$(curl -s -w "
 %{http_code}" -X POST -H "Content-Type: application/json" -d "$DATA" "$URL")
@@ -35,7 +35,7 @@ create_movie() {
 }
 
 create_celebrity() {
-    URL="http://localhost:8080/api/celebrities"
+    URL="$APP_TEST_URL/api/celebrities"
     DATA="$2"
     BODY_AND_STATUS=$(curl -s -w "
 %{http_code}" -X POST -H "Content-Type: application/json" -d "$DATA" "$URL")
@@ -50,13 +50,13 @@ create_celebrity() {
 
 delete_movie() {
     MOVIE_ID="$1"
-    URL="http://localhost:8080/api/movies/$MOVIE_ID"
+    URL="$APP_TEST_URL/api/movies/$MOVIE_ID"
     curl -s -o /dev/null -X DELETE "$URL"
 }
 
 delete_celebrity() {
     CELEBRITY_ID="$1"
-    URL="http://localhost:8080/api/celebrities/$CELEBRITY_ID"
+    URL="$APP_TEST_URL/api/celebrities/$CELEBRITY_ID"
     curl -s -o /dev/null -X DELETE "$URL"
 }
 
@@ -73,19 +73,19 @@ if [ -z "$MOVIE_ID" ] || [ -z "$CELEBRITY_ID" ]; then
 fi
 
 # Caso 1: Rol exitoso
-run_post_test "Rol exitoso" "http://localhost:8080/api/movies/$MOVIE_ID/roles" '{"celebrity_id": '$CELEBRITY_ID', "role": "Actor"}' 201
+run_post_test "Rol exitoso" "$APP_TEST_URL/api/movies/$MOVIE_ID/roles" '{"celebrity_id": '$CELEBRITY_ID', "role": "Actor"}' 201
 
 # Caso 2: Rol duplicado
-run_post_test "Rol duplicado" "http://localhost:8080/api/movies/$MOVIE_ID/roles" '{"celebrity_id": '$CELEBRITY_ID', "role": "Actor"}' 409
+run_post_test "Rol duplicado" "$APP_TEST_URL/api/movies/$MOVIE_ID/roles" '{"celebrity_id": '$CELEBRITY_ID', "role": "Actor"}' 409
 
 # Caso 3: Película no encontrada
-run_post_test "Película no encontrada" "http://localhost:8080/api/movies/99999/roles" '{"celebrity_id": '$CELEBRITY_ID', "role": "Director"}' 404
+run_post_test "Película no encontrada" "$APP_TEST_URL/api/movies/99999/roles" '{"celebrity_id": '$CELEBRITY_ID', "role": "Director"}' 404
 
 # Caso 4: Celebridad no encontrada
-run_post_test "Celebridad no encontrada" "http://localhost:8080/api/movies/$MOVIE_ID/roles" '{"celebrity_id": 99999, "role": "Director"}' 404
+run_post_test "Celebridad no encontrada" "$APP_TEST_URL/api/movies/$MOVIE_ID/roles" '{"celebrity_id": 99999, "role": "Director"}' 404
 
 # Caso 5: Falla de validación (role vacío)
-run_post_test "Falla de validación (role vacío)" "http://localhost:8080/api/movies/$MOVIE_ID/roles" '{"celebrity_id": '$CELEBRITY_ID', "role": ""}' 400
+run_post_test "Falla de validación (role vacío)" "$APP_TEST_URL/api/movies/$MOVIE_ID/roles" '{"celebrity_id": '$CELEBRITY_ID', "role": ""}' 400
 
 # Limpieza
 delete_movie "$MOVIE_ID"

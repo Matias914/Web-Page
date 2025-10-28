@@ -21,7 +21,7 @@ run_post_test() {
 }
 
 create_movie() {
-    URL="http://localhost:8080/api/movies"
+    URL="$APP_TEST_URL/api/movies"
     DATA="$2"
     BODY_AND_STATUS=$(curl -s -w "
 %{http_code}" -X POST -H "Content-Type: application/json" -d "$DATA" "$URL")
@@ -35,7 +35,7 @@ create_movie() {
 }
 
 create_genre() {
-    URL="http://localhost:8080/api/genres"
+    URL="$APP_TEST_URL/api/genres"
     DATA="$2"
     BODY_AND_STATUS=$(curl -s -w "
 %{http_code}" -X POST -H "Content-Type: application/json" -d "$DATA" "$URL")
@@ -50,13 +50,13 @@ create_genre() {
 
 delete_movie() {
     MOVIE_ID="$1"
-    URL="http://localhost:8080/api/movies/$MOVIE_ID"
+    URL="$APP_TEST_URL/api/movies/$MOVIE_ID"
     curl -s -o /dev/null -X DELETE "$URL"
 }
 
 delete_genre() {
     GENRE_ID="$1"
-    URL="http://localhost:8080/api/genres/$GENRE_ID"
+    URL="$APP_TEST_URL/api/genres/$GENRE_ID"
     curl -s -o /dev/null -X DELETE "$URL"
 }
 
@@ -74,19 +74,19 @@ if [ -z "$MOVIE_ID" ] || [ -z "$GENRE_ID" ] || [ -z "$GENRE_ID_2" ]; then
 fi
 
 # Caso 1: Categoría exitosa
-run_post_test "Categoría exitosa" "http://localhost:8080/api/movies/$MOVIE_ID/categories" '{"genre_id": '$GENRE_ID'}' 204
+run_post_test "Categoría exitosa" "$APP_TEST_URL/api/movies/$MOVIE_ID/categories" '{"genre_id": '$GENRE_ID'}' 204
 
 # Caso 2: Categoría duplicada
-run_post_test "Categoría duplicada" "http://localhost:8080/api/movies/$MOVIE_ID/categories" '{"genre_id": '$GENRE_ID'}' 409
+run_post_test "Categoría duplicada" "$APP_TEST_URL/api/movies/$MOVIE_ID/categories" '{"genre_id": '$GENRE_ID'}' 409
 
 # Caso 3: Película no encontrada
-run_post_test "Película no encontrada" "http://localhost:8080/api/movies/99999/categories" '{"genre_id": '$GENRE_ID'}' 404
+run_post_test "Película no encontrada" "$APP_TEST_URL/api/movies/99999/categories" '{"genre_id": '$GENRE_ID'}' 404
 
 # Caso 4: Género no encontrado
-run_post_test "Género no encontrado" "http://localhost:8080/api/movies/$MOVIE_ID/categories" '{"genre_id": 99999}' 404
+run_post_test "Género no encontrado" "$APP_TEST_URL/api/movies/$MOVIE_ID/categories" '{"genre_id": 99999}' 404
 
 # Caso 5: Falla de validación (genre_id vacío)
-run_post_test "Falla de validación (genre_id vacío)" "http://localhost:8080/api/movies/$MOVIE_ID/categories" '{}' 400
+run_post_test "Falla de validación (genre_id vacío)" "$APP_TEST_URL/api/movies/$MOVIE_ID/categories" '{}' 400
 
 # Limpieza
 delete_movie "$MOVIE_ID"

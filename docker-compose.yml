@@ -11,7 +11,6 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "${POSTGRES_PORT}:5432"
-
   # Servicio para la aplicación Go
   app:
     build: .
@@ -27,7 +26,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     depends_on:
       - db
-
 # Definición de los volúmenes para persistencia
 volumes:
   postgres_data:

@@ -23,7 +23,7 @@ run_post_test() {
 create_movie() {
     echo "----------------------------------------------------" >&2
     echo "Acción: $1" >&2
-    URL="http://localhost:8080/api/movies"
+    URL="$APP_TEST_URL/api/movies"
     DATA="$2"
 
     BODY_AND_STATUS=$(curl -s -w "\n%{http_code}" -X POST -H "Content-Type: application/json" -d "$DATA" "$URL")
@@ -52,7 +52,7 @@ delete_movie() {
     MOVIE_ID="$1"
     echo "----------------------------------------------------"
     echo "Acción: Eliminando película con ID $MOVIE_ID"
-    URL="http://localhost:8080/api/movies/$MOVIE_ID"
+    URL="$APP_TEST_URL/api/movies/$MOVIE_ID"
 
     HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "$URL")
 
@@ -67,20 +67,20 @@ delete_movie() {
 echo -e "\n===== INICIANDO PRUEBAS PARA POST /api/movies ===="
 
 # Caso 1: JSON Inválido
-# run_post_test "JSON Inválido" "http://localhost:8080/api/movies" '{"title": "Test Movie",,}' 400
+# run_post_test "JSON Inválido" "$APP_TEST_URL/api/movies" '{"title": "Test Movie",,}' 400
 
 # Caso 2: Campo requerido faltante (title)
-run_post_test "Campo requerido faltante (title)" "http://localhost:8080/api/movies" '{"synopsis": "Post Test Synopsis", "released_at": "2023-01-01T00:00:00Z", "duration_minutes": 120}' 400
+run_post_test "Campo requerido faltante (title)" "$APP_TEST_URL/api/movies" '{"synopsis": "Post Test Synopsis", "released_at": "2023-01-01T00:00:00Z", "duration_minutes": 120}' 400
 
 # Caso 3: Falla de validación (duration_minutes=0)
-run_post_test "Falla de validación (duration_minutes=0)" "http://localhost:8080/api/movies" '{"title": "Post Test Movie", "synopsis": "Test Synopsis", "released_at": "2023-01-01T00:00:00Z", "duration_minutes": 0}' 400
+run_post_test "Falla de validación (duration_minutes=0)" "$APP_TEST_URL/api/movies" '{"title": "Post Test Movie", "synopsis": "Test Synopsis", "released_at": "2023-01-01T00:00:00Z", "duration_minutes": 0}' 400
 
 # Caso 4: Crear una película para probar duplicados
 MOVIE_DATA='{"title": "Duplicate Test Movie", "synopsis": "Synopsis", "released_at": "2024-01-01T00:00:00Z", "duration_minutes": 100}'
 MOVIE_ID=$(create_movie "Crear película para prueba de duplicados" "$MOVIE_DATA")
 
 # Caso 5: Película duplicada
-run_post_test "Película duplicada" "http://localhost:8080/api/movies" "$MOVIE_DATA" 409
+run_post_test "Película duplicada" "$APP_TEST_URL/api/movies" "$MOVIE_DATA" 409
 
 # Limpieza: Eliminar la película creada
 if [ ! -z "$MOVIE_ID" ]; then

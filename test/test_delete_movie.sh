@@ -24,7 +24,7 @@ run_delete_test() {
 create_movie() {
     echo "----------------------------------------------------" >&2
     echo "Acción: $1" >&2
-    URL="http://localhost:8080/api/movies"
+    URL="$APP_TEST_URL/api/movies"
     DATA="$2"
 
     BODY_AND_STATUS=$(curl -s -w "\n%{http_code}" -X POST -H "Content-Type: application/json" -d "$DATA" "$URL")
@@ -53,15 +53,15 @@ create_movie() {
 echo -e "\n===== INICIANDO PRUEBAS PARA DELETE /api/movies/{id} ====="
 
 # Caso 1: ID no es un número
-run_delete_test "ID no es un número" "http://localhost:8080/api/movies/abc" 500
+run_delete_test "ID no es un número" "$APP_TEST_URL/api/movies/abc" 500
 
 # Caso 2: Película no encontrada
-run_delete_test "Película no encontrada" "http://localhost:8080/api/movies/999999" 404
+run_delete_test "Película no encontrada" "$APP_TEST_URL/api/movies/999999" 404
 
 # Caso 3: Borrado exitoso
 MOVIE_ID=$(create_movie "Crear película para borrar" '{"title": "Delete Test Movie 3", "synopsis": "Synopsis", "released_at": "2023-01-01T00:00:00Z", "duration_minutes": 130}')
 if [ ! -z "$MOVIE_ID" ]; then
-    run_delete_test "Borrado exitoso" "http://localhost:8080/api/movies/$MOVIE_ID" 204
+    run_delete_test "Borrado exitoso" "$APP_TEST_URL/api/movies/$MOVIE_ID" 204
 fi
 
 if [[ "$FAILED" -eq 0 ]]; then

@@ -24,7 +24,7 @@ run_put_test() {
 create_celebrity() {
     echo "----------------------------------------------------" >&2
     echo "Acción: $1" >&2
-    URL="http://localhost:8080/api/celebrities"
+    URL="$APP_TEST_URL/api/celebrities"
     DATA="$2"
 
     BODY_AND_STATUS=$(curl -s -w "
@@ -55,13 +55,12 @@ delete_celebrity() {
     CELEBRITY_ID="$1"
     echo "----------------------------------------------------"
     echo "Acción: Eliminando celebridad con ID $CELEBRITY_ID"
-    URL="http://localhost:8080/api/celebrities/$CELEBRITY_ID"
+    URL="$APP_TEST_URL/api/celebrities/$CELEBRITY_ID"
 
     HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "$URL")
 
     if [ "$HTTP_STATUS" -eq 204 ]; then
         echo "Celebridad eliminada exitosamente"
-        echo "----------------------------------------------------" >&2
     else
         echo "FALLÓ la eliminación - Se esperaba 204, se obtuvo $HTTP_STATUS"
     fi
@@ -71,33 +70,34 @@ echo -e "
 ===== INICIANDO PRUEBAS PARA PUT /api/celebrities/{id} ====="
 
 # Caso 1: ID no es un número
-run_put_test "ID no es un número" "http://localhost:8080/api/celebrities/abc" '{}' 500
+run_put_test "ID no es un número" "$APP_TEST_URL/api/celebrities/abc" '{}' 500
 
 # Caso 2: Celebridad no encontrada
-run_put_test "Celebridad no encontrada" "http://localhost:8080/api/celebrities/999999" '{"name": "Not Found Test", "birth_date": "1999-01-01T00:00:00Z"}' 404
+run_put_test "Celebridad no encontrada" "$APP_TEST_URL/api/celebrities/999999" '{"name": "Not Found Test", "birth_date": "1999-01-01T00:00:00Z"}' 404
 
 # Caso 3: JSON Inválido
 CELEBRITY_ID_INV_JSON=$(create_celebrity "Crear celebridad para JSON inválido" '{"name": "Invalid JSON Celebrity", "birth_date": "1993-03-03T00:00:00Z"}')
 if [ ! -z "$CELEBRITY_ID_INV_JSON" ]; then
-    run_put_test "JSON Inválido" "http://localhost:8080/api/celebrities/$CELEBRITY_ID_INV_JSON" '{"name": "Updated Name",,}' 500
+    run_put_test "JSON Inválido" "$APP_TEST_URL/api/celebrities/$CELEBRITY_ID_INV_JSON" '{"name": "Updated Name",,}' 500
     delete_celebrity "$CELEBRITY_ID_INV_JSON"
 fi
 
 # Caso 4: Falla de validación (campo faltante)
 CELEBRITY_ID_VALIDATION=$(create_celebrity "Crear celebridad para falla de validación" '{"name": "Validation Fail Celebrity", "birth_date": "1994-04-04T00:00:00Z"}')
 if [ ! -z "$CELEBRITY_ID_VALIDATION" ]; then
-    run_put_test "Falla de validación" "http://localhost:8080/api/celebrities/$CELEBRITY_ID_VALIDATION" '{"birth_date": "1994-04-04T00:00:00Z"}' 400
+    run_put_test "Falla de validación" "$APP_TEST_URL/api/celebrities/$CELEBRITY_ID_VALIDATION" '{"birth_date": "1994-04-04T00:00:00Z"}' 400
     delete_celebrity "$CELEBRITY_ID_VALIDATION"
 fi
 
 # Caso 5: Actualización exitosa
 CELEBRITY_ID_SUCCESS=$(create_celebrity "Crear celebridad para actualizar" '{"name": "Update Success Original", "birth_date": "1995-05-05T00:00:00Z"}')
 if [ ! -z "$CELEBRITY_ID_SUCCESS" ]; then
-    run_put_test "Actualización exitosa" "http://localhost:8080/api/celebrities/$CELEBRITY_ID_SUCCESS" '{"name": "Update Success Final", "birth_date": "1996-06-06T00:00:00Z"}' 200
+    run_put_test "Actualización exitosa" "$APP_TEST_URL/api/celebrities/$CELEBRITY_ID_SUCCESS" '{"name": "Update Success Final", "birth_date": "1996-06-06T00:00:00Z"}' 200
     delete_celebrity "$CELEBRITY_ID_SUCCESS"
 fi
 
 if [[ "$FAILED" -eq 0 ]]; then
+    echo "----------------------------------------------------" >&2
     echo -e "Todas las pruebas para PUT /api/celebrities/{id} pasaron exitosamente. ✅
 "
 fi

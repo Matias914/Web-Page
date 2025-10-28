@@ -20,7 +20,7 @@ run_get_test() {
 }
 
 create_user() {
-    URL="http://localhost:8080/api/users"
+    URL="$APP_TEST_URL/api/users"
     DATA="$2"
     BODY_AND_STATUS=$(curl -s -w "
 %{http_code}" -X POST -H "Content-Type: application/json" -d "$DATA" "$URL")
@@ -34,7 +34,7 @@ create_user() {
 }
 
 create_movie() {
-    URL="http://localhost:8080/api/movies"
+    URL="$APP_TEST_URL/api/movies"
     DATA="$2"
     BODY_AND_STATUS=$(curl -s -w "
 %{http_code}" -X POST -H "Content-Type: application/json" -d "$DATA" "$URL")
@@ -50,20 +50,20 @@ create_movie() {
 create_review() {
     USER_ID="$1"
     MOVIE_ID="$2"
-    URL="http://localhost:8080/api/users/$USER_ID/reviews"
+    URL="$APP_TEST_URL/api/users/$USER_ID/reviews"
     DATA='{"movie_id": '$MOVIE_ID', "comment": "A great movie"}'
     curl -s -o /dev/null -X POST -H "Content-Type: application/json" -d "$DATA" "$URL"
 }
 
 delete_user() {
     USER_ID="$1"
-    URL="http://localhost:8080/api/users/$USER_ID"
+    URL="$APP_TEST_URL/api/users/$USER_ID"
     curl -s -o /dev/null -X DELETE "$URL"
 }
 
 delete_movie() {
     MOVIE_ID="$1"
-    URL="http://localhost:8080/api/movies/$MOVIE_ID"
+    URL="$APP_TEST_URL/api/movies/$MOVIE_ID"
     curl -s -o /dev/null -X DELETE "$URL"
 }
 
@@ -76,16 +76,16 @@ MOVIE_ID=$(create_movie "" '{"title": "Get Review Movie", "synopsis": "s", "rele
 create_review "$USER_ID" "$MOVIE_ID"
 
 # Caso 1: Obtención exitosa
-run_get_test "Obtención exitosa" "http://localhost:8080/api/users/$USER_ID/reviews/$MOVIE_ID" 200
+run_get_test "Obtención exitosa" "$APP_TEST_URL/api/users/$USER_ID/reviews/$MOVIE_ID" 200
 
 # Caso 2: Usuario no encontrado
-run_get_test "Usuario no encontrado" "http://localhost:8080/api/users/999999/reviews/$MOVIE_ID" 404
+run_get_test "Usuario no encontrado" "$APP_TEST_URL/api/users/999999/reviews/$MOVIE_ID" 404
 
 # Caso 3: Película no encontrada
-run_get_test "Película no encontrada" "http://localhost:8080/api/users/$USER_ID/reviews/999999" 404
+run_get_test "Película no encontrada" "$APP_TEST_URL/api/users/$USER_ID/reviews/999999" 404
 
 # Caso 4: ID de usuario inválido
-run_get_test "ID de usuario inválido" "http://localhost:8080/api/users/abc/reviews/$MOVIE_ID" 500
+run_get_test "ID de usuario inválido" "$APP_TEST_URL/api/users/abc/reviews/$MOVIE_ID" 500
 
 # Limpieza
 delete_user "$USER_ID"

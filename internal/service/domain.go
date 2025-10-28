@@ -149,60 +149,60 @@ type User struct {
 /* ----------------------------------------------------------------------------- */
 
 type CategoryData struct {
-	GenreID int `json:"genre_id" validate:"required,gt=0"`
+	GenreID int `json:"genre_id" example:"1" validate:"required,gt=0"`
 }
 
 type CelebrityData struct {
-	Name      string    `json:"name" validate:"required,max=255"`
-	BirthDate time.Time `json:"birth_date" validate:"required,before_or_today"`
+	Name      string    `json:"name" example:"Linus Torvalds" validate:"required,max=255"`
+	BirthDate time.Time `json:"birth_date" example:"1969-12-28T00:00:00Z" validate:"required,before_or_today"`
 }
 
 type GenreData struct {
-	Name string `json:"name" validate:"required,max=255"`
+	Name string `json:"name" example:"horror" validate:"required,max=255"`
 }
 
 type MovieData struct {
-	Title           string    `json:"title" validate:"required,max=255"`
-	Synopsis        string    `json:"synopsis" validate:"required,max=5000"`
-	ReleasedAt      time.Time `json:"released_at" validate:"required,before_or_today"`
-	DurationMinutes int       `json:"duration_minutes" validate:"required,gt=0"`
-	PosterUrl       string    `json:"poster_url" validate:"omitempty"`
+	Title           string    `json:"title" example:"Lord of the Strings" validate:"required,max=255"`
+	Synopsis        string    `json:"synopsis" example:"A man that can manipulate every string variable" validate:"required,max=5000"`
+	ReleasedAt      time.Time `json:"released_at" example:"2025-10-30T00:00:00Z" validate:"required,before_or_today"`
+	DurationMinutes int       `json:"duration_minutes" example:"255" validate:"required,gt=0"`
+	PosterUrl       string    `json:"poster_url" example:"https://www.amazon.nl/Lord-Strings-J-Khan/dp/B000BU9TAQ" validate:"omitempty"`
 }
 
 type RatingData struct {
-	MovieID int `json:"movie_id" validate:"required,gt=0"`
-	Rating  int `json:"rating" validate:"required,gt=0,lte=10"`
+	MovieID int `json:"movie_id" example:"2" validate:"required,gt=0"`
+	Rating  int `json:"rating" example:"5" validate:"required,gt=0,lte=10"`
 }
 
 type UpdatableRatingData struct {
-	Rating int `json:"rating" validate:"required,gt=0,lt=11"`
+	Rating int `json:"rating" example:"5" validate:"required,gt=0,lt=11"`
 }
 
 type ReviewData struct {
-	MovieID int    `json:"movie_id" validate:"required,gt=0"`
-	Comment string `json:"comment" validate:"required,max=255"`
+	MovieID int    `json:"movie_id" example:"2" validate:"required,gt=0"`
+	Comment string `json:"comment" example:"Seriously... Who made this?" validate:"required,max=255"`
 }
 
 type UpdatableReviewData struct {
-	Comment string `json:"comment" validate:"required,max=255"`
+	Comment string `json:"comment" example:"Seriously... Who made this?" validate:"required,max=255"`
 }
 
 type RoleData struct {
-	CelebrityID int    `json:"celebrity_id" validate:"required,gt=0"`
-	Role        string `json:"role" validate:"required,max=255"`
+	CelebrityID int    `json:"celebrity_id" example:"1" validate:"required,gt=0"`
+	Role        string `json:"role" example:"Tech Guy" validate:"required,max=255"`
 }
 
 type UpdatableRoleData struct {
-	Role string `json:"role" validate:"required,max=255"`
+	Role string `json:"role" example:"Tech Guy" validate:"required,max=255"`
 }
 
 type UserData struct {
-	Username string `json:"username" validate:"required,max=255"`
-	Password string `json:"password" validate:"required,max=255"`
-	Mail     string `json:"mail" validate:"required,max=255"`
+	Username string `json:"username" example:"thescrummaster1" validate:"required,max=255"`
+	Password string `json:"password" example:"notofyourbusiness" validate:"required,max=255"`
+	Mail     string `json:"mail" example:"smokeseller@gmail.com" validate:"required,max=255"`
 }
 
 type UpdatableUserData struct {
-	Username string `json:"username" validate:"required,max=255"`
-	Mail     string `json:"mail" validate:"required,max=255"`
+	Username string `json:"username" example:"thescrummaster1" validate:"required,max=255"`
+	Mail     string `json:"mail" example:"smokeseller@gmail.com" validate:"required,max=255"`
 }

@@ -28,7 +28,7 @@ run_get_test() {
 
 create_movie() {
     TEST_NAME="$1"
-    URL="http://localhost:8080/api/movies"
+    URL="$APP_TEST_URL/api/movies"
     DATA_TEMPLATE="$2"
 
     # Generate a unique title
@@ -72,7 +72,7 @@ delete_movie() {
         return 1
     fi
 
-    URL="http://localhost:8080/api/movies/$MOVIE_ID"
+    URL="$APP_TEST_URL/api/movies/$MOVIE_ID"
 
     HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "$URL")
 
@@ -88,13 +88,13 @@ echo -e "\n===== INICIANDO PRUEBAS PARA GET /api/movies/{id} ====="
 
 # Caso 1: ID válido
 MOVIE_ID=$(create_movie "Crear película para borrar" '{"title": "Get Test Movie", "synopsis": "Synopsis", "released_at": "2023-01-01T00:00:00Z", "duration_minutes": 130}')
-run_get_test "ID válido" "http://localhost:8080/api/movies/$MOVIE_ID" 200
+run_get_test "ID válido" "$APP_TEST_URL/api/movies/$MOVIE_ID" 200
 
 # Caso 2: ID no es un número
-run_get_test "ID no es un número" "http://localhost:8080/api/movies/abc" 500
+run_get_test "ID no es un número" "$APP_TEST_URL/api/movies/abc" 500
 
 # Caso 3: Película no encontrada (ID muy grande)
-run_get_test "Película no encontrada" "http://localhost:8080/api/movies/999999" 404
+run_get_test "Película no encontrada" "$APP_TEST_URL/api/movies/999999" 404
 
 delete_movie "$MOVIE_ID"
 

@@ -5,13 +5,14 @@ export
 # CONFIGURACIÓN
 # ==============================================================================
 
-GO      ?= go
-AIR     ?= air
-SQLC    ?= sqlc
-DOCKER  ?= docker
-DOCKERC ?= docker compose
-ATLAS   ?= atlas
-SWAG    ?= swag
+GO      	 ?= go
+AIR     	 ?= air
+SQLC    	 ?= sqlc
+DOCKER  	 ?= docker
+DOCKERC 	 ?= docker compose
+DOCKERC_TEST ?= docker compose -f docker-compose.tests.yml -p proyecto_test
+ATLAS   	 ?= atlas
+SWAG    	 ?= swag
 
 # Variables del Proyecto
 APP_NAME := App Web en Go
@@ -55,7 +56,7 @@ help:
 	@echo "  sqlc-gen      - Genera código Go desde las queries SQL."
 	@echo "  build         - Compila el binario de la aplicación."
 	@echo "  run           - Compila y ejecuta el binario."
-	@echo "  test          - Ejecuta todas las pruebas."
+	@echo "  test          - Ejecuta todas las pruebas usando un entorno de ejecución Docker."
 	@echo "  tidy          - Ordena y verifica las dependencias de Go."
 	@echo "  clean         - Elimina el directorio de binarios '$(BIN_DIR)'."
 	@echo "  docker-clean  - Limpieza completa del proyecto actual en Docker."
@@ -164,7 +165,12 @@ run: build
 
 test:
 	@echo "🧪  Ejecutando pruebas..."
-	@bash test/run_all_tests.sh
+	@echo "🐋  Construyendo y levantando entorno (DB y API) en segundo plano..."
+	@$(DOCKERC_TEST) up -d --build app_test db_test
+	@echo "🏃  Corriendo tests (mostrando solo logs del runner)..."
+	@$(DOCKERC_TEST) run --rm test-runner
+	@echo "🧼  Limpiando entorno de pruebas..."
+	@$(DOCKERC_TEST) down -v
 
 tidy:
 	@echo "📦  Ordenando dependencias de Go..."

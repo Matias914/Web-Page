@@ -22,7 +22,7 @@ run_get_test() {
 create_celebrity() {
     echo "----------------------------------------------------" >&2
     echo "Acción: $1" >&2
-    URL="http://localhost:8080/api/celebrities"
+    URL="$APP_TEST_URL/api/celebrities"
     DATA="$2"
 
     BODY_AND_STATUS=$(curl -s -w "
@@ -53,7 +53,7 @@ delete_celebrity() {
     CELEBRITY_ID="$1"
     echo "----------------------------------------------------"
     echo "Acción: Eliminando celebridad con ID $CELEBRITY_ID"
-    URL="http://localhost:8080/api/celebrities/$CELEBRITY_ID"
+    URL="$APP_TEST_URL/api/celebrities/$CELEBRITY_ID"
 
     HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "$URL")
 
@@ -69,21 +69,21 @@ echo -e "
 ===== INICIANDO PRUEBAS PARA GET /api/celebrities/{id}/roles ====="
 
 # Caso 1: ID no es un número
-run_get_test "ID no es un número" "http://localhost:8080/api/celebrities/abc/roles?page=1&rows=5" 500
+run_get_test "ID no es un número" "$APP_TEST_URL/api/celebrities/abc/roles?page=1&rows=5" 500
 
 # Caso 2: Celebridad no encontrada
-run_get_test "Celebridad no encontrada" "http://localhost:8080/api/celebrities/999999/roles?page=1&rows=5" 404
+run_get_test "Celebridad no encontrada" "$APP_TEST_URL/api/celebrities/999999/roles?page=1&rows=5" 404
 
 # Caso 3: Paginación inválida (page)
-run_get_test "Paginación inválida (page=abc)" "http://localhost:8080/api/celebrities/1/roles?page=abc&rows=5" 500
+run_get_test "Paginación inválida (page=abc)" "$APP_TEST_URL/api/celebrities/1/roles?page=abc&rows=5" 500
 
 # Caso 4: Paginación inválida (rows)
-run_get_test "Paginación inválida (rows=0)" "http://localhost:8080/api/celebrities/1/roles?page=1&rows=0" 500
+run_get_test "Paginación inválida (rows=0)" "$APP_TEST_URL/api/celebrities/1/roles?page=1&rows=0" 500
 
 # Caso 5: Obtención exitosa
 CELEBRITY_ID=$(create_celebrity "Crear celebridad para obtener roles" '{"name": "Get Roles Test Celebrity", "birth_date": "2000-01-01T00:00:00Z"}')
 if [ ! -z "$CELEBRITY_ID" ]; then
-    run_get_test "Obtención exitosa" "http://localhost:8080/api/celebrities/$CELEBRITY_ID/roles?page=1&rows=5" 200
+    run_get_test "Obtención exitosa" "$APP_TEST_URL/api/celebrities/$CELEBRITY_ID/roles?page=1&rows=5" 200
     delete_celebrity "$CELEBRITY_ID"
 fi
 

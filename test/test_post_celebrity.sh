@@ -22,7 +22,7 @@ run_post_test() {
 create_celebrity() {
     echo "----------------------------------------------------" >&2
     echo "Acción: $1" >&2
-    URL="http://localhost:8080/api/celebrities"
+    URL="$APP_TEST_URL/api/celebrities"
     DATA="$2"
 
     BODY_AND_STATUS=$(curl -s -w "
@@ -52,13 +52,12 @@ delete_celebrity() {
     CELEBRITY_ID="$1"
     echo "----------------------------------------------------"
     echo "Acción: Eliminando celebridad con ID $CELEBRITY_ID"
-    URL="http://localhost:8080/api/celebrities/$CELEBRITY_ID"
+    URL="$APP_TEST_URL/api/celebrities/$CELEBRITY_ID"
 
     HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "$URL")
 
     if [ "$HTTP_STATUS" -eq 204 ]; then
         echo "Celebridad eliminada exitosamente"
-        echo "----------------------------------------------------" >&2
     else
         echo "FALLÓ la eliminación - Se esperaba 204, se obtuvo $HTTP_STATUS"
     fi
@@ -68,10 +67,10 @@ echo -e "
 ===== INICIANDO PRUEBAS PARA POST /api/celebrities ===="
 
 # Caso 1: JSON Inválido
-run_post_test "JSON Inválido" "http://localhost:8080/api/celebrities" '{"name": "Test celebrity",,}' 500
+run_post_test "JSON Inválido" "$APP_TEST_URL/api/celebrities" '{"name": "Test celebrity",,}' 500
 
 # Caso 2: Campo requerido faltante (name)
-run_post_test "Campo requerido faltante (name)" "http://localhost:8080/api/celebrities" '{"birth_date": "1990-01-01T00:00:00Z"}' 400
+run_post_test "Campo requerido faltante (name)" "$APP_TEST_URL/api/celebrities" '{"birth_date": "1990-01-01T00:00:00Z"}' 400
 
 # Caso 3: Crear una celebridad para probar duplicados
 CELEBRITY_DATA='{"name": "duplicate test celebrity", "birth_date": "1985-05-15T00:00:00Z"}'
@@ -79,13 +78,14 @@ CELEBRITY_ID_1=$(create_celebrity "Crear celebridad para prueba de duplicados" "
 CELEBRITY_ID_2=$(create_celebrity "Crear celebridad para prueba de duplicados" "$CELEBRITY_DATA")
 
 # Caso 4: Celebridad duplicada
-run_post_test "Celebridad duplicada" "http://localhost:8080/api/celebrities" "$CELEBRITY_DATA" 409
+run_post_test "Celebridad duplicada" "$APP_TEST_URL/api/celebrities" "$CELEBRITY_DATA" 409
 
 if [ ! -z "$CELEBRITY_ID" ]; then
     delete_celebrity "$CELEBRITY_ID"
 fi
 
 if [[ "$FAILED" -eq 0 ]]; then
+    echo "----------------------------------------------------" >&2
     echo -e "Todas las pruebas para POST /api/celebrities pasaron exitosamente. ✅
 "
 fi

@@ -32,7 +32,7 @@ run_put_test() {
 create_movie() {
     echo "----------------------------------------------------" >&2
     echo "Acción: $1" >&2
-    URL="http://localhost:8080/api/movies"
+    URL="$APP_TEST_URL/api/movies"
     DATA="$2"
 
     BODY_AND_STATUS=$(curl -s -w "\n%{http_code}" -X POST -H "Content-Type: application/json" -d "$DATA" "$URL")
@@ -61,7 +61,7 @@ delete_movie() {
     MOVIE_ID="$1"
     echo "----------------------------------------------------"
     echo "Acción: Eliminando película con ID $MOVIE_ID"
-    URL="http://localhost:8080/api/movies/$MOVIE_ID"
+    URL="$APP_TEST_URL/api/movies/$MOVIE_ID"
 
     HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "$URL")
 
@@ -79,21 +79,21 @@ MOVIE_ID_1=$(create_movie "Crear película 1 para actualizar" '{"title": "Put Te
 MOVIE_ID_2=$(create_movie "Crear película 2 para conflicto" '{"title": "Put Test Movie 2", "synopsis": "Synopsis", "released_at": "2025-01-02T00:00:00Z", "duration_minutes": 120}')
 
 # Caso 1: ID no es un número
-run_put_test "ID no es un número" "http://localhost:8080/api/movies/abc" '{}' 500
+run_put_test "ID no es un número" "$APP_TEST_URL/api/movies/abc" '{}' 500
 
 # Caso 2: Película no encontrada
-run_put_test "Película no encontrada" "http://localhost:8080/api/movies/999999" '{"id": 999999, "title": "Not Found Test", "synopsis": "Valid synopsis", "released_at": "2025-01-01T00:00:00Z", "duration_minutes": 100}' 404
+run_put_test "Película no encontrada" "$APP_TEST_URL/api/movies/999999" '{"id": 999999, "title": "Not Found Test", "synopsis": "Valid synopsis", "released_at": "2025-01-01T00:00:00Z", "duration_minutes": 100}' 404
 
 # Caso 3: JSON Inválido
-run_put_test "JSON Inválido" "http://localhost:8080/api/movies/$MOVIE_ID_1" '{"title": "Invalid JSON",}' 500
+run_put_test "JSON Inválido" "$APP_TEST_URL/api/movies/$MOVIE_ID_1" '{"title": "Invalid JSON",}' 500
 
 # Case 4: Falla de validación (duration_minutes=0)
 DATA_CASE_4='{"id": '"$MOVIE_ID_1"', "title": "Valid Title", "synopsis": "Valid Synopsis", "released_at": "2025-01-01T00:00:00Z", "duration_minutes": 0}'
-run_put_test "Falla de validación" "http://localhost:8080/api/movies/$MOVIE_ID_1" "$DATA_CASE_4" 400
+run_put_test "Falla de validación" "$APP_TEST_URL/api/movies/$MOVIE_ID_1" "$DATA_CASE_4" 400
 
 # Caso 5: Conflicto de duplicados
 CONFLICT_DATA='{"id": '"$MOVIE_ID_1"', "title": "Put Test Movie 2", "synopsis": "Synopsis", "released_at": "2025-01-02T00:00:00Z", "duration_minutes": 120}'
-run_put_test "Conflicto de duplicados" "http://localhost:8080/api/movies/$MOVIE_ID_1" "$CONFLICT_DATA" 409
+run_put_test "Conflicto de duplicados" "$APP_TEST_URL/api/movies/$MOVIE_ID_1" "$CONFLICT_DATA" 409
 
 # Limpieza
 delete_movie "$MOVIE_ID_1"

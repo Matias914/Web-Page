@@ -23,19 +23,19 @@ echo -e "
 ===== INICIANDO PRUEBAS PARA GET /api/users ====="
 
 # Caso 1: Paginación correcta
-run_get_test "Paginación correcta (page=1, rows=5)" "http://localhost:8080/api/users?page=1&rows=5" 200
+run_get_test "Paginación correcta (page=1, rows=5)" "$APP_TEST_URL/api/users?page=1&rows=5" 200
 
 # Caso 2: Número de página inválido (no es un número)
-run_get_test "Número de página inválido (page=abc)" "http://localhost:8080/api/users?page=abc&rows=5" 500
+run_get_test "Número de página inválido (page=abc)" "$APP_TEST_URL/api/users?page=abc&rows=5" 500
 
 # Caso 3: Número de página inválido (menor a 1)
-run_get_test "Número de página inválido (page=0)" "http://localhost:8080/api/users?page=0&rows=5" 500
+run_get_test "Número de página inválido (page=0)" "$APP_TEST_URL/api/users?page=0&rows=5" 500
 
 # Caso 4: Filas por página inválidas (no es un número)
-run_get_test "Filas por página inválidas (rows=abc)" "http://localhost:8080/api/users?page=1&rows=abc" 500
+run_get_test "Filas por página inválidas (rows=abc)" "$APP_TEST_URL/api/users?page=1&rows=abc" 500
 
 # Caso 5: Filas por página inválidas (menor a 1)
-run_get_test "Filas por página inválidas (rows=0)" "http://localhost:8080/api/users?page=1&rows=0" 500
+run_get_test "Filas por página inválidas (rows=0)" "$APP_TEST_URL/api/users?page=1&rows=0" 500
 
 if [[ "$FAILED" -eq 0 ]]; then
     echo "----------------------------------------------------" >&2

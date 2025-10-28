@@ -23,7 +23,7 @@ run_post_test() {
 create_user() {
     echo "----------------------------------------------------" >&2
     echo "Acción: $1" >&2
-    URL="http://localhost:8080/api/users"
+    URL="$APP_TEST_URL/api/users"
     DATA="$2"
 
     BODY_AND_STATUS=$(curl -s -w "
@@ -54,7 +54,7 @@ delete_user() {
     USER_ID="$1"
     echo "----------------------------------------------------"
     echo "Acción: Eliminando usuario con ID $USER_ID"
-    URL="http://localhost:8080/api/users/$USER_ID"
+    URL="$APP_TEST_URL/api/users/$USER_ID"
 
     HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "$URL")
 
@@ -70,20 +70,20 @@ echo -e "
 ===== INICIANDO PRUEBAS PARA POST /api/users ===="
 
 # Caso 1: JSON Inválido
-run_post_test "JSON Inválido" "http://localhost:8080/api/users" '{"username": "Test User",,}' 500
+run_post_test "JSON Inválido" "$APP_TEST_URL/api/users" '{"username": "Test User",,}' 500
 
 # Caso 2: Campo requerido faltante (username)
-run_post_test "Campo requerido faltante (username)" "http://localhost:8080/api/users" '{"password": "pass", "mail": "a@a.com"}' 400
+run_post_test "Campo requerido faltante (username)" "$APP_TEST_URL/api/users" '{"password": "pass", "mail": "a@a.com"}' 400
 
 # Caso 3: Crear un usuario para probar duplicados
 USER_DATA='{"username": "duplicate_user", "password": "password123", "mail": "duplicate@test.com"}'
 USER_ID=$(create_user "Crear usuario para prueba de duplicados" "$USER_DATA")
 
 # Caso 4: Usuario duplicado (username)
-run_post_test "Usuario duplicado (username)" "http://localhost:8080/api/users" '{"username": "duplicate_user", "password": "newpass", "mail": "new@test.com"}' 409
+run_post_test "Usuario duplicado (username)" "$APP_TEST_URL/api/users" '{"username": "duplicate_user", "password": "newpass", "mail": "new@test.com"}' 409
 
 # Caso 5: Usuario duplicado (mail)
-run_post_test "Usuario duplicado (mail)" "http://localhost:8080/api/users" '{"username": "new_user", "password": "newpass", "mail": "duplicate@test.com"}' 409
+run_post_test "Usuario duplicado (mail)" "$APP_TEST_URL/api/users" '{"username": "new_user", "password": "newpass", "mail": "duplicate@test.com"}' 409
 
 # Limpieza: Eliminar el usuario creado
 if [ ! -z "$USER_ID" ]; then

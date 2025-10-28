@@ -22,7 +22,7 @@ run_put_test() {
 }
 
 create_user() {
-    URL="http://localhost:8080/api/users"
+    URL="$APP_TEST_URL/api/users"
     DATA="$2"
     BODY_AND_STATUS=$(curl -s -w "
 %{http_code}" -X POST -H "Content-Type: application/json" -d "$DATA" "$URL")
@@ -36,7 +36,7 @@ create_user() {
 }
 
 create_movie() {
-    URL="http://localhost:8080/api/movies"
+    URL="$APP_TEST_URL/api/movies"
     DATA="$2"
     BODY_AND_STATUS=$(curl -s -w "
 %{http_code}" -X POST -H "Content-Type: application/json" -d "$DATA" "$URL")
@@ -52,20 +52,20 @@ create_movie() {
 create_review() {
     USER_ID="$1"
     MOVIE_ID="$2"
-    URL="http://localhost:8080/api/users/$USER_ID/reviews"
+    URL="$APP_TEST_URL/api/users/$USER_ID/reviews"
     DATA='{"movie_id": '$MOVIE_ID', "comment": "Initial comment"}'
     curl -s -o /dev/null -X POST -H "Content-Type: application/json" -d "$DATA" "$URL"
 }
 
 delete_user() {
     USER_ID="$1"
-    URL="http://localhost:8080/api/users/$USER_ID"
+    URL="$APP_TEST_URL/api/users/$USER_ID"
     curl -s -o /dev/null -X DELETE "$URL"
 }
 
 delete_movie() {
     MOVIE_ID="$1"
-    URL="http://localhost:8080/api/movies/$MOVIE_ID"
+    URL="$APP_TEST_URL/api/movies/$MOVIE_ID"
     curl -s -o /dev/null -X DELETE "$URL"
 }
 
@@ -78,13 +78,13 @@ MOVIE_ID=$(create_movie "" '{"title": "Put Review Movie", "synopsis": "s", "rele
 create_review "$USER_ID" "$MOVIE_ID"
 
 # Caso 1: Actualización exitosa
-run_put_test "Actualización exitosa" "http://localhost:8080/api/users/$USER_ID/reviews/$MOVIE_ID" '{"comment": "Updated comment"}' 200
+run_put_test "Actualización exitosa" "$APP_TEST_URL/api/users/$USER_ID/reviews/$MOVIE_ID" '{"comment": "Updated comment"}' 200
 
 # Caso 2: Review no encontrada
-run_put_test "Review no encontrada" "http://localhost:8080/api/users/$USER_ID/reviews/999999" '{"comment": "some comment"}' 404
+run_put_test "Review no encontrada" "$APP_TEST_URL/api/users/$USER_ID/reviews/999999" '{"comment": "some comment"}' 404
 
 # Caso 3: Falla de validación (comment vacío)
-run_put_test "Falla de validación" "http://localhost:8080/api/users/$USER_ID/reviews/$MOVIE_ID" '{"comment": ""}' 400
+run_put_test "Falla de validación" "$APP_TEST_URL/api/users/$USER_ID/reviews/$MOVIE_ID" '{"comment": ""}' 400
 
 # Limpieza
 delete_user "$USER_ID"

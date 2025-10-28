@@ -23,7 +23,7 @@ run_delete_test() {
 create_user() {
     echo "----------------------------------------------------" >&2
     echo "Acción: $1" >&2
-    URL="http://localhost:8080/api/users"
+    URL="$APP_TEST_URL/api/users"
     DATA="$2"
 
     BODY_AND_STATUS=$(curl -s -w "
@@ -53,15 +53,15 @@ echo -e "
 ===== INICIANDO PRUEBAS PARA DELETE /api/users/{id} ====="
 
 # Caso 1: ID no es un número
-run_delete_test "ID no es un número" "http://localhost:8080/api/users/abc" 500
+run_delete_test "ID no es un número" "$APP_TEST_URL/api/users/abc" 500
 
 # Caso 2: Usuario no encontrado
-run_delete_test "Usuario no encontrado" "http://localhost:8080/api/users/999999" 404
+run_delete_test "Usuario no encontrado" "$APP_TEST_URL/api/users/999999" 404
 
 # Caso 3: Borrado exitoso
 USER_ID=$(create_user "Crear usuario para borrar" '{"username": "delete_me", "password": "p", "mail": "delete@me.com"}')
 if [ ! -z "$USER_ID" ]; then
-    run_delete_test "Borrado exitoso" "http://localhost:8080/api/users/$USER_ID" 204
+    run_delete_test "Borrado exitoso" "$APP_TEST_URL/api/users/$USER_ID" 204
 fi
 
 if [[ "$FAILED" -eq 0 ]]; then

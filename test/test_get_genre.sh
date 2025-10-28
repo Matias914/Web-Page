@@ -28,7 +28,7 @@ run_get_test() {
 
 create_genre() {
     TEST_NAME="$1"
-    URL="http://localhost:8080/api/genres"
+    URL="$APP_TEST_URL/api/genres"
     DATA_TEMPLATE="$2"
 
     # Generate a unique name
@@ -72,7 +72,7 @@ delete_genre() {
         return 1
     fi
 
-    URL="http://localhost:8080/api/genres/$GENRE_ID"
+    URL="$APP_TEST_URL/api/genres/$GENRE_ID"
 
     HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "$URL")
 
@@ -90,13 +90,13 @@ echo -e "\n===== INICIANDO PRUEBAS PARA GET /api/genres/{id} ====="
 
 # Caso 1: ID válido
 GENRE_ID=$(create_genre "Crear género para obtener" '{"name": "Get Test Genre"}')
-run_get_test "ID válido" "http://localhost:8080/api/genres/$GENRE_ID" 200
+run_get_test "ID válido" "$APP_TEST_URL/api/genres/$GENRE_ID" 200
 
 # Caso 2: ID no es un número
-run_get_test "ID no es un número" "http://localhost:8080/api/genres/abc" 500
+run_get_test "ID no es un número" "$APP_TEST_URL/api/genres/abc" 500
 
 # Caso 3: Género no encontrado (ID muy grande)
-run_get_test "Género no encontrado" "http://localhost:8080/api/genres/999999" 404
+run_get_test "Género no encontrado" "$APP_TEST_URL/api/genres/999999" 404
 
 delete_genre "$GENRE_ID"
 

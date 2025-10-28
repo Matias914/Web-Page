@@ -20,7 +20,7 @@ run_get_test() {
 }
 
 create_user() {
-    URL="http://localhost:8080/api/users"
+    URL="$APP_TEST_URL/api/users"
     DATA="$2"
     BODY_AND_STATUS=$(curl -s -w "
 %{http_code}" -X POST -H "Content-Type: application/json" -d "$DATA" "$URL")
@@ -35,7 +35,7 @@ create_user() {
 
 delete_user() {
     USER_ID="$1"
-    URL="http://localhost:8080/api/users/$USER_ID"
+    URL="$APP_TEST_URL/api/users/$USER_ID"
     curl -s -o /dev/null -X DELETE "$URL"
 }
 
@@ -51,16 +51,16 @@ if [ -z "$USER_ID" ]; then
 fi
 
 # Caso 1: Obtención exitosa (incluso si está vacía)
-run_get_test "Obtención exitosa" "http://localhost:8080/api/users/$USER_ID/reviews?page=1&rows=5" 200
+run_get_test "Obtención exitosa" "$APP_TEST_URL/api/users/$USER_ID/reviews?page=1&rows=5" 200
 
 # Caso 2: ID de usuario no es un número
-run_get_test "ID de usuario no es un número" "http://localhost:8080/api/users/abc/reviews?page=1&rows=5" 500
+run_get_test "ID de usuario no es un número" "$APP_TEST_URL/api/users/abc/reviews?page=1&rows=5" 500
 
 # Caso 3: Usuario no encontrado
-run_get_test "Usuario no encontrado" "http://localhost:8080/api/users/999999/reviews?page=1&rows=5" 404
+run_get_test "Usuario no encontrado" "$APP_TEST_URL/api/users/999999/reviews?page=1&rows=5" 404
 
 # Caso 4: Paginación inválida
-run_get_test "Paginación inválida" "http://localhost:8080/api/users/$USER_ID/reviews?page=abc&rows=5" 500
+run_get_test "Paginación inválida" "$APP_TEST_URL/api/users/$USER_ID/reviews?page=abc&rows=5" 500
 
 # Limpieza
 delete_user "$USER_ID"
