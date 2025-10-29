@@ -14,6 +14,7 @@ El proyecto está construido sobre un stack de tecnologías moderno, enfocado en
 * [SQL Compiler (sqlc)](https://sqlc.dev/)
 * [Atlas](https://atlasgo.io/)
 * [Air](https://github.com/cosmtrek/air)
+* [Swagger]()
 
 ---
 ## Estructura del Proyecto
@@ -26,40 +27,35 @@ El repositorio está organizado siguiendo convenciones estándar para facilitar 
 │   └── web/
 │       └── main.go
 ├── internal/                   # Código privado del proyecto (no importable por otros)
+│   ├── api/                    # Endpoints REST
 │   ├── config/                 # Lógica de configuración del entorno
-│   │   └── config.go
-│   ├── handler/                # Servidor HTTP, handlers y renderer de plantillas
-│   │   ├── application.go
-│   │   ├── handlers.go
-│   │   ├── renderer.go
-│   │   └── router.go
+│   ├── domain/                 # -- Nivel de Lógica de Negocio  --
 │   ├── middleware/             # Middleware del proyecto
-│   │   └── middleware.go       
-│   └── storage/                # Capa de Datos
-│       └── postgres/           # Lógica de la base de datos PostgreSQL
-│           ├── migrations/     # Archivos de migración generados por Atlas
-│           ├── queries/        # Consultas SQL para sqlc
-│           │   └── movies.sql
-│           ├── schema/         # Esquemas de la base de datos
-│           │   └── schema.sql
-│           ├── sqlc/           # Archivos generados por sqlc
-│           │   ├── db.go
-│           │   ├── models.go
-│           │   └── movies.go
-│           └── postgre.go
-├── web/                        # Archivos estáticos y plantillas HTML
-│   ├── static/
-│   │   └── style.css
-│   └── templates/
-│          ├── index.html
-│          ├── 404.html
-│          └── 500.html
+│   ├── service/                
+│   ├── storage/                # -- Nivel de Datos --
+│   │   └── postgres/           
+│   │       ├── migrations/     # Archivos de migración generados por Atlas
+│   │       ├── queries/        # Consultas SQL para sqlc
+│   │       ├── schema/         # Esquemas de la base de datos
+│   │       ├── sqlc/           # Archivos generados por sqlc
+│   │       └── postgre.go      # Manejo de conexión con base de datos PostgreSQL
+│   ├── test/                   # Scripts bash de testing
+│   │   ├── Dockerfile          # Imagen con curl, bash y jq
+│   │   ├── run_all_test.sh
+│   │   └── ...
+│   └── transport/              # Manejo de HTTP, handlers y renderer de plantillas
+├── web/                        
+│   ├── static/                 # Archivos estáticos
+│   │   ├── js/
+│   │   └── styles/
+│   └── templates/              # Plantillas HTML
 ├── .air.toml                   # Configuración para Air (hot-reload)
 ├── .dockerignore               # Archivos a ignorar por Docker
 ├── .gitignore                  # Archivos a ignorar por Git
-├── atlas.hcl                   # Configuración para Atlas (migraciones)
-├── docker-compose.yml          # Definición de servicios Docker (app y db)
 ├── Dockerfile                  # Instrucciones para construir la imagen de la app
+├── atlas.hcl                   # Configuración para Atlas (migraciones)
+├── docker-compose.test.yml     # Definición de servicios Docker para Testing (db_test, app_test y test_runner)
+├── docker-compose.yml          # Definición de servicios Docker (app y db)
 ├── go.mod                      # Dependencias del proyecto Go
 ├── sqlc.yml                    # Configuración para sqlc
 ├── .env                        # Variables de entorno
@@ -87,54 +83,61 @@ Antes de empezar, asegúrate de tener instaladas las siguientes herramientas en 
 Estas son herramientas de desarrollo que nos ayudan a automatizar tareas. Se instalan fácilmente con `go install`:
 
 * **sqlc** (Generador de código para la base de datos):
-    ```bash
-    go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
-    ```
+```bash
+go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+```
 * **Air** (Recarga en caliente para desarrollo local):
-    ```bash
-    go install github.com/air-verse/air@latest
-    ```
+```bash
+go install github.com/air-verse/air@latest
+```
 * **Atlas** (Herramienta de migraciones de base de datos):
-    ```bash
-    go install ariga.io/atlas/cmd/atlas@latest
-    ```
+```bash
+go install ariga.io/atlas/cmd/atlas@latest
+```
+* **Swagger** (Herramienta de documentación para la API REST):
+```bash
+go install github.com/swaggo/swag/cmd/swag@latest
+```
+**Nota:** configura el PATH para Go. Si utilizas Go y no tenes agregado su binario al PATH, necesitas exportarlo para que el sistema reconozca los comandos instalados con go install.
+```bash
+export PATH=$PATH:$HOME/go/bin
+```
 
 ### Instalación y Ejecución
 
 1.  **Clona el repositorio:**
-    ```bash
-    git clone https://github.com/Matias914/Web-Page.git
-    cd Web-Page
-    ```
+```bash
+git clone https://github.com/Matias914/Web-Page.git
+cd Web-Page
+```
 
 2.  **Crea tu archivo de entorno:**
     Copia el archivo de ejemplo `.env.example` a un nuevo archivo llamado `.env`. Este archivo es ignorado por Git y contiene tus secretos locales.
-    ```bash
-    cp .env.example .env
-    ```
-
-3. **Configura el PATH para Go:**
-    Si utilizas Go y no tenes agregado su binario al PATH, necesitas exportarlo para que el sistema reconozca los comandos instalados con go install.
-    ```bash
-    export PATH=$PATH:$HOME/go/bin
-    ```
-
-
-4.  **Inicia el entorno de producción:**
-    Este único comando utiliza el `Makefile` para orquestar todo: levanta la base de datos y la aplicación en contenedores docker.
-    ```bash
-    make prod
-    ```
-
-5.  **¡Listo!**
-    La aplicación estará corriendo y accesible en `http://localhost:8080`.    
-
-**Opcional:**
-       Para detener el entorno de producción, se utiliza el siguiente comando de make:
 ```bash
-   make prod-down
+cp .env.example .env
+```
+
+
+3.  **Inicia el entorno de producción:**
+    Este único comando utiliza el `Makefile` para orquestar todo: levanta la base de datos y la aplicación en contenedores docker.
+```bash
+make prod
+```
+
+4.  **¡Listo!**
+    La aplicación estará corriendo y accesible en `http://localhost:8080`.
+
+5. **Opcional:** Para detener el entorno de producción, se utiliza el siguiente comando de make:
+```bash
+make prod-down
 ```
 ---
+### Testing
+
+Este único comando utiliza el `Makefile` para ejecutar todos los tests: levanta la base de datos de prueba, una copia de la aplicación y la imagen con los tests. Todo el proceso está automatizado con Docker y no guarda información persistente. Pueden ejecutarse en simultáneo con la aplicación.
+```bash
+make test
+```
 ## Flujo de Trabajo
 
 ### Recarga en Caliente
@@ -143,10 +146,9 @@ Gracias a **Air**, cualquier cambio que guardes en un archivo `.go` o `.sql` dis
 ### Migraciones de Base de Datos
 La evolución del esquema de la base de datos se gestiona con **Atlas**. El flujo de trabajo es el siguiente:
 1.  **Modifica el esquema:** Realiza cambios en el archivo `internal/storage/postgres/schema/schema.sql`.
-2.  **Genera una nueva migración:** Ejecuta `make migrate-new NAME=nombre_descriptivo_del_cambio`.
+2.  **Genera una nueva migración:** Ejecuta `make migrate-diff NAME=nombre_descriptivo_del_cambio`.
 3.  **Aplica la migración:** Ejecuta `make migrate-up` para aplicar los cambios a tu base de datos.
 
----
 ## Comandos Disponibles
 
 El `Makefile` es el centro de control del proyecto. Ejecuta `make help` para ver una lista completa y actualizada de todos los comandos disponibles.
@@ -155,19 +157,34 @@ El `Makefile` es el centro de control del proyecto. Ejecuta `make help` para ver
 $ make help
 Uso: make [comando]
 
-Comandos disponibles:
-clean                Limpieza segura de artefactos de build locales.
-clean-docker         Limpieza completa del PROYECTO ACTUAL en Docker.
-db-down              Detiene los contenedores de la base de datos.
-db-up                Inicia el contenedor de la base de datos.
-dev                  Levanta la BD y el servidor para desarrollo.
-help                 Muestra esta ayuda.
-migrate-new          Crea un nuevo archivo de migración con Atlas.
-migrate-up           Aplica todas las migraciones pendientes con Atlas.
-server               Inicia el servidor con Air (hot-reload).
-sqlc                 Genera el código Go a partir de las consultas SQL.
-test                 Ejecuta las pruebas unitarias.
-tidy                 Limpia y verifica las dependencias de Go.
+Comandos Principales:
+  dev           - Inicia DB, aplica migraciones y corre el servidor en modo desarrollo.
+  prod          - Construye y levanta toda la aplicación (app y db) en Docker.
+  prod-down     - Detiene los contenedores de producción y remueve contenedores huérfanos.
+  server        - Corre el servidor con hot-reload (Air).
+
+Comandos de Base de Datos (Docker):
+  db-up         - Inicia el contenedor de la base de datos.
+  db-down       - Detiene el contenedor de la base de datos.
+  db-nuke       - Detiene y elimina los volúmenes de la base de datos.
+
+Comandos de Migraciones (Atlas):
+  migrate-diff  - Crea un nuevo archivo de migración (requiere NAME).
+  migrate-up    - Aplica todas las migraciones pendientes.
+  migrate-set   - Revierte a una migración anterior (requiere VERSION).
+
+Comandos de Desarrollo:
+  sqlc-gen      - Genera código Go desde las queries SQL.
+  build         - Compila el binario de la aplicación.
+  run           - Compila y ejecuta el binario.
+  test          - Ejecuta todas las pruebas usando un entorno de ejecución Docker.
+  tidy          - Ordena y verifica las dependencias de Go.
+  clean         - Elimina el directorio de binarios.
+  docker-clean  - Limpieza completa del proyecto actual en Docker.
+  docker-nuke   - Elimina contenedores y volúmenes de Docker no utilizados.
+
+Comandos para Documentación:
+  swagger       - Genera la documentación Swagger/OpenAPI.
 ```
 
 ---
