@@ -2,6 +2,7 @@
 
 Este proyecto es una aplicación web desarrollada como parte de la currícula de la **Universidad Nacional del Centro de la Provincia de Buenos Aires (UNICEN)**. La aplicación se centra en el dominio de la cinematografía, permitiendo a los usuarios interactuar con una base de datos de películas, géneros, actores y más.
 
+![Page.gif](docs/Page.gif)
 ---
 ## Tecnologías Utilizadas
 
@@ -124,8 +125,8 @@ cp .env.example .env
 make prod
 ```
 
-4.  **¡Listo!**
-    La aplicación estará corriendo y accesible en `http://localhost:8080`.
+4. **¡Listo!**
+   La aplicación estará corriendo y accesible en `http://localhost:8080`.
 
 5. **Opcional:** Para detener el entorno de producción, se utiliza el siguiente comando de make:
 ```bash
@@ -148,6 +149,12 @@ La evolución del esquema de la base de datos se gestiona con **Atlas**. El fluj
 1.  **Modifica el esquema:** Realiza cambios en el archivo `internal/storage/postgres/schema/schema.sql`.
 2.  **Genera una nueva migración:** Ejecuta `make migrate-diff NAME=nombre_descriptivo_del_cambio`.
 3.  **Aplica la migración:** Ejecuta `make migrate-up` para aplicar los cambios a tu base de datos.
+
+## Arquitectura de Base de Datos
+
+Se adjunta un modelo de la base de datos para que se tenga a disposición una referencia visual de la arquitectura.
+
+![db.png](docs/db.png)
 
 ## Comandos Disponibles
 
@@ -196,3 +203,5 @@ Comandos para Documentación:
 **Universidad Nacional del Centro de la Provincia de Buenos Aires (UNICEN)**
 Facultad de Ciencias Exactas - Tandil, Buenos Aires.
 Septiembre, 2025.
+
+![img.png](docs/banner.png)
