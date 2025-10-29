@@ -30,6 +30,7 @@ El repositorio está organizado siguiendo convenciones estándar para facilitar 
 ├── internal/                   # Código privado del proyecto (no importable por otros)
 │   ├── api/                    # Endpoints REST
 │   ├── config/                 # Lógica de configuración del entorno
+│   ├── docs/                   # Documentación del proyecto: Swagger + imágenes
 │   ├── domain/                 # -- Nivel de Lógica de Negocio  --
 │   ├── middleware/             # Middleware del proyecto
 │   ├── service/                
