@@ -2,7 +2,7 @@
 
 Este proyecto es una aplicación web desarrollada como parte de la currícula de la **Universidad Nacional del Centro de la Provincia de Buenos Aires (UNICEN)**. La aplicación se centra en el dominio de la cinematografía, permitiendo a los usuarios interactuar con una base de datos de películas, géneros, actores y más.
 
-![Page.gif](docs/Page.gif)
+![web-page.gif](docs/web-page.gif)
 ---
 ## Tecnologías Utilizadas
 
@@ -140,6 +140,13 @@ Este único comando utiliza el `Makefile` para ejecutar todos los tests: levanta
 ```bash
 make test
 ```
+
+*Aclaración: los test consisten en un conjunto de script en bash que utilizan curl y una variable de entorno APP_TEST_URL. Si se quisieran ejecutar de forma independiente (sin docker), deberían setear la variable con el caso correspondiente.*
+
+También proponemos usar la UI de swagger, accesible desde el endpoint `/swagger/`, para poder probar el funcionamiento de la API de una forma más interactiva.
+
+![swagger.gif](docs/swagger.gif)
+
 ## Flujo de Trabajo
 
 ### Recarga en Caliente
