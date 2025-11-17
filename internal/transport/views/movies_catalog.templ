@@ -1,0 +1,18 @@
+package views
+
+import "github.com/Matias914/Web-Page/internal/service"
+
+/*
+ * Template que se encarga de renderizar la lista de películas.
+ */
+templ MoviesCatalog(movies []service.Movie) {
+    if len(movies) == 0 {
+        <p>No hay películas en el catálogo.</p>
+    } else {
+        <div id="movies-list" class="catalog-grid">
+            for _, movie := range movies {
+                @MovieCard(movie)
+            }
+        </div>
+    }
+}

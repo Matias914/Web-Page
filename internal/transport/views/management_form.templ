@@ -1,0 +1,98 @@
+package views
+
+import "github.com/Matias914/Web-Page/internal/service"
+import "fmt"
+
+/*
+ *  Formulario de gestión y lista de entidades. Se renderiza tanto el formulario
+ *  para agregar nuevas entidades como la lista de las entidades existentes.
+ */
+templ ManagementFormAndList(config service.EntityConfig, items any) {
+
+    <form id="entity-form" class="entity-form" action={ templ.URL(config.ApiEndpoint) } method="POST">
+        <h3 id="form-title">Agregar { config.Singular }</h3>
+        <div id="form-fields" class="input-group">
+            // Renderizado dinámico de los campos del formulario según la configuración
+            @renderFields(config.Fields)
+        </div>
+        <button type="submit" id="form-submit-button" class="primary-button">Añadir { config.Singular }</button>
+    </form>
+
+    <div class="divider"></div>
+
+    <h3 id="list-title">Lista de { config.Plural }</h3>
+    <ul id="entity-list" class="entity-list">
+        // Renderizado dinámico de los elementos de la lista según la entidad
+        @ManagementListItems(config, items)
+    </ul>
+}
+
+/*
+ *  Función que se encarga de renderizar los campos del formulario
+ *  según la configuración proporcionada.
+ */
+templ renderFields(fields []service.FieldConfig) {
+    for _, field := range fields {
+        if field.Type == "textarea" {
+            <textarea
+                id={ fmt.Sprintf("field-%s", field.Name) }
+                name={ field.Name }
+                placeholder={ field.Placeholder }
+                if field.Required { required }
+            ></textarea>
+        } else {
+            <input
+                type={ field.Type }
+                id={ fmt.Sprintf("field-%s", field.Name) }
+                name={ field.Name }
+                placeholder={ field.Placeholder }
+                if field.Required { required }
+            />
+        }
+    }
+}
+
+
+/*
+ *  Función que se encarga de renderizar los elementos de la lista
+ *  según el tipo de entidad y los datos proporcionados. Por cada tipo
+ *  de entidad (películas, géneros, celebridades), se renderiza una
+ *  lista específica con los atributos correspondientes.
+ */
+templ ManagementListItems(config service.EntityConfig, items any) {
+    // Renderizado dinámico basado en el tipo de entidad
+	switch v := items.(type) {
+	case []service.Movie:
+		if len(v) == 0 {
+			<li>No hay { config.Plural } para mostrar.</li>
+		} else {
+			for _, item := range v {
+				<li data-id={fmt.Sprintf("%d", item.ID)}>
+					<span>{item.Title}</span>
+				</li>
+			}
+		}
+
+	case []service.Genre:
+		if len(v) == 0 {
+			<li>No hay { config.Plural } para mostrar.</li>
+		} else {
+			for _, item := range v {
+				<li data-id={fmt.Sprintf("%d", item.ID)}>
+					<span>{item.Name}</span>
+				</li>
+			}
+		}
+
+	case []service.Celebrity:
+		if len(v) == 0 {
+			<li>No hay { config.Plural } para mostrar.</li>
+		} else {
+			for _, item := range v {
+				<li data-id={fmt.Sprintf("%d", item.ID)}>
+					<span>{item.Name}</span>
+				</li>
+			}
+		}
+	}
+}

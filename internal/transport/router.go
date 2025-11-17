@@ -11,9 +11,21 @@ func (app *Application) GetRouter() *chi.Mux {
 	fsr := http.FileServer(http.Dir("./web/static/"))
 	mux.Handle("/static/*", http.StripPrefix("/static/", fsr))
 
-	mux.HandleFunc("/", app.handleHome)
-	mux.HandleFunc("/catalog", app.handleCatalog)
-	mux.HandleFunc("/management", app.handleManagement)
 	mux.NotFound(app.handleNotFound)
+	mux.MethodNotAllowed(app.handleNotFound)
+
+	mux.Get("/", app.handleIndexPage)
+	mux.Get("/catalog", app.handleCatalogPage)
+	mux.Get("/management", app.handleControlPage)
+
+	// Movies
+	mux.Post("/movies", app.handleMoviesCreate)
+
+	// Genres
+	mux.Post("/genres", app.handleGenresCreate)
+
+	// Celebrities
+	mux.Post("/celebrities", app.handleCelebritiesCreate)
+
 	return mux
 }

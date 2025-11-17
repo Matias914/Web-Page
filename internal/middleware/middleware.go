@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/Matias914/Web-Page/internal/transport"
 )
 
 // WithLogging es una función que retorna un Handler que mide el tiempo, el path y el
@@ -22,8 +24,11 @@ func WithRecovery(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {
-				log.Printf("el servidor entró en pánico %v", err)
-				http.Error(w, "error interno del servidor", http.StatusInternalServerError)
+				log.Printf("el servidor entró en pánico: %v", err)
+
+				// Crear una instancia de Application para usar su manejador de errores
+				app := &transport.Application{}
+				app.HandleServerError(w, r)
 			}
 		}()
 		next.ServeHTTP(w, r)

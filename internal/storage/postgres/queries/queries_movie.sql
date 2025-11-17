@@ -13,12 +13,12 @@ RETURNING *;
 -- noinspection SqlResolve
 -- name: UpdateMovie :one
 UPDATE movies
-SET title = $2,
-    synopsis = $3,
-    released_at = $4,
-    duration_minutes = $5,
-    poster_url = $6
-WHERE id = $1
+SET title = $1,
+    synopsis = $2,
+    released_at = $3,
+    duration_minutes = $4,
+    poster_url = $5
+WHERE id = $6
 RETURNING *;
 
 -- noinspection SqlResolve

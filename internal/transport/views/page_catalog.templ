@@ -1,0 +1,16 @@
+package views
+
+import "github.com/Matias914/Web-Page/internal/service"
+
+/*
+ * Template que renderiza la página del catálogo de películas.
+ * Llama a la plantilla MoviesList para mostrar la lista de películas.
+ */
+templ CatalogPage(movies []service.Movie) {
+    @Layout("Catalogo") {
+        <div class="main-container">
+            <h2 class="view-title">Catálogo de Películas</h2>
+            @MoviesCatalog(movies)
+        </div>
+    }
+}

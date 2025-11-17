@@ -3,30 +3,38 @@ package transport
 import (
 	"log"
 	"net/http"
+
+	"github.com/Matias914/Web-Page/internal/transport/views"
+	"github.com/a-h/templ"
+
+	"github.com/Matias914/Web-Page/internal/service"
 )
 
 type Application struct {
-	Renderer *Renderer
+	MovieService     *service.MovieService
+	GenreService     *service.GenreService
+	CelebrityService *service.CelebrityService
+
+	ValidationService *service.ValidationService
 }
 
-func (app *Application) handleResponse(w http.ResponseWriter, status int, name string, data interface{}) error {
-	buf, err := app.Renderer.renderToBuffer(name, data)
-	if err != nil {
-		return err
-	}
+func (app *Application) HandleServerError(w http.ResponseWriter, r *http.Request) {
+	component := views.Error500Page()
+	app.handleTemplRender(w, r, http.StatusInternalServerError, component)
+}
+
+func (app *Application) handleNotFound(w http.ResponseWriter, r *http.Request) {
+	component := views.Error404Page()
+	app.handleTemplRender(w, r, http.StatusNotFound, component)
+}
+
+// handleTemplRender es un método de conveniencia para renderizar componentes Templ.
+// Se encarga de establecer las cabeceras HTTP necesarias y el código de estado.
+func (app *Application) handleTemplRender(w http.ResponseWriter, r *http.Request, status int, component templ.Component) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(status)
-	// Error Irreversible porque solo falla si hubo una desconexion
-	// Además, protocolo HTTP prohibe escribir el contenido antes de la cabecera
-	if _, err := buf.WriteTo(w); err != nil {
-		log.Printf("(handleResponse) no se pudo escribir el contenido del buffer en la respuesta: %v", err)
-	}
-	return nil
-}
 
-func (app *Application) handleServerError(w http.ResponseWriter, err error) {
-	log.Printf("(handleServerError) error interno del servidor: %v", err)
-	if err := app.handleResponse(w, http.StatusInternalServerError, "500", nil); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+	if err := component.Render(r.Context(), w); err != nil {
+		log.Printf("(handleTemplRender) no se pudo escribir el componente en la respuesta: %v", err)
 	}
 }

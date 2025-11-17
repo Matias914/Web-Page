@@ -132,12 +132,12 @@ func (service *MovieService) GetMovie(ctx context.Context, id int) (Movie, error
 // restricciones de integridad u ocurrió un error inesperado.
 func (service *MovieService) UpdateMovie(ctx context.Context, id int, movie MovieData) (Movie, error) {
 	result, err := service.Queries.UpdateMovie(ctx, sqlc.UpdateMovieParams{
-		ID:              int64(id),
 		Title:           movie.Title,
 		Synopsis:        movie.Synopsis,
-		DurationMinutes: int32(movie.DurationMinutes),
 		ReleasedAt:      movie.ReleasedAt,
+		DurationMinutes: int32(movie.DurationMinutes),
 		PosterUrl:       service.adaptNullablePoster(movie.PosterUrl),
+		ID:              int64(id),
 	})
 	var pgErr *pgconn.PgError
 	if errors.As(err, &pgErr) {

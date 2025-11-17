@@ -9,7 +9,6 @@ import (
 	_ "github.com/Matias914/Web-Page/docs"
 	httpSwagger "github.com/swaggo/http-swagger"
 
-	"github.com/Matias914/Web-Page/internal/api"
 	"github.com/Matias914/Web-Page/internal/config"
 	"github.com/Matias914/Web-Page/internal/middleware"
 	"github.com/Matias914/Web-Page/internal/service"
@@ -63,41 +62,21 @@ func main() {
 	if err != nil {
 		log.Fatalf("error: no se pudo crear el servicio de validacion: %v", err)
 	}
-	categoryService := service.CategoryService{Queries: sqlc.New(db)}
-	celebrityService := service.CelebrityService{Queries: sqlc.New(db)}
-	genreService := service.GenreService{Queries: sqlc.New(db)}
+
 	movieService := service.MovieService{Queries: sqlc.New(db)}
-	ratingService := service.RatingService{Queries: sqlc.New(db)}
-	reviewService := service.ReviewService{Queries: sqlc.New(db)}
-	roleService := service.RoleService{Queries: sqlc.New(db)}
-	userService := service.UserService{Queries: sqlc.New(db)}
-
-	/* ----------------------------------------------------------------------------- */
-	/*						      	     API REST   	       	  			         */
-	/* ----------------------------------------------------------------------------- */
-
-	apiRest := api.API{
-		ValidationService: &validationService,
-		CategoryService:   &categoryService,
-		CelebrityService:  &celebrityService,
-		GenreService:      &genreService,
-		MovieService:      &movieService,
-		RatingService:     &ratingService,
-		ReviewService:     &reviewService,
-		RoleService:       &roleService,
-		UserService:       &userService,
-	}
+	genreService := service.GenreService{Queries: sqlc.New(db)}
+	celebrityService := service.CelebrityService{Queries: sqlc.New(db)}
 
 	/* ----------------------------------------------------------------------------- */
 	/*						      	   APPLICATION  	      				         */
 	/* ----------------------------------------------------------------------------- */
 
-	renderer, err := transport.NewRenderer("./web/templates/")
-	if err != nil {
-		log.Fatalf("no pudo crearse una instancia de Renderer: %v", err)
-	}
 	app := &transport.Application{
-		Renderer: renderer,
+		MovieService:     &movieService,
+		GenreService:     &genreService,
+		CelebrityService: &celebrityService,
+
+		ValidationService: &validationService,
 	}
 
 	/* ----------------------------------------------------------------------------- */
@@ -106,7 +85,6 @@ func main() {
 
 	mainRouter := chi.NewRouter()
 	mainRouter.Mount("/", app.GetRouter())
-	mainRouter.Mount("/api", apiRest.GetRouter())
 	mainRouter.Get("/swagger/*", httpSwagger.WrapHandler)
 
 	server := &http.Server{

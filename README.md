@@ -28,7 +28,6 @@ El repositorio está organizado siguiendo convenciones estándar para facilitar 
 │   └── web/
 │       └── main.go
 ├── internal/                   # Código privado del proyecto (no importable por otros)
-│   ├── api/                    # Endpoints REST
 │   ├── config/                 # Lógica de configuración del entorno
 │   ├── docs/                   # Documentación del proyecto: Swagger + imágenes
 │   ├── domain/                 # -- Nivel de Lógica de Negocio  --
@@ -41,16 +40,11 @@ El repositorio está organizado siguiendo convenciones estándar para facilitar 
 │   │       ├── schema/         # Esquemas de la base de datos
 │   │       ├── sqlc/           # Archivos generados por sqlc
 │   │       └── postgre.go      # Manejo de conexión con base de datos PostgreSQL
-│   ├── test/                   # Scripts bash de testing
-│   │   ├── Dockerfile          # Imagen con curl, bash y jq
-│   │   ├── run_all_test.sh
-│   │   └── ...
-│   └── transport/              # Manejo de HTTP, handlers y renderer de plantillas
+│   └── transport/              # Manejo de HTTP, handlers
+│       └── views/              # Manejo de plantillas
 ├── web/                        
-│   ├── static/                 # Archivos estáticos
-│   │   ├── js/
-│   │   └── styles/
-│   └── templates/              # Plantillas HTML
+│   └── static/                 # Archivos estáticos
+│       └── styles/
 ├── .air.toml                   # Configuración para Air (hot-reload)
 ├── .dockerignore               # Archivos a ignorar por Docker
 ├── .gitignore                  # Archivos a ignorar por Git
@@ -134,16 +128,9 @@ make prod
 make prod-down
 ```
 ---
-### Testing
+### Documentación 
 
-Este único comando utiliza el `Makefile` para ejecutar todos los tests: levanta la base de datos de prueba, una copia de la aplicación y la imagen con los tests. Todo el proceso está automatizado con Docker y no guarda información persistente. Pueden ejecutarse en simultáneo con la aplicación.
-```bash
-make test
-```
-
-*Aclaración: los test consisten en un conjunto de script en bash que utilizan curl y una variable de entorno APP_TEST_URL. Si se quisieran ejecutar de forma independiente (sin docker), deberían setear la variable con el caso correspondiente.*
-
-También proponemos usar la UI de swagger, accesible desde el endpoint `/swagger/`, para poder probar el funcionamiento de la API de una forma más interactiva.
+Proponemos usar la UI de swagger, accesible desde el endpoint `/swagger/`, para poder ver el funcionamiento de la API de una forma más interactiva.
 
 ![swagger.gif](docs/swagger.gif)
 

@@ -1,0 +1,33 @@
+package views
+
+import "github.com/Matias914/Web-Page/internal/service"
+
+
+/*
+ * ControlPage muestra la página de gestión de entidades (películas, géneros, celebridades).
+ * Recibe la configuración de la entidad actual y los ítems correspondientes para
+ * renderizar el formulario y la lista de gestión. Utiliza la plantilla ManagementFormAndList
+ * para mostrar el contenido de gestión.
+ */
+templ ControlPage(config service.EntityConfig, items any) {
+    @Layout("Control") {
+        <div id="notification-banner" class="notification"></div>
+        <div class="card management-card">
+            <h2>Gestión de Entidades</h2>
+            <div id="entity-selector" class="entity-selector">
+                <a href="/management?entity=movies" role="button" class={ "entity-btn", templ.KV("active", config.Singular == "Película") }>
+                    Películas
+                </a>
+                <a href="/management?entity=genres" role="button" class={ "entity-btn", templ.KV("active", config.Singular == "Género") }>
+                    Géneros
+                </a>
+                <a href="/management?entity=celebrities" role="button" class={ "entity-btn", templ.KV("active", config.Singular == "Celebridad") }>
+                    Celebridades
+                </a>
+            </div>
+            <div id="management-content">
+                @ManagementFormAndList(config, items)
+            </div>
+        </div>
+    }
+}

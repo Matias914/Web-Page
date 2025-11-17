@@ -13,6 +13,7 @@ DOCKERC 	 ?= docker compose
 DOCKERC_TEST ?= docker compose -f docker-compose.tests.yml -p proyecto_test
 ATLAS   	 ?= atlas
 SWAG    	 ?= swag
+TEMPL   	 ?= templ
 
 # Variables del Proyecto
 APP_NAME := App Web en Go
@@ -54,6 +55,7 @@ help:
 	@echo ""
 	@echo "Comandos de Desarrollo:"
 	@echo "  sqlc-gen      - Genera código Go desde las queries SQL."
+	@echo "  templ-gen     - Genera componentes Go desde archivos .templ."
 	@echo "  build         - Compila el binario de la aplicación."
 	@echo "  run           - Compila y ejecuta el binario."
 	@echo "  test          - Ejecuta todas las pruebas usando un entorno de ejecución Docker."
@@ -71,7 +73,7 @@ help:
 
 .PHONY: dev prod prod-down server
 
-dev: db-up swagger sqlc-gen migrate-up server
+dev: db-up swagger sqlc-gen templ-gen migrate-up server
 
 prod:
 	@echo "🐋  Construyendo y levantando la aplicación en modo producción..."
@@ -125,11 +127,15 @@ docker-nuke:
 # MIGRACIONES (ATLAS & SQLC)
 # ==============================================================================
 
-.PHONY: sqlc-gen migrate-diff migrate-up migrate-down
+.PHONY: sqlc-gen templ-gen migrate-diff migrate-up migrate-down
 
 sqlc-gen:
 	@echo "🧬  Generando código Go con sqlc..."
 	@$(SQLC) generate
+
+templ-gen:
+	@echo "🎨 Generando componentes Go con templ..."
+	@$(TEMPL) generate
 
 migrate-diff:
 	@if [ -z "$(NAME)" ]; then echo "Error: La variable NAME es requerida. Ej: make migrate-diff NAME=create_users_table"; exit 1; fi
@@ -155,7 +161,7 @@ migrate-set:
 
 .PHONY: build run test tidy clean
 
-build:
+build: sqlc-gen templ-gen
 	@echo "🛠️  Compilando el binario en $(BIN)..."
 	@$(GO) build -o $(BIN) ./cmd/web
 

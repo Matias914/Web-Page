@@ -1,0 +1,17 @@
+package views
+
+import "github.com/Matias914/Web-Page/internal/service"
+import "fmt"
+
+/*
+ * Template que se encarga de renderizar una tarjeta individual de película.
+ */
+templ MovieCard(movie service.Movie) {
+    <div class="movie-card" data-id={ fmt.Sprintf("%d", movie.ID) }>
+        <img src={ movie.PosterUrl } alt={ fmt.Sprintf("Póster de %s", movie.Title) }/>
+        <div class="movie-card-content">
+            <h3>{ movie.Title }</h3>
+            <p class="">{ movie.Synopsis }</p>
+        </div>
+    </div>
+}

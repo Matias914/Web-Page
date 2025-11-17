@@ -206,3 +206,64 @@ type UpdatableUserData struct {
 	Username string `json:"username" example:"thescrummaster1" validate:"required,max=255"`
 	Mail     string `json:"mail" example:"smokeseller@gmail.com" validate:"required,max=255"`
 }
+
+/* ----------------------------------------------------------------------------- */
+/*						       	     FORMS  	        				         */
+/* ----------------------------------------------------------------------------- */
+
+// FieldConfig Define la estructura básica de un campo dentro de un formulario para una
+// entidad específica.
+type FieldConfig struct {
+	Name        string
+	Placeholder string
+	Type        string
+	Required    bool
+}
+
+// EntityConfig Define la configuración completa para una entidad (como Películas, Géneros,
+// o Celebridades). Esta configuración es utilizada por la capa de transporte
+// (handlers y templates) para generar formularios, tablas y rutas de API de forma genérica.
+type EntityConfig struct {
+	Plural       string
+	Singular     string
+	ApiEndpoint  string
+	DisplayField string
+	Fields       []FieldConfig // Lista de campos (inputs) que componen el formulario de la entidad.
+}
+
+// EntityConfigs Contiene la configuración completa para todas las entidades administrables
+// de la aplicación. La clave del mapa es el nombre interno de la entidad (ej: "movies").
+var EntityConfigs = map[string]EntityConfig{
+	"movies": {
+		Plural:       "Películas",
+		Singular:     "Película",
+		ApiEndpoint:  "/movies",
+		DisplayField: "title",
+		Fields: []FieldConfig{
+			{Name: "title", Placeholder: "Título", Type: "text", Required: true},
+			{Name: "synopsis", Placeholder: "Sinopsis", Type: "textarea", Required: true},
+			{Name: "released_at", Placeholder: "Fecha de Lanzamiento", Type: "date", Required: true},
+			{Name: "duration_minutes", Placeholder: "Duración (minutos)", Type: "number", Required: true},
+			{Name: "poster_url", Placeholder: "URL del Póster", Type: "text", Required: false},
+		},
+	},
+	"genres": {
+		Plural:       "Géneros",
+		Singular:     "Género",
+		ApiEndpoint:  "/genres",
+		DisplayField: "name",
+		Fields: []FieldConfig{
+			{Name: "name", Placeholder: "Nombre del Género", Type: "text", Required: true},
+		},
+	},
+	"celebrities": {
+		Plural:       "Celebridades",
+		Singular:     "Celebridad",
+		ApiEndpoint:  "/celebrities",
+		DisplayField: "name",
+		Fields: []FieldConfig{
+			{Name: "name", Placeholder: "Nombre de la Celebridad", Type: "text", Required: true},
+			{Name: "birth_date", Placeholder: "Fecha de Nacimiento", Type: "date", Required: true},
+		},
+	},
+}

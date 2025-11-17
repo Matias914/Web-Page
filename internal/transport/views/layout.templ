@@ -1,0 +1,39 @@
+package views
+
+
+/*
+ *  Layout es el componente base que envuelve todas las páginas del sitio web.
+ *  Recibe un título y un conjunto de componentes hijos que se insertan en el main.
+ */
+templ Layout(title string, children ...templ.Component) {
+	<!DOCTYPE html>
+	<html lang="es" data-theme="dark">
+		<head>
+            <meta charset="UTF-8">
+            <title>{ title }</title>
+			<link rel="stylesheet" href="/static/styles/index.css?v=1.0"/>
+			<link rel="stylesheet" href="/static/styles/error.css?v=1.0"/>
+			<link rel="stylesheet" href="/static/styles/catalog.css?v=1.0"/>
+			<link rel="stylesheet" href="/static/styles/management.css?v=1.0"/>
+		</head>
+		<body>
+			<div id="notification-banner" class="notification"></div>
+			<header class="navbar">
+				<div class="container">
+					<h1 class="logo">🎬 WebPage</h1>
+					<nav>
+						<a href="/">Inicio</a>
+						<a href="/catalog">Películas</a>
+						<a href="/management">Control</a>
+					</nav>
+				</div>
+			</header>
+			<main class="main-container">
+				{children...}
+			</main>
+			<footer class="footer">
+				© 2025 <strong>WebPage</strong> — Proyecto académico de Leon Nicolas y Ortiz Matías
+			</footer>
+		</body>
+	</html>
+}
