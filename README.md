@@ -28,7 +28,7 @@ El repositorio está organizado siguiendo convenciones estándar para facilitar 
 │       └── main.go
 ├── internal/                   # Código privado del proyecto (no importable por otros)
 │   ├── config/                 # Lógica de configuración del entorno
-│   ├── docs/                   # Documentación del proyecto: Swagger + imágenes
+│   ├── docs/                   # Documentación del proyecto: Imágenes y GIFs
 │   ├── domain/                 # -- Nivel de Lógica de Negocio  --
 │   ├── middleware/             # Middleware del proyecto
 │   ├── service/                
