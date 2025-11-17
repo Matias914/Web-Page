@@ -15,7 +15,6 @@ El proyecto está construido sobre un stack de tecnologías moderno, enfocado en
 * [SQL Compiler (sqlc)](https://sqlc.dev/)
 * [Atlas](https://atlasgo.io/)
 * [Air](https://github.com/cosmtrek/air)
-* [Swagger]()
 
 ---
 ## Estructura del Proyecto
@@ -50,7 +49,6 @@ El repositorio está organizado siguiendo convenciones estándar para facilitar 
 ├── .gitignore                  # Archivos a ignorar por Git
 ├── Dockerfile                  # Instrucciones para construir la imagen de la app
 ├── atlas.hcl                   # Configuración para Atlas (migraciones)
-├── docker-compose.test.yml     # Definición de servicios Docker para Testing (db_test, app_test y test_runner)
 ├── docker-compose.yml          # Definición de servicios Docker (app y db)
 ├── go.mod                      # Dependencias del proyecto Go
 ├── sqlc.yml                    # Configuración para sqlc
@@ -128,11 +126,6 @@ make prod
 make prod-down
 ```
 ---
-### Documentación 
-
-Proponemos usar la UI de swagger, accesible desde el endpoint `/swagger/`, para poder ver el funcionamiento de la API de una forma más interactiva.
-
-![swagger.gif](docs/swagger.gif)
 
 ## Flujo de Trabajo
 
@@ -184,9 +177,6 @@ Comandos de Desarrollo:
   clean         - Elimina el directorio de binarios.
   docker-clean  - Limpieza completa del proyecto actual en Docker.
   docker-nuke   - Elimina contenedores y volúmenes de Docker no utilizados.
-
-Comandos para Documentación:
-  swagger       - Genera la documentación Swagger/OpenAPI.
 ```
 
 ---

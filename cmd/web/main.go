@@ -6,9 +6,6 @@ import (
 	"net/http"
 	"time"
 
-	_ "github.com/Matias914/Web-Page/docs"
-	httpSwagger "github.com/swaggo/http-swagger"
-
 	"github.com/Matias914/Web-Page/internal/config"
 	"github.com/Matias914/Web-Page/internal/middleware"
 	"github.com/Matias914/Web-Page/internal/service"
@@ -85,7 +82,6 @@ func main() {
 
 	mainRouter := chi.NewRouter()
 	mainRouter.Mount("/", app.GetRouter())
-	mainRouter.Get("/swagger/*", httpSwagger.WrapHandler)
 
 	server := &http.Server{
 		Addr:         ":" + cfg.AppPort,

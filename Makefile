@@ -10,9 +10,7 @@ AIR     	 ?= air
 SQLC    	 ?= sqlc
 DOCKER  	 ?= docker
 DOCKERC 	 ?= docker compose
-DOCKERC_TEST ?= docker compose -f docker-compose.tests.yml -p proyecto_test
 ATLAS   	 ?= atlas
-SWAG    	 ?= swag
 TEMPL   	 ?= templ
 
 # Variables del Proyecto
@@ -58,14 +56,11 @@ help:
 	@echo "  templ-gen     - Genera componentes Go desde archivos .templ."
 	@echo "  build         - Compila el binario de la aplicación."
 	@echo "  run           - Compila y ejecuta el binario."
-	@echo "  test          - Ejecuta todas las pruebas usando un entorno de ejecución Docker."
 	@echo "  tidy          - Ordena y verifica las dependencias de Go."
 	@echo "  clean         - Elimina el directorio de binarios '$(BIN_DIR)'."
 	@echo "  docker-clean  - Limpieza completa del proyecto actual en Docker."
 	@echo "  docker-nuke   - Elimina contenedores y volúmenes de Docker no utilizados."
 	@echo ""
-	@echo "Comandos para Documentación:"
-	@echo "  swagger       - Genera la documentación Swagger/OpenAPI."
 
 # ==============================================================================
 # CICLO DE VIDA DE DESARROLLO
@@ -159,7 +154,7 @@ migrate-set:
 # COMPILACIÓN Y PRUEBAS
 # ==============================================================================
 
-.PHONY: build run test tidy clean
+.PHONY: build run tidy clean
 
 build: sqlc-gen templ-gen
 	@echo "🛠️  Compilando el binario en $(BIN)..."
@@ -169,15 +164,6 @@ run: build
 	@echo "▶️  Ejecutando el binario..."
 	@./$(BIN)
 
-test:
-	@echo "🧪  Ejecutando pruebas..."
-	@echo "🐋  Construyendo y levantando entorno (DB y API) en segundo plano..."
-	@$(DOCKERC_TEST) up -d --build app_test db_test
-	@echo "🏃  Corriendo tests (mostrando solo logs del runner)..."
-	@$(DOCKERC_TEST) run --rm test-runner
-	@echo "🧼  Limpiando entorno de pruebas..."
-	@$(DOCKERC_TEST) down -v
-
 tidy:
 	@echo "📦  Ordenando dependencias de Go..."
 	@$(GO) mod tidy
@@ -186,13 +172,3 @@ tidy:
 clean:
 	@echo "🗑️  Limpiando el directorio $(BIN_DIR)..."
 	@rm -rf $(BIN_DIR)
-
-# ==============================================================================
-# DOCUMENTACION
-# ==============================================================================
-
-.PHONY: swagger
-
-swagger:
-	@echo "==> Generando documentación Swagger..."
-	@$(SWAG) init -g cmd/web/main.go
