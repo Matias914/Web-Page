@@ -10,19 +10,21 @@ import (
 	"github.com/Matias914/Web-Page/internal/service"
 )
 
+// Application encapsula los servicios y manejadores HTTP de la aplicación.
 type Application struct {
-	MovieService     *service.MovieService
-	GenreService     *service.GenreService
-	CelebrityService *service.CelebrityService
-
+	MovieService      *service.MovieService
+	GenreService      *service.GenreService
+	CelebrityService  *service.CelebrityService
 	ValidationService *service.ValidationService
 }
 
+// HandleServerError gestiona las solicitudes HTTP que resultan en un error del servidor (500).
 func (app *Application) HandleServerError(w http.ResponseWriter, r *http.Request) {
 	component := views.Error500Page()
 	app.handleTemplRender(w, r, http.StatusInternalServerError, component)
 }
 
+// handleNotFound gestiona las solicitudes HTTP para rutas no encontradas (404).
 func (app *Application) handleNotFound(w http.ResponseWriter, r *http.Request) {
 	component := views.Error404Page()
 	app.handleTemplRender(w, r, http.StatusNotFound, component)

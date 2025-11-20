@@ -212,7 +212,7 @@ type UpdatableUserData struct {
 /* ----------------------------------------------------------------------------- */
 
 // FieldConfig Define la estructura básica de un campo dentro de un formulario para una
-// entidad específica.
+// entidad específica. Se utiliza para generar formularios de manera dinámica.
 type FieldConfig struct {
 	Name        string
 	Placeholder string
@@ -221,8 +221,7 @@ type FieldConfig struct {
 }
 
 // EntityConfig Define la configuración completa para una entidad (como Películas, Géneros,
-// o Celebridades). Esta configuración es utilizada por la capa de transporte
-// (handlers y templates) para generar formularios, tablas y rutas de API de forma genérica.
+// o Celebridades). Incluye metadatos para la generación de formularios, tablas y rutas.
 type EntityConfig struct {
 	Plural       string
 	Singular     string
@@ -231,8 +230,10 @@ type EntityConfig struct {
 	Fields       []FieldConfig // Lista de campos (inputs) que componen el formulario de la entidad.
 }
 
-// EntityConfigs Contiene la configuración completa para todas las entidades administrables
+// EntityConfigs Contiene la configuración completa para las entidades administrables
 // de la aplicación. La clave del mapa es el nombre interno de la entidad (ej: "movies").
+// Esta configuración es utilizada por la capa de transporte para generar formularios,
+// tablas y rutas de API de forma genérica.
 var EntityConfigs = map[string]EntityConfig{
 	"movies": {
 		Plural:       "Películas",

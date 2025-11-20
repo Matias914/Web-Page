@@ -42,6 +42,7 @@ func (app *Application) handleCatalogPage(w http.ResponseWriter, r *http.Request
 // handleControlPage gestiona la solicitud HTTP para el panel de administración ("/management").
 // Determina la entidad (movies, genres, celebrities) a gestionar y renderiza la página completa.
 func (app *Application) handleControlPage(w http.ResponseWriter, r *http.Request) {
+	// Se obtiene el nombre de la entidad desde los parámetros de la URL.
 	entityName := r.URL.Query().Get("entity")
 	if entityName == "" {
 		entityName = "movies"
@@ -56,13 +57,14 @@ func (app *Application) handleControlPage(w http.ResponseWriter, r *http.Request
 		rows = 10
 	}
 
+	// Se obtiene la configuración de la entidad desde el mapa de configuraciones.
 	config, exists := service.EntityConfigs[entityName]
 	if !exists {
 		http.Error(w, "Entity not found", http.StatusNotFound)
 		return
 	}
 
-	// Se llama al servicio correspondiente basado en 'entityName'.
+	// Se llama al servicio correspondiente basado en el nombre de la entidad para obtener la lista de ítems.
 	var items any
 	var err error
 	switch entityName {
