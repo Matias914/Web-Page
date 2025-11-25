@@ -88,9 +88,9 @@ go install github.com/air-verse/air@latest
 ```bash
 go install ariga.io/atlas/cmd/atlas@latest
 ```
-* **Swagger** (Herramienta de documentación para la API REST):
+* **Templ** (Herramienta de generación de código a partir de plantillas):
 ```bash
-go install github.com/swaggo/swag/cmd/swag@latest
+go install github.com/go-templ/templ/cmd/templ@latest
 ```
 **Nota:** configura el PATH para Go. Si utilizas Go y no tenes agregado su binario al PATH, necesitas exportarlo para que el sistema reconozca los comandos instalados con go install.
 ```bash
@@ -170,9 +170,9 @@ Comandos de Migraciones (Atlas):
 
 Comandos de Desarrollo:
   sqlc-gen      - Genera código Go desde las queries SQL.
+  templ-gen     - Genera código desde plantillas Templ.
   build         - Compila el binario de la aplicación.
   run           - Compila y ejecuta el binario.
-  test          - Ejecuta todas las pruebas usando un entorno de ejecución Docker.
   tidy          - Ordena y verifica las dependencias de Go.
   clean         - Elimina el directorio de binarios.
   docker-clean  - Limpieza completa del proyecto actual en Docker.

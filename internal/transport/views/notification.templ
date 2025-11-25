@@ -1,0 +1,25 @@
+package views
+
+
+/*
+ * Template que se utiliza para mostrar una notificación en la parte superior de la página.
+ * La notificación puede ser de éxito o de error, dependiendo del valor de isError.
+ * La notificación se oculta automáticamente después de 3 segundos utilizando HTMX.
+ */
+templ Notification(message string, isError bool) {
+	<div
+		id="notification-banner"
+		class={ "notification", "show", templ.KV("error", isError) }
+		hx-swap-oob="true"
+		hx-trigger="load delay:3s"
+		hx-get="/clear-notification"
+		hx-swap="outerHTML"
+	>
+		{ message }
+	</div>
+}
+
+// ClearNotification returns an empty div to clear the notification.
+templ ClearNotification() {
+	<div id="notification-banner" class="notification"></div>
+}

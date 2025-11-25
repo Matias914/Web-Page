@@ -65,6 +65,28 @@ input:focus {
     transform: translateY(0);
 }
 
+.secondary-button {
+    background: linear-gradient(135deg, #f43f24, #cd3326);
+    border: none;
+    border-radius: 8px;
+    padding: 0.8rem 1.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    color: #1e1e2f;
+    transition: all 0.3s;
+    margin-top: 1rem;
+    box-shadow: 0 4px 15px rgba(150, 28, 13, 0.3);
+}
+
+.secondary-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(191, 25, 25, 0.5);
+}
+
+.secondary-button:active {
+    transform: translateY(0);
+}
+
 /* ENTITY LIST */
 .divider {
     height: 1px;
@@ -129,6 +151,7 @@ input:focus {
     padding: 0.6rem 1rem;
     cursor: pointer;
     font-weight: 500;
+    text-decoration: none;
     color: #ccc;
     transition: all 0.3s ease;
 }

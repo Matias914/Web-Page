@@ -9,7 +9,7 @@ import "fmt"
  */
 templ ManagementFormAndList(config service.EntityConfig, items any) {
 
-    <form id="entity-form" class="entity-form" action={ templ.URL(config.ApiEndpoint) } method="POST">
+    <form id="entity-form" class="entity-form" hx-post={ config.ApiEndpoint } hx-target="#management-content" hx-swap="innerHTML">
         <h3 id="form-title">Agregar { config.Singular }</h3>
         <div id="form-fields" class="input-group">
             // Renderizado dinámico de los campos del formulario según la configuración
@@ -57,7 +57,8 @@ templ renderFields(fields []service.FieldConfig) {
  *  Función que se encarga de renderizar los elementos de la lista
  *  según el tipo de entidad y los datos proporcionados. Por cada tipo
  *  de entidad (películas, géneros, celebridades), se renderiza una
- *  lista específica con los atributos correspondientes.
+ *  lista específica con los atributos correspondientes. Además también
+ *
  */
 templ ManagementListItems(config service.EntityConfig, items any) {
     // Renderizado dinámico basado en el tipo de entidad
@@ -66,9 +67,18 @@ templ ManagementListItems(config service.EntityConfig, items any) {
 		if len(v) == 0 {
 			<li>No hay { config.Plural } para mostrar.</li>
 		} else {
-			for _, item := range v {
+            for _, item := range v {
 				<li data-id={fmt.Sprintf("%d", item.ID)}>
 					<span>{item.Title}</span>
+					<div>
+						<button class="edit-btn"
+								hx-get={ fmt.Sprintf("%s/%d/edit", config.ApiEndpoint, item.ID) }
+								hx-target="#entity-form"
+								hx-swap="outerHTML">
+							Editar
+						</button>
+						<button class="delete-btn" hx-delete={ fmt.Sprintf("%s/%d", config.ApiEndpoint, item.ID)} hx-target="closest li" hx-swap="outerHTML">Eliminar</button>
+					</div>
 				</li>
 			}
 		}
@@ -80,6 +90,15 @@ templ ManagementListItems(config service.EntityConfig, items any) {
 			for _, item := range v {
 				<li data-id={fmt.Sprintf("%d", item.ID)}>
 					<span>{item.Name}</span>
+					<div>
+						<button class="edit-btn"
+								hx-get={ fmt.Sprintf("%s/%d/edit", config.ApiEndpoint, item.ID) }
+								hx-target="#entity-form"
+								hx-swap="outerHTML">
+							Editar
+						</button>
+						<button class="delete-btn" hx-delete={ fmt.Sprintf("%s/%d", config.ApiEndpoint, item.ID)} hx-target="closest li" hx-swap="outerHTML">Eliminar</button>
+					</div>
 				</li>
 			}
 		}
@@ -91,6 +110,15 @@ templ ManagementListItems(config service.EntityConfig, items any) {
 			for _, item := range v {
 				<li data-id={fmt.Sprintf("%d", item.ID)}>
 					<span>{item.Name}</span>
+					<div>
+						<button class="edit-btn"
+								hx-get={ fmt.Sprintf("%s/%d/edit", config.ApiEndpoint, item.ID) }
+								hx-target="#entity-form"
+								hx-swap="outerHTML">
+							Editar
+						</button>
+						<button class="delete-btn" hx-delete={ fmt.Sprintf("%s/%d", config.ApiEndpoint, item.ID)} hx-target="closest li" hx-swap="outerHTML">Eliminar</button>
+					</div>
 				</li>
 			}
 		}

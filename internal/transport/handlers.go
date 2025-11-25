@@ -80,6 +80,17 @@ func (app *Application) handleControlPage(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	// Si es una solicitud de HTMX, se renderiza el contenido parcial.
+	if r.Header.Get("HX-Request") == "true" {
+		component := views.ManagementFormAndList(config, items)
+		if err := component.Render(r.Context(), w); err != nil {
+			log.Printf("error rendering management form and list: %v", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// Si no es una solicitud HTMX, se renderiza la página completa.
 	component := views.ControlPage(config, items)
 	if err := component.Render(r.Context(), w); err != nil {
 		log.Printf("error rendering control page: %v", err)

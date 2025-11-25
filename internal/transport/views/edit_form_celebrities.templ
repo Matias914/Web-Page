@@ -1,0 +1,21 @@
+package views
+
+import (
+	"fmt"
+	"github.com/Matias914/Web-Page/internal/service"
+)
+
+/*
+ * Template que se encarga de renderizar el formulario de edición de celebridades.
+ */
+templ CelebrityEditForm(config service.EntityConfig, celebrity service.Celebrity) {
+	<form id="entity-form" class="entity-form" hx-put={ fmt.Sprintf("/celebrities/%d", celebrity.ID) } hx-target="#management-content" hx-swap="innerHTML">
+		<h3 id="form-title">Editando { config.Singular }</h3>
+		<div id="form-fields" class="input-group">
+			<input type="text" id="field-name" name="name" placeholder="Nombre de la Celebridad" required value={ celebrity.Name }/>
+			<input type="date" id="field-birth_date" name="birth_date" placeholder="Fecha de Nacimiento" required value={ celebrity.BirthDate.Format("2006-01-02") }/>
+		</div>
+		<button type="submit" id="form-submit-button" class="primary-button">Guardar Cambios</button>
+		<button hx-get="/management?entity=celebrities" hx-target="#management-content" hx-swap="innerHTML" type="button" class="secondary-button">Cancelar</button>
+	</form>
+}
