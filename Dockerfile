@@ -17,6 +17,9 @@ COPY go.mod go.sum ./
 RUN go mod download
 RUN go mod verify
 
+# Para ejecutar el script de atlas en el docker-compose.yml
+RUN go install ariga.io/atlas/cmd/atlas@latest
+
 COPY . .
 
 RUN go build -ldflags="-s -w" -o /app/main ./cmd/web
@@ -35,6 +38,9 @@ WORKDIR /app
 
 COPY --from=builder --chown=app:app /app/main /app/main
 COPY --from=builder --chown=app:app /app/web ./web
+# Se trae las migraciones para poder ejecutar el script de atlas
+COPY --from=builder --chown=app:app /app/internal/storage/postgres/migrations ./migrations
+COPY --from=builder --chown=app:app /go/bin/atlas /usr/local/bin/atlas
 
 EXPOSE 8080
 
