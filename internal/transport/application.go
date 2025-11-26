@@ -30,12 +30,11 @@ func (app *Application) handleNotFound(w http.ResponseWriter, r *http.Request) {
 	app.handleTemplRender(w, r, http.StatusNotFound, component)
 }
 
-// handleTemplRender es un método de conveniencia para renderizar componentes Templ.
+// handleTemplRender es una utilidad de conveniencia para renderizar componentes Templ.
 // Se encarga de establecer las cabeceras HTTP necesarias y el código de estado.
 func (app *Application) handleTemplRender(w http.ResponseWriter, r *http.Request, status int, component templ.Component) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(status)
-
 	if err := component.Render(r.Context(), w); err != nil {
 		log.Printf("(handleTemplRender) no se pudo escribir el componente en la respuesta: %v", err)
 	}

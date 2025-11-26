@@ -17,7 +17,6 @@ const ErrCodeConstraintFK = "23503"
 
 var ErrCategoryNotFound = errors.New("the movie is not associated with the genre")
 var ErrCategoryDuplicated = errors.New("the movie is already associated with the genre")
-var ErrInvalidCategory = errors.New("some category fields were rejected")
 
 var ErrCelebrityNotFound = errors.New("the celebrity does not exist")
 var ErrCelebrityDuplicated = errors.New("the celebrity already exists")
@@ -231,7 +230,7 @@ type EntityConfig struct {
 }
 
 // EntityConfigs Contiene la configuración completa para las entidades administrables
-// de la aplicación. La clave del mapa es el nombre interno de la entidad (ej: "movies").
+// de la aplicación. La clave del mapa es el nombre interno de la entidad (ej.: "movies").
 // Esta configuración es utilizada por la capa de transporte para generar formularios,
 // tablas y rutas de API de forma genérica.
 var EntityConfigs = map[string]EntityConfig{

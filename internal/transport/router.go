@@ -18,13 +18,8 @@ func (app *Application) GetRouter() *chi.Mux {
 	mux.Get("/catalog", app.handleCatalogPage)
 	mux.Get("/management", app.handleControlPage)
 
-	// Movies
 	mux.Post("/movies", app.handleMoviesCreate)
-
-	// Genres
 	mux.Post("/genres", app.handleGenresCreate)
-
-	// Celebrities
 	mux.Post("/celebrities", app.handleCelebritiesCreate)
 
 	return mux

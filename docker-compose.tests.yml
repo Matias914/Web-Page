@@ -34,9 +34,7 @@ services:
       dockerfile: test/Dockerfile
     container_name: api-tests-runner
     environment:
-      # Le pasamos la URL de la API (ahora es un nombre de servicio)
       APP_TEST_URL: "http://app_test:8080"
-    # Este es el comando que ejecuta tu script principal
     command: ["/app/test/run_all_tests.sh"]
     depends_on:
       - app_test

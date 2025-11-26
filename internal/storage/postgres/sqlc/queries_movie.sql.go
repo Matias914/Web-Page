@@ -240,33 +240,33 @@ func (q *Queries) ListMovies(ctx context.Context, arg ListMoviesParams) ([]Movie
 
 const updateMovie = `-- name: UpdateMovie :one
 UPDATE movies
-SET title = $2,
-    synopsis = $3,
-    released_at = $4,
-    duration_minutes = $5,
-    poster_url = $6
-WHERE id = $1
+SET title = $1,
+    synopsis = $2,
+    released_at = $3,
+    duration_minutes = $4,
+    poster_url = $5
+WHERE id = $6
 RETURNING id, title, synopsis, released_at, poster_url, duration_minutes
 `
 
 type UpdateMovieParams struct {
-	ID              int64          `json:"id"`
 	Title           string         `json:"title"`
 	Synopsis        string         `json:"synopsis"`
 	ReleasedAt      time.Time      `json:"released_at"`
 	DurationMinutes int32          `json:"duration_minutes"`
 	PosterUrl       sql.NullString `json:"poster_url"`
+	ID              int64          `json:"id"`
 }
 
 // noinspection SqlResolve
 func (q *Queries) UpdateMovie(ctx context.Context, arg UpdateMovieParams) (Movie, error) {
 	row := q.db.QueryRowContext(ctx, updateMovie,
-		arg.ID,
 		arg.Title,
 		arg.Synopsis,
 		arg.ReleasedAt,
 		arg.DurationMinutes,
 		arg.PosterUrl,
+		arg.ID,
 	)
 	var i Movie
 	err := row.Scan(

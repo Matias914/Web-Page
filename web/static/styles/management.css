@@ -1,4 +1,3 @@
-/* Ajuste para que la card de gestión sea más ancha que la de "bienvenida" */
 .management-card {
     max-width: 900px;
 }
@@ -65,7 +64,6 @@ input:focus {
     transform: translateY(0);
 }
 
-/* ENTITY LIST */
 .divider {
     height: 1px;
     background: linear-gradient(90deg, transparent, rgba(255, 204, 0, 0.3), transparent);
@@ -95,8 +93,6 @@ input:focus {
     transform: translateX(4px);
 }
 
-/* === STYLES FOR DYNAMIC ENTITIES === */
-
 .hidden {
     display: none !important;
 }
@@ -109,11 +105,6 @@ input:focus {
     margin-bottom: 1rem;
 }
 
-/* NOTA: Estos estilos de catálogo están aquí porque
-   tu HTML de "management" también incluye la sección #catalog-view
-*/
-
-/* Entity Selector (Tabs) */
 .entity-selector {
     display: flex;
     gap: 0.5rem;
@@ -149,7 +140,6 @@ input:focus {
     box-shadow: 0 4px 15px rgba(255, 204, 0, 0.3);
 }
 
-/* Dynamic Form Fields */
 #form-fields {
     display: flex;
     flex-wrap: wrap;
@@ -183,14 +173,11 @@ input:focus {
 }
 
 
-/* Make title and synopsis take full width */
 #form-fields #field-title,
 #form-fields #field-synopsis {
     flex-basis: 100%;
 }
 
-
-/* List Item Buttons */
 .entity-list li > span {
     flex-grow: 1;
     word-break: break-word;
