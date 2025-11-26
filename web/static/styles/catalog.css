@@ -1,5 +1,3 @@
-/* === ESTILOS SÓLO PARA LA PÁGINA DE PELÍCULAS === */
-
 .view-title {
     color: #ffcc00;
     font-size: 2rem;
@@ -13,10 +11,6 @@
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 2rem;
     width: 100%;
-    /* NOTA: Estos estilos probablemente deberían estar 
-       en .main-container o en <main> en tu index.css
-       para que el contenido se centre.
-    */
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 2rem;
@@ -61,7 +55,7 @@
     color: #e0e0e0;
     font-size: 0.9rem;
     line-height: 1.5;
-    height: 6.75em; /* 5 lines approx */
+    height: 6.75em;
     overflow: hidden;
     text-overflow: ellipsis;
 }

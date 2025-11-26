@@ -107,7 +107,6 @@ body {
     width: 100%;
 }
 
-/* MAIN */
 .main-container {
     display: flex;
     flex-direction: column;
@@ -126,7 +125,6 @@ body {
     border-radius: 8px;
 }
 
-/* CARDS */
 .card {
     background: rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(12px);
