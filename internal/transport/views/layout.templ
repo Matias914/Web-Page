@@ -1,6 +1,5 @@
 package views
 
-
 /*
  *  Layout es el componente base que envuelve todas las páginas del sitio web.
  *  Recibe un título y un conjunto de componentes hijos que se insertan en el main.
@@ -12,11 +11,12 @@ templ Layout(title string, children ...templ.Component) {
             <meta charset="UTF-8">
             <title>{ title }</title>
 
-            <script src="https://unpkg.com/htmx.org@1.9.12"></script>
 			<link rel="stylesheet" href="/static/styles/index.css?v=1.0"/>
 			<link rel="stylesheet" href="/static/styles/error.css?v=1.0"/>
 			<link rel="stylesheet" href="/static/styles/catalog.css?v=1.0"/>
 			<link rel="stylesheet" href="/static/styles/management.css?v=1.3"/>
+
+            <script src="https://unpkg.com/htmx.org@1.9.12"></script>
 		</head>
 		<body>
 			<div id="notification-banner" class="notification"></div>

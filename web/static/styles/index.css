@@ -9,7 +9,6 @@
     font-family: 'Poppins', sans-serif;
 }
 
-/* Global link style: remove underlines from all <a> tags */
 a {
     text-decoration: none;
 }
@@ -86,30 +85,10 @@ body {
  */
 .navbar a {
     color: #fff;
-    /* text-decoration: none; */ /* Removed as global rule covers it */
     transition: all 0.3s ease;
     font-weight: 500;
     position: relative;
-    /* padding-bottom: 0.3rem; */ /* Removed as ::after is removed */
 }
-
-/* Removed custom ::after underline effect */
-/*
-.navbar a::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: #ffcc00;
-    transition: width 0.3s ease;
-}
-
-.navbar a:hover::after {
-    width: 100%;
-}
-*/
 
 .navbar a:hover {
     color: #ffcc00;

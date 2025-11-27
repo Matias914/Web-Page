@@ -14,7 +14,6 @@ import (
 // Renderiza el componente IndexPage utilizando la plantilla base.
 func (app *Application) handleIndexPage(w http.ResponseWriter, r *http.Request) {
 	component := views.IndexPage()
-
 	if err := component.Render(r.Context(), w); err != nil {
 		log.Printf("error rendering index page: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -46,7 +45,6 @@ func (app *Application) handleControlPage(w http.ResponseWriter, r *http.Request
 	if entityName == "" {
 		entityName = "movies"
 	}
-
 	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
 	if page < 1 {
 		page = 1
@@ -55,13 +53,11 @@ func (app *Application) handleControlPage(w http.ResponseWriter, r *http.Request
 	if rows < 1 {
 		rows = 10
 	}
-
 	config, exists := service.EntityConfigs[entityName]
 	if !exists {
 		http.Error(w, "Entity not found", http.StatusNotFound)
 		return
 	}
-
 	// Se llama al servicio correspondiente basado en 'entityName'.
 	var items any
 	var err error
@@ -73,13 +69,11 @@ func (app *Application) handleControlPage(w http.ResponseWriter, r *http.Request
 	case "celebrities":
 		items, err = app.CelebrityService.GetCelebritiesList(r.Context(), page, rows)
 	}
-
 	if err != nil {
 		log.Printf("error getting %s list: %v", entityName, err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-
 	// Si es una solicitud de HTMX, se renderiza el contenido parcial.
 	if r.Header.Get("HX-Request") == "true" {
 		component := views.ManagementFormAndList(config, items)
@@ -89,7 +83,6 @@ func (app *Application) handleControlPage(w http.ResponseWriter, r *http.Request
 		}
 		return
 	}
-
 	// Si no es una solicitud HTMX, se renderiza la página completa.
 	component := views.ControlPage(config, items)
 	if err := component.Render(r.Context(), w); err != nil {

@@ -9,12 +9,26 @@ import (
  * Template que se encarga de renderizar el formulario de edición de géneros.
  */
 templ GenreEditForm(config service.EntityConfig, genre service.Genre) {
-	<form id="entity-form" class="entity-form" hx-put={ fmt.Sprintf("/genres/%d", genre.ID) } hx-target="#management-content" hx-swap="innerHTML">
+	<form
+	    id="entity-form"
+	    class="entity-form"
+	    hx-put={ fmt.Sprintf("/genres/%d", genre.ID) }
+	    hx-target="#management-content"
+	    hx-swap="innerHTML"
+    >
 		<h3 id="form-title">Editando { config.Singular }</h3>
 		<div id="form-fields" class="input-group">
 			<input type="text" id="field-name" name="name" placeholder="Nombre del Género" required value={ genre.Name }/>
 		</div>
 		<button type="submit" id="form-submit-button" class="primary-button">Guardar Cambios</button>
-		<button hx-get="/management?entity=genres" hx-target="#management-content" hx-swap="innerHTML" type="button" class="secondary-button">Cancelar</button>
+		<button
+		    hx-get="/management?entity=genres"
+		    hx-target="#management-content"
+		    hx-swap="innerHTML"
+		    type="button"
+		    class="secondary-button"
+        >
+            Cancelar
+        </button>
 	</form>
 }

@@ -9,7 +9,13 @@ import "fmt"
  */
 templ ManagementFormAndList(config service.EntityConfig, items any) {
 
-    <form id="entity-form" class="entity-form" hx-post={ config.ApiEndpoint } hx-target="#management-content" hx-swap="innerHTML">
+    <form
+        id="entity-form"
+        class="entity-form"
+        hx-post={ config.ApiEndpoint }
+        hx-target="#management-content"
+        hx-swap="innerHTML"
+    >
         <h3 id="form-title">Agregar { config.Singular }</h3>
         <div id="form-fields" class="input-group">
             // Renderizado dinámico de los campos del formulario según la configuración

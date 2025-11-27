@@ -90,7 +90,7 @@ go install ariga.io/atlas/cmd/atlas@latest
 ```
 * **Templ** (Herramienta de generación de código a partir de plantillas):
 ```bash
-go install github.com/go-templ/templ/cmd/templ@latest
+go install github.com/a-h/templ/cmd/templ@latest
 ```
 **Nota:** configura el PATH para Go. Si utilizas Go y no tenes agregado su binario al PATH, necesitas exportarlo para que el sistema reconozca los comandos instalados con go install.
 ```bash

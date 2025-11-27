@@ -41,13 +41,13 @@ func Layout(title string, children ...templ.Component) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/transport/views/layout.templ`, Line: 13, Col: 26}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/transport/views/layout.templ`, Line: 12, Col: 26}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><script src=\"https://unpkg.com/htmx.org@1.9.12\"></script><link rel=\"stylesheet\" href=\"/static/styles/index.css?v=1.0\"><link rel=\"stylesheet\" href=\"/static/styles/error.css?v=1.0\"><link rel=\"stylesheet\" href=\"/static/styles/catalog.css?v=1.0\"><link rel=\"stylesheet\" href=\"/static/styles/management.css?v=1.3\"></head><body><div id=\"notification-banner\" class=\"notification\"></div><header class=\"navbar\"><div class=\"container\"><h1 class=\"logo\">🎬 WebPage</h1><nav><a href=\"/\">Inicio</a> <a href=\"/catalog\">Películas</a> <a href=\"/management\">Control</a></nav></div></header><main class=\"main-container\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><link rel=\"stylesheet\" href=\"/static/styles/index.css?v=1.0\"><link rel=\"stylesheet\" href=\"/static/styles/error.css?v=1.0\"><link rel=\"stylesheet\" href=\"/static/styles/catalog.css?v=1.0\"><link rel=\"stylesheet\" href=\"/static/styles/management.css?v=1.3\"><script src=\"https://unpkg.com/htmx.org@1.9.12\"></script></head><body><div id=\"notification-banner\" class=\"notification\"></div><header class=\"navbar\"><div class=\"container\"><h1 class=\"logo\">🎬 WebPage</h1><nav><a href=\"/\">Inicio</a> <a href=\"/catalog\">Películas</a> <a href=\"/management\">Control</a></nav></div></header><main class=\"main-container\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

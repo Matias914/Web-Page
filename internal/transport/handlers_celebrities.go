@@ -18,20 +18,17 @@ func (app *Application) handleCelebritiesCreate(w http.ResponseWriter, r *http.R
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
-
 	// Se crea la estructura CelebrityData con los datos recibidos
 	birthDate, _ := time.Parse("2006-01-02", r.FormValue("birth_date"))
 	celebrityData := service.CelebrityData{
 		Name:      r.FormValue("name"),
 		BirthDate: birthDate,
 	}
-
 	// Se valida la estructura CelebrityData
 	if err := app.ValidationService.Validate(celebrityData); err != nil {
 		http.Error(w, "Bad Request: Invalid data", http.StatusBadRequest)
 		return
 	}
-
 	// Se llama al servicio para agregar la nueva celebridad a la base de datos
 	_, err := app.CelebrityService.AddCelebrity(r.Context(), celebrityData)
 	if err != nil {
@@ -45,7 +42,6 @@ func (app *Application) handleCelebritiesCreate(w http.ResponseWriter, r *http.R
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-
 	// Se re-renderiza la lista de celebridades
 	config := service.EntityConfigs["celebrities"]
 	items, _ := app.CelebrityService.GetCelebritiesList(r.Context(), 1, 100)
@@ -62,7 +58,6 @@ func (app *Application) handleCelebrityDelete(w http.ResponseWriter, r *http.Req
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
 		return
 	}
-
 	// Se llama al servicio para eliminar la celebridad de la base de datos
 	err = app.CelebrityService.DeleteCelebrity(r.Context(), id)
 	if err != nil {
@@ -70,7 +65,6 @@ func (app *Application) handleCelebrityDelete(w http.ResponseWriter, r *http.Req
 		component.Render(r.Context(), w)
 		return
 	}
-
 	// Se envía una notificación de éxito
 	component := views.Notification("Celebridad eliminada con exito", false)
 	component.Render(r.Context(), w)
@@ -83,7 +77,6 @@ func (app *Application) handleCelebritiesUpdate(w http.ResponseWriter, r *http.R
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
-
 	// Se obtiene el ID de la celebridad desde la URL
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
@@ -91,14 +84,12 @@ func (app *Application) handleCelebritiesUpdate(w http.ResponseWriter, r *http.R
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
 		return
 	}
-
 	// Se crea la estructura CelebrityData con los datos recibidos
 	birthDate, _ := time.Parse("2006-01-02", r.FormValue("birth_date"))
 	celebrityData := service.CelebrityData{
 		Name:      r.FormValue("name"),
 		BirthDate: birthDate,
 	}
-
 	// Se valida la estructura CelebrityData
 	if err := app.ValidationService.Validate(celebrityData); err != nil {
 		http.Error(w, "Bad Request: Invalid data", http.StatusBadRequest)
@@ -137,14 +128,12 @@ func (app *Application) handleCelebrityEditForm(w http.ResponseWriter, r *http.R
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
 		return
 	}
-
 	// Se obtiene la celebridad desde el servicio
 	celebrity, err := app.CelebrityService.GetCelebrity(r.Context(), id)
 	if err != nil {
 		http.Error(w, "Not Found", http.StatusNotFound)
 		return
 	}
-
 	// Se renderiza el formulario de edición con los datos de la celebridad
 	config := service.EntityConfigs["celebrities"]
 	component := views.CelebrityEditForm(config, celebrity)

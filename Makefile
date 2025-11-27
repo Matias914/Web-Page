@@ -68,7 +68,7 @@ help:
 
 .PHONY: dev prod prod-down server
 
-dev: db-up swagger sqlc-gen templ-gen migrate-up server
+dev: db-up sqlc-gen templ-gen migrate-up server
 
 prod:
 	@echo "🐋  Construyendo y levantando la aplicación en modo producción..."

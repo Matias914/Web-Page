@@ -9,16 +9,56 @@ import (
  * Template que se encarga de renderizar el formulario de edición de una película.
  */
 templ MovieEditForm(config service.EntityConfig, movie service.Movie) {
-	<form id="entity-form" class="entity-form" hx-put={ fmt.Sprintf("/movies/%d", movie.ID) } hx-target="#management-content" hx-swap="innerHTML">
+	<form
+	    id="entity-form"
+	    class="entity-form"
+	    hx-put={ fmt.Sprintf("/movies/%d", movie.ID) }
+	    hx-target="#management-content"
+	    hx-swap="innerHTML"
+    >
 		<h3 id="form-title">Editando { config.Singular }</h3>
 		<div id="form-fields" class="input-group">
-			<input type="text" id="field-title" name="title" placeholder="Título" required value={ movie.Title }/>
-			<textarea id="field-synopsis" name="synopsis" placeholder="Sinopsis" required>{ movie.Synopsis }</textarea>
-			<input type="date" id="field-released_at" name="released_at" placeholder="Fecha de Lanzamiento" required value={ movie.ReleasedAt.Format("2006-01-02") }/>
-			<input type="number" id="field-duration_minutes" name="duration_minutes" placeholder="Duración (minutos)" required value={ fmt.Sprintf("%d", movie.DurationMinutes) }/>
-			<input type="text" id="field-poster_url" name="poster_url" placeholder="URL del Póster" value={ movie.PosterUrl }/>
+			<input
+			    type="text" id="field-title" name="title" placeholder="Título" required value={ movie.Title }/>
+			<textarea
+			    id="field-synopsis" name="synopsis" placeholder="Sinopsis" required>{ movie.Synopsis }</textarea>
+			<input
+			    type="date"
+			    id="field-released_at"
+			    name="released_at"
+			    placeholder="Fecha de Lanzamiento"
+			    required value={ movie.ReleasedAt.Format("2006-01-02") }
+			    />
+			<input
+			    type="number"
+			    id="field-duration_minutes"
+			    name="duration_minutes"
+			    placeholder="Duración (minutos)"
+			    required value={ fmt.Sprintf("%d", movie.DurationMinutes) }
+            />
+			<input
+			    type="text"
+			    id="field-poster_url"
+			    name="poster_url"
+			    placeholder="URL del Póster"
+			    value={ movie.PosterUrl }
+            />
 		</div>
-		<button type="submit" id="form-submit-button" class="primary-button">Guardar Cambios</button>
-		<button hx-get="/management?entity=movies" hx-target="#management-content" hx-swap="innerHTML" type="button" class="secondary-button">Cancelar</button>
+		<button
+            type="submit"
+            id="form-submit-button"
+            class="primary-button"
+        >
+            Guardar Cambios
+        </button>
+		<button
+		    hx-get="/management?entity=movies"
+		    hx-target="#management-content"
+		    hx-swap="innerHTML"
+		    type="button"
+		    class="secondary-button"
+        >
+            Cancelar
+        </button>
 	</form>
 }
