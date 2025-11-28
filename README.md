@@ -162,7 +162,10 @@ La evolución del esquema de la base de datos se gestiona con **Atlas**. El fluj
 
 Se adjunta un modelo de la base de datos para que se tenga a disposición una referencia visual de la arquitectura.
 
-![db.png](docs/db.png)
+<p align="center">
+  <img src="docs/db.png" alt="Descripción" width="800">
+</p>
+
 
 ## Comandos Disponibles
 
