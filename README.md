@@ -1,218 +1,191 @@
-# Web-Page 🍿
+# 🍿 Movie Catalog & Management Platform
 
-Este proyecto es una aplicación web desarrollada como parte de la currícula de la **Universidad Nacional del Centro de la Provincia de Buenos Aires (UNICEN)**. La aplicación se centra en el dominio de la cinematografía, permitiendo a los usuarios interactuar con una base de datos de películas, géneros, actores y más.
+![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?style=for-the-badge&logo=go&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Swagger](https://img.shields.io/badge/Swagger-API_Docs-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)
 
-![web-page.gif](docs/web-page.gif)
----
-## Tecnologías Utilizadas
+A full-stack, production-ready web application built from scratch in **Go (Golang)** and **PostgreSQL**. Developed as part of the software engineering curriculum at **UNICEN**, this platform provides a movie cataloging and management system featuring a domain-driven layered architecture, declarative database migrations, automated black-box testing pipelines, and hot-reloading development environments.
 
-El proyecto está construido sobre un stack de tecnologías moderno, enfocado en la eficiencia, la automatización y las buenas prácticas de desarrollo.
-
-* [Go (Golang)](https://go.dev/)
-* [PostgreSQL](https://www.postgresql.org/)
-* [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
-* [GNU Make](https://www.gnu.org/software/make/)
-* [SQL Compiler (sqlc)](https://sqlc.dev/)
-* [Atlas](https://atlasgo.io/)
-* [Air](https://github.com/cosmtrek/air)
-* [Swagger]()
+![Platform Walkthrough](docs/web-page.gif)
 
 ---
-## Estructura del Proyecto
 
-El repositorio está organizado siguiendo convenciones estándar para facilitar la mantenibilidad y escalabilidad.
+## 🏗️ Core Architecture & Directory Layout
+
+The project adheres to the standard Go project layout, implementing a decoupled, layered architectural pattern (`Transport ➔ Service ➔ Storage`) to ensure high maintainability, isolated testing, and strict separation of concerns.
 
 ```
 .
-├── cmd/                        # Punto de entrada de la aplicación (main.go)
-│   └── web/
-│       └── main.go
-├── internal/                   # Código privado del proyecto (no importable por otros)
-│   ├── api/                    # Endpoints REST
-│   ├── config/                 # Lógica de configuración del entorno
-│   ├── docs/                   # Documentación del proyecto: Swagger + imágenes
-│   ├── domain/                 # -- Nivel de Lógica de Negocio  --
-│   ├── middleware/             # Middleware del proyecto
-│   ├── service/                
-│   ├── storage/                # -- Nivel de Datos --
-│   │   └── postgres/           
-│   │       ├── migrations/     # Archivos de migración generados por Atlas
-│   │       ├── queries/        # Consultas SQL para sqlc
-│   │       ├── schema/         # Esquemas de la base de datos
-│   │       ├── sqlc/           # Archivos generados por sqlc
-│   │       └── postgre.go      # Manejo de conexión con base de datos PostgreSQL
-│   ├── test/                   # Scripts bash de testing
-│   │   ├── Dockerfile          # Imagen con curl, bash y jq
-│   │   ├── run_all_test.sh
-│   │   └── ...
-│   └── transport/              # Manejo de HTTP, handlers y renderer de plantillas
-├── web/                        
-│   ├── static/                 # Archivos estáticos
-│   │   ├── js/
-│   │   └── styles/
-│   └── templates/              # Plantillas HTML
-├── .air.toml                   # Configuración para Air (hot-reload)
-├── .dockerignore               # Archivos a ignorar por Docker
-├── .gitignore                  # Archivos a ignorar por Git
-├── Dockerfile                  # Instrucciones para construir la imagen de la app
-├── atlas.hcl                   # Configuración para Atlas (migraciones)
-├── docker-compose.test.yml     # Definición de servicios Docker para Testing (db_test, app_test y test_runner)
-├── docker-compose.yml          # Definición de servicios Docker (app y db)
-├── go.mod                      # Dependencias del proyecto Go
-├── sqlc.yml                    # Configuración para sqlc
-├── .env                        # Variables de entorno
-└── Makefile                    # Centro de comandos para automatizar tareas
+├── cmd/
+│   └── web/main.go             # Application entry-point and dependency injection wire-up
+├── internal/                   # Private application code (domain logic & implementation)
+│   ├── api/                    # REST API Handlers, route definitions, and HTTP payloads
+│   ├── config/                 # Environment configuration parser and validation layers
+│   ├── middleware/             # HTTP middleware hooks (logging, auth, recovery)
+│   ├── service/                # Core Business Logic Layer (validations, domain rules)
+│   ├── transport/              # HTTP Server lifecycle, HTML template rendering engine
+│   └── storage/                # Data Access Layer (DAL)
+│       └── postgres/
+│           ├── schema/         # Single-source-of-truth declarative database schema
+│           ├── queries/        # Raw SQL query templates optimized for sqlc compilation
+│           ├── migrations/     # Versioned migration logs auto-generated by Atlas
+│           └── sqlc/           # Type-safe, high-performance Go code auto-generated from SQL
+├── web/                        # Presentation Assets
+│   ├── static/                 # Frontend assets (Vanilla JS modules, component styles)
+│   └── templates/              # Dynamic, server-side rendered HTML Go Templates
+├── test/                       # Automated Black-Box Integration Tests
+│   ├── Dockerfile              # Isolated test runner environment (Bash + Curl + JQ)
+│   └── run_all_tests.sh        # Orchestration script executing HTTP validation suites
+├── Makefile                    # Project command center for automation tasks
+└── docker-compose.yml          # Container orchestration configuration (App + Database)
 ```
 
 ---
-## Build
 
-Sigue estos pasos para construir y ejecutar el proyecto en tu entorno local.
+## 🛠️ Tech Stack & Tooling
 
-### Requisitos Previos
+* **Backend Core:** [Go (Golang)](https://go.dev/) (v1.21+) using natively compiled structures.
+* **Database:** [PostgreSQL](https://www.postgresql.org/) optimized with specialized relational indexing.
+* **Database Tooling:** * [SQLC](https://sqlc.dev/) for compiling raw, highly efficient SQL queries into type-safe Go code.
+    * [Atlas](https://atlasgo.io/) for declarative schema inspection and versioned migration planning.
+* **Developer Experience:** [Air](https://github.com/air-verse/air) for sub-second containerized hot-reloading.
+* **Documentation:** [Swagger/OpenAPI](https://github.com/swaggo/swag) for standardized, interactive live API test benches.
 
-Antes de empezar, asegúrate de tener instaladas las siguientes herramientas en tu sistema.
+---
 
-#### 1. Herramientas del Sistema
+## 🚀 Getting Started
 
-* **Git:** Para clonar el repositorio.
-* **Docker & Docker Compose:** Para ejecutar la base de datos y la aplicación en contenedores.
-* **Go:** El lenguaje de programación (versión 1.21 o superior).
-* **Make:** Para ejecutar los comandos automatizados del proyecto.
+### Prerequisites
 
-#### 2. Herramientas de Línea de Comandos de Go
+Ensure you have the following toolchains installed locally:
+* [Docker & Docker Compose](https://docs.docker.com/engine/install/)
+* [Go Toolchain](https://go.dev/dl/) (v1.21+)
+* [GNU Make](https://www.gnu.org/software/make/)
 
-Estas son herramientas de desarrollo que nos ayudan a automatizar tareas. Se instalan fácilmente con `go install`:
-
-* **sqlc** (Generador de código para la base de datos):
+Install development dependencies via the Go package manager:
 ```bash
-go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
-```
-* **Air** (Recarga en caliente para desarrollo local):
-```bash
-go install github.com/air-verse/air@latest
-```
-* **Atlas** (Herramienta de migraciones de base de datos):
-```bash
+# Code generation for Type-Safe SQL data bindings
+go install [github.com/sqlc-dev/sqlc/cmd/sqlc@latest](https://github.com/sqlc-dev/sqlc/cmd/sqlc@latest)
+
+# Sub-second live hot-reloading daemon
+go install [github.com/air-verse/air@latest](https://github.com/air-verse/air@latest)
+
+# Declarative schema migration toolkit
 go install ariga.io/atlas/cmd/atlas@latest
-```
-* **Swagger** (Herramienta de documentación para la API REST):
-```bash
-go install github.com/swaggo/swag/cmd/swag@latest
-```
-**Nota:** configura el PATH para Go. Si utilizas Go y no tenes agregado su binario al PATH, necesitas exportarlo para que el sistema reconozca los comandos instalados con go install.
-```bash
-export PATH=$PATH:$HOME/go/bin
-```
 
-### Instalación y Ejecución
-
-1.  **Clona el repositorio:**
-```bash
-git clone https://github.com/Matias914/Web-Page.git
-cd Web-Page
+# OpenAPI/Swagger contract generation engine
+go install [github.com/swaggo/swag/cmd/swag@latest](https://github.com/swaggo/swag/cmd/swag@latest)
 ```
+> *Note: Ensure your local binary path is exported to look up newly installed tools:* `export PATH=$PATH:$HOME/go/bin`
 
-2.  **Crea tu archivo de entorno:**
-    Copia el archivo de ejemplo `.env.example` a un nuevo archivo llamado `.env`. Este archivo es ignorado por Git y contiene tus secretos locales.
-```bash
-cp .env.example .env
-```
+### Installation & Local Launch
 
+1. **Clone the Repository:**
+   ```bash
+   git clone [https://github.com/Matias914/Web-Page.git](https://github.com/Matias914/Web-Page.git)
+   cd Web-Page
+   ```
 
-3.  **Inicia el entorno de producción:**
-    Este único comando utiliza el `Makefile` para orquestar todo: levanta la base de datos y la aplicación en contenedores docker.
-```bash
-make prod
-```
+2. **Initialize Environment Variables:**
+   ```bash
+   cp .env.example .env
+   ```
 
-4. **¡Listo!**
-   La aplicación estará corriendo y accesible en `http://localhost:8080`.
+3. **Orchestrate Production Build:**
+   Compile assets, spin up dependencies, apply migrations, and lift the platform using the single-command automated toolchain:
+   ```bash
+   make prod
+   ```
+   The application will boot instantly and become accessible at `http://localhost:8080`.
 
-5. **Opcional:** Para detener el entorno de producción, se utiliza el siguiente comando de make:
-```bash
-make prod-down
-```
+4. **Spin Down the Environment:**
+   ```bash
+   make prod-down
+   ```
+
 ---
-### Testing
 
-Este único comando utiliza el `Makefile` para ejecutar todos los tests: levanta la base de datos de prueba, una copia de la aplicación y la imagen con los tests. Todo el proceso está automatizado con Docker y no guarda información persistente. Pueden ejecutarse en simultáneo con la aplicación.
+## 🧪 Testing & Interactive API Documentation
+
+### Automated Integration Testing
+
+The project incorporates an isolated black-box testing paradigm. Executing the test pipeline provisions an independent test database, boots a clean instance of the system container, and targets it with transactional shell script operations (`curl` + data validations with `jq`).
 ```bash
 make test
 ```
+*No persistent volume overrides are retained post-execution, making this routine safe to execute in parallel alongside real-time development workflows.*
 
-*Aclaración: los test consisten en un conjunto de script en bash que utilizan curl y una variable de entorno APP_TEST_URL. Si se quisieran ejecutar de forma independiente (sin docker), deberían setear la variable con el caso correspondiente.*
+### Interactive Swagger UI
 
-También proponemos usar la UI de swagger, accesible desde el endpoint `/swagger/`, para poder probar el funcionamiento de la API de una forma más interactiva.
+For individual endpoint inspection and interactive live testing, you can open the built-in Swagger dashboard at: `http://localhost:8080/swagger/`.
 
-![swagger.gif](docs/swagger.gif)
+![Swagger Workspace Walkthrough](docs/swagger.gif)
 
-## Flujo de Trabajo
+---
 
-### Recarga en Caliente
-Gracias a **Air**, cualquier cambio que guardes en un archivo `.go` o `.sql` disparará automáticamente la regeneración de código, la recompilación y el reinicio del servidor. Verás los cambios reflejados en segundos.
+## 🔄 Engineering Workflows
 
-### Migraciones de Base de Datos
-La evolución del esquema de la base de datos se gestiona con **Atlas**. El flujo de trabajo es el siguiente:
-1.  **Modifica el esquema:** Realiza cambios en el archivo `internal/storage/postgres/schema/schema.sql`.
-2.  **Genera una nueva migración:** Ejecuta `make migrate-diff NAME=nombre_descriptivo_del_cambio`.
-3.  **Aplica la migración:** Ejecuta `make migrate-up` para aplicar los cambios a tu base de datos.
+### Live Development (Hot-Reloading)
+By running the application through **Air**, any code or structure alteration across `.go` or `.sql` files automatically triggers parallel tracking, fast recompilation, and instant live state refreshes inside the active system memory loop.
 
-## Arquitectura de Base de Datos
+### Declarative Database Migrations
+Database schema evolutions are managed as code using **Atlas** to prevent drift across environments:
+1.  **Modify Schema Blueprint:** Update the master schema definition file `internal/storage/postgres/schema/schema.sql`.
+2.  **Generate Differential Migrations:** Execute `make migrate-diff NAME=add_description_field` to write automated tracking code.
+3.  **Apply Migration Pipeline:** Execute `make migrate-up` to securely execute the modifications onto the local target container.
 
-Se adjunta un modelo de la base de datos para que se tenga a disposición una referencia visual de la arquitectura.
+---
+
+## 📊 Database Architecture
+
+The data layout layer establishes highly relational mappings connecting movies, categories, roles, and actors with optimal constraints:
 
 <p align="center">
-  <img src="docs/db.png" alt="Descripción" width="800">
+  <img src="docs/db.png" alt="Relational Database Schema Layout Diagram" width="800">
 </p>
 
+---
 
-## Comandos Disponibles
+## 📋 Available Commands Reference
 
-El `Makefile` es el centro de control del proyecto. Ejecuta `make help` para ver una lista completa y actualizada de todos los comandos disponibles.
+The `Makefile` serves as the centralized orchestration layer. Run `make help` to inspect the available targets:
 
 ```bash
 $ make help
-Uso: make [comando]
+Usage: make [command]
 
-Comandos Principales:
-  dev           - Inicia DB, aplica migraciones y corre el servidor en modo desarrollo.
-  prod          - Construye y levanta toda la aplicación (app y db) en Docker.
-  prod-down     - Detiene los contenedores de producción y remueve contenedores huérfanos.
-  server        - Corre el servidor con hot-reload (Air).
+Core Deployment Targets:
+  dev           - Boot database container, run schema migrations, and execute hot-reload server (Air).
+  prod          - Compile binaries, build containers, and initialize full runtime stack inside Docker.
+  prod-down     - Safely terminate and remove active containers and orphan artifacts.
+  server        - Spin up the web application daemon with active hot-reloading tracking.
 
-Comandos de Base de Datos (Docker):
-  db-up         - Inicia el contenedor de la base de datos.
-  db-down       - Detiene el contenedor de la base de datos.
-  db-nuke       - Detiene y elimina los volúmenes de la base de datos.
+Database & Storage Management:
+  db-up         - Spin up the isolated PostgreSQL storage container instance.
+  db-down       - Halt active PostgreSQL storage containers.
+  db-nuke       - Drop active database structures, clear data streams, and purge storage volumes.
 
-Comandos de Migraciones (Atlas):
-  migrate-diff  - Crea un nuevo archivo de migración (requiere NAME).
-  migrate-up    - Aplica todas las migraciones pendientes.
-  migrate-set   - Revierte a una migración anterior (requiere VERSION).
+Declarative Schema Migrations (Atlas):
+  migrate-diff  - Compute differential script mapping from declarative schema (Requires NAME parameter).
+  migrate-up    - Flush all pending versioned migration scripts down to the target database instance.
+  migrate-set   - Enforce database state rewind or transition targeting explicit logs (Requires VERSION parameter).
 
-Comandos de Desarrollo:
-  sqlc-gen      - Genera código Go desde las queries SQL.
-  build         - Compila el binario de la aplicación.
-  run           - Compila y ejecuta el binario.
-  test          - Ejecuta todas las pruebas usando un entorno de ejecución Docker.
-  tidy          - Ordena y verifica las dependencias de Go.
-  clean         - Elimina el directorio de binarios.
-  docker-clean  - Limpieza completa del proyecto actual en Docker.
-  docker-nuke   - Elimina contenedores y volúmenes de Docker no utilizados.
-
-Comandos para Documentación:
-  swagger       - Genera la documentación Swagger/OpenAPI.
+Development, Compiling & Asset Pipelines:
+  sqlc-gen      - Run sqlc compiler to generate strongly-typed Go structural handlers out of SQL statements.
+  build         - Compile optimized binary configurations for native target environments.
+  run           - Compile assets and launch standard binary executions.
+  test          - Run the fully containerized end-to-end multi-service test runner workspace.
+  swagger       - Rebuild interactive OpenAPI configuration blocks and update Swagger UI docs.
 ```
 
 ---
-## Desarrolladores
 
-* **Ortiz Matias** - *Estudiante*
-* **Leon Nicolas** - *Estudiante*
+## 👥 Engineering Team
 
-**Universidad Nacional del Centro de la Provincia de Buenos Aires (UNICEN)**
-Facultad de Ciencias Exactas - Tandil, Buenos Aires.
-Septiembre, 2025.
+* **Matias Ortiz** - *Software Engineering Student (UNICEN)*
+* **Nicolas Leon** - *Software Engineering Student (UNICEN)*
 
-![img.png](docs/banner.png)
+**Universidad Nacional del Centro de la Provincia de Buenos Aires (UNICEN)** Faculty of Exact Sciences — Tandil, Buenos Aires, Argentina.
+
+![Institutional Banner](docs/banner.png)
