@@ -1,192 +1,148 @@
-# Web-Page 🍿
+# 🍿 Plataforma Web de Cine — Entrega TP6 (UI/UX & Formularios Modulares)
 
-Este proyecto es una aplicación web desarrollada como parte de la currícula de la **Universidad Nacional del Centro de la Provincia de Buenos Aires (UNICEN)**. La aplicación se centra en el dominio de la cinematografía, permitiendo a los usuarios interactuar con una base de datos de películas, géneros, actores y más.
+![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?style=for-the-badge&logo=go&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Templ](https://img.shields.io/badge/Templ-Type__Safe__UI-00CDA6?style=for-the-badge&logo=go&logoColor=white)
 
-![web-page.gif](docs/web-page.gif)
----
-## Tecnologías Utilizadas
+> 📢 **Nota de la Entrega:** Esta rama contiene el código fuente consolidado correspondiente al **Trabajo Práctico 6 (TP6)** de la UNICEN. El objetivo de este hito es la refactorización de la capa de presentación para mejorar la usabilidad (UX). Se implementó un sistema de notificaciones en tiempo real manejado desde el servidor y se desacoplaron los formularios de administración en componentes especializados (Películas, Celebridades y Géneros) utilizando el motor Templ.
 
-El proyecto está construido sobre un stack de tecnologías moderno, enfocado en la eficiencia, la automatización y las buenas prácticas de desarrollo.
-
-* [Go (Golang)](https://go.dev/)
-* [PostgreSQL](https://www.postgresql.org/)
-* [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
-* [GNU Make](https://www.gnu.org/software/make/)
-* [SQL Compiler (sqlc)](https://sqlc.dev/)
-* [Atlas](https://atlasgo.io/)
-* [Air](https://github.com/cosmtrek/air)
+![Demostración de la Aplicación](docs/web-page.gif)
 
 ---
-## Estructura del Proyecto
 
-El repositorio está organizado siguiendo convenciones estándar para facilitar la mantenibilidad y escalabilidad.
+## 🏗️ Estructura del Proyecto
+
+La capa de frontend en servidor continúa expandiéndose, ahora con soporte para interacciones granulares y retroalimentación visual al usuario.
 
 ```
 .
-├── cmd/                        # Punto de entrada de la aplicación (main.go)
-│   └── web/
-│       └── main.go
-├── internal/                   # Código privado del proyecto (no importable por otros)
-│   ├── config/                 # Lógica de configuración del entorno
-│   ├── docs/                   # Documentación del proyecto: Imágenes y GIFs
-│   ├── domain/                 # -- Nivel de Lógica de Negocio  --
-│   ├── middleware/             # Middleware del proyecto
-│   ├── service/                
-│   ├── storage/                # -- Nivel de Datos --
-│   │   └── postgres/           
-│   │       ├── migrations/     # Archivos de migración generados por Atlas
-│   │       ├── queries/        # Consultas SQL para sqlc
-│   │       ├── schema/         # Esquemas de la base de datos
-│   │       ├── sqlc/           # Archivos generados por sqlc
-│   │       └── postgre.go      # Manejo de conexión con base de datos PostgreSQL
-│   └── transport/              # Manejo de HTTP, handlers
-│       └── views/              # Manejo de plantillas
+├── cmd/
+│   └── web/main.go             # Punto de entrada de la aplicación y cableado de dependencias
+├── internal/                   # Código privado del ecosistema backend
+│   ├── config/                 # Validación de variables de entorno
+│   ├── middleware/             # Interceptores de peticiones HTTP
+│   ├── service/                # Capa de Lógica de Negocio 
+│   ├── storage/                # Motor de Datos (PostgreSQL, SQLC Binding y Atlas)
+│   └── transport/              # Capa de Comunicación HTTP
+│       ├── handlers_*.go       # Controladores segmentados por dominio de datos
+│       ├── handlers_notification.go # Lógica de despacho de alertas y mensajes flash
+│       ├── router.go           # Enrutador principal
+│       └── views/              # 🎨 Componentes de Interfaz de Usuario (Templ Engine)
+│           ├── edit_form_celebrities.templ # Formulario específico para Actores/Directores
+│           ├── edit_form_genres.templ      # Formulario específico para Géneros
+│           ├── edit_form_movies.templ      # Formulario específico para Películas
+│           ├── notification.templ          # Sistema de alertas dinámicas (Toast/Flash)
+│           ├── layout.templ                # Armazón HTML global
+│           ├── page_*.templ                # Vistas principales de página
+│           └── *_templ.go                  # Código Go autogenerado
 ├── web/                        
-│   └── static/                 # Archivos estáticos
-│       └── styles/
-├── .air.toml                   # Configuración para Air (hot-reload)
-├── .dockerignore               # Archivos a ignorar por Docker
-├── .gitignore                  # Archivos a ignorar por Git
-├── Dockerfile                  # Instrucciones para construir la imagen de la app
-├── atlas.hcl                   # Configuración para Atlas (migraciones)
-├── docker-compose.yml          # Definición de servicios Docker (app y db)
-├── go.mod                      # Dependencias del proyecto Go
-├── sqlc.yml                    # Configuración para sqlc
-├── .env                        # Variables de entorno
-└── Makefile                    # Centro de comandos para automatizar tareas
+│   └── static/styles/          # Hojas de estilo modulares (CSS puro)
+├── .air.toml                   # Configuración de recarga en caliente (Air)
+├── Dockerfile                  # Instrucciones para contenedor de producción
+├── Makefile                    # Catálogo de comandos de automatización
+├── atlas.hcl                   # Declaración del motor de migraciones
+└── docker-compose.yml          # Topología multi-contenedor (App + BD)
 ```
 
 ---
-## Build
 
-Sigue estos pasos para construir y ejecutar el proyecto en tu entorno local.
+## 🛠️ Stack Tecnológico
+
+* **Backend:** [Go (Golang)](https://go.dev/) (v1.21+).
+* **Motor de Interfaz:** [Templ](https://templ.guide/), procesamiento de vistas web tipadas en Go.
+* **Base de Datos:** [PostgreSQL](https://www.postgresql.org/) interactuando mediante sentencias tipadas de [SQLC](https://sqlc.dev/).
+* **Migraciones:** [Atlas](https://atlasgo.io/) para control de versiones estructurales.
+* **Desarrollo:** [Air](https://github.com/air-verse/air) para *hot-reload* continuo.
+
+---
+
+## 🚀 Despliegue Local
 
 ### Requisitos Previos
 
-Antes de empezar, asegúrate de tener instaladas las siguientes herramientas en tu sistema.
+Asegúrate de contar con Docker, Docker Compose, GNU Make y Go v1.21+. Instala las utilidades globales ejecutando:
 
-#### 1. Herramientas del Sistema
-
-* **Git:** Para clonar el repositorio.
-* **Docker & Docker Compose:** Para ejecutar la base de datos y la aplicación en contenedores.
-* **Go:** El lenguaje de programación (versión 1.21 o superior).
-* **Make:** Para ejecutar los comandos automatizados del proyecto.
-
-#### 2. Herramientas de Línea de Comandos de Go
-
-Estas son herramientas de desarrollo que nos ayudan a automatizar tareas. Se instalan fácilmente con `go install`:
-
-* **sqlc** (Generador de código para la base de datos):
 ```bash
-go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
-```
-* **Air** (Recarga en caliente para desarrollo local):
-```bash
-go install github.com/air-verse/air@latest
-```
-* **Atlas** (Herramienta de migraciones de base de datos):
-```bash
+go install [github.com/sqlc-dev/sqlc/cmd/sqlc@latest](https://github.com/sqlc-dev/sqlc/cmd/sqlc@latest)
+go install [github.com/air-verse/air@latest](https://github.com/air-verse/air@latest)
 go install ariga.io/atlas/cmd/atlas@latest
-```
-* **Templ** (Herramienta de generación de código a partir de plantillas):
-```bash
-go install github.com/a-h/templ/cmd/templ@latest
-```
-**Nota:** configura el PATH para Go. Si utilizas Go y no tenes agregado su binario al PATH, necesitas exportarlo para que el sistema reconozca los comandos instalados con go install.
-```bash
-export PATH=$PATH:$HOME/go/bin
+go install [github.com/a-h/templ/cmd/templ@latest](https://github.com/a-h/templ/cmd/templ@latest)
 ```
 
-### Instalación y Ejecución
+### Configuración Rápida
 
-1.  **Clona el repositorio:**
-```bash
-git clone https://github.com/Matias914/Web-Page.git
-cd Web-Page
-```
+1. **Clonar e inicializar el entorno:**
+   ```bash
+   git clone [https://github.com/Matias914/Web-Page.git](https://github.com/Matias914/Web-Page.git)
+   cd Web-Page
+   cp .env.example .env
+   ```
 
-2.  **Crea tu archivo de entorno:**
-    Copia el archivo de ejemplo `.env.example` a un nuevo archivo llamado `.env`. Este archivo es ignorado por Git y contiene tus secretos locales.
-```bash
-cp .env.example .env
-```
+2. **Despliegue Full-Stack Automático:**
+   ```bash
+   make prod
+   ```
+   La aplicación compilará todos sus componentes, ejecutará las migraciones e iniciará en: `http://localhost:8080`.
 
+3. **Detener servicios:**
+   ```bash
+   make prod-down
+   ```
 
-3.  **Inicia el entorno de producción:**
-    Este único comando utiliza el `Makefile` para orquestar todo: levanta la base de datos y la aplicación en contenedores docker.
-```bash
-make prod
-```
-
-4. **¡Listo!**
-   La aplicación estará corriendo y accesible en `http://localhost:8080`.
-
-5. **Opcional:** Para detener el entorno de producción, se utiliza el siguiente comando de make:
-```bash
-make prod-down
-```
 ---
 
-## Flujo de Trabajo
+## 🔄 Flujo de Trabajo
 
-### Recarga en Caliente
-Gracias a **Air**, cualquier cambio que guardes en un archivo `.go` o `.sql` disparará automáticamente la regeneración de código, la recompilación y el reinicio del servidor. Verás los cambios reflejados en segundos.
+### Sistema de Componentes (Templ) y Hot-Reload
+Mediante la ejecución de `make dev`, **Air** supervisará de forma conjunta los archivos `.go` y `.templ`. Al modificar la estructura visual de una notificación o un formulario, el compilador generará automáticamente el árbol tipado de Go y reiniciará el servidor de forma instantánea.
 
-### Migraciones de Base de Datos
-La evolución del esquema de la base de datos se gestiona con **Atlas**. El flujo de trabajo es el siguiente:
-1.  **Modifica el esquema:** Realiza cambios en el archivo `internal/storage/postgres/schema/schema.sql`.
-2.  **Genera una nueva migración:** Ejecuta `make migrate-diff NAME=nombre_descriptivo_del_cambio`.
-3.  **Aplica la migración:** Ejecuta `make migrate-up` para aplicar los cambios a tu base de datos.
+### Administración de Base de Datos
+1. Modifica la estructura en `internal/storage/postgres/schema/schema.sql`.
+2. Genera el diferencial: `make migrate-diff NAME=nombre_del_cambio`.
+3. Aplica los cambios: `make migrate-up`.
 
-## Arquitectura de Base de Datos
+---
 
-Se adjunta un modelo de la base de datos para que se tenga a disposición una referencia visual de la arquitectura.
+## 📋 Panel de Comandos (Makefile)
 
-![db.png](docs/db.png)
-
-## Comandos Disponibles
-
-El `Makefile` es el centro de control del proyecto. Ejecuta `make help` para ver una lista completa y actualizada de todos los comandos disponibles.
+Utiliza `make help` para auditar la suite de tareas integradas:
 
 ```bash
 $ make help
 Uso: make [comando]
 
 Comandos Principales:
-  dev           - Inicia DB, aplica migraciones y corre el servidor en modo desarrollo.
-  prod          - Construye y levanta toda la aplicación (app y db) en Docker.
-  prod-down     - Detiene los contenedores de producción y remueve contenedores huérfanos.
-  server        - Corre el servidor con hot-reload (Air).
+  dev           - Inicia BD, aplica migraciones y corre el servidor en desarrollo (hot-reload).
+  prod          - Construye y levanta toda la infraestructura en contenedores Docker.
+  prod-down     - Detiene los servicios en ejecución.
+  server        - Corre localmente el servidor web aislando dependencias de BD.
 
-Comandos de Base de Datos (Docker):
-  db-up         - Inicia el contenedor de la base de datos.
-  db-down       - Detiene el contenedor de la base de datos.
-  db-nuke       - Detiene y elimina los volúmenes de la base de datos.
+Comandos de Base de Datos:
+  db-up         - Levanta únicamente PostgreSQL en Docker.
+  db-down       - Apaga el contenedor de BD.
+  db-nuke       - Destruye contenedores y purga volúmenes persistentes.
 
-Comandos de Migraciones (Atlas):
-  migrate-diff  - Crea un nuevo archivo de migración (requiere NAME).
-  migrate-up    - Aplica todas las migraciones pendientes.
-  migrate-set   - Revierte a una migración anterior (requiere VERSION).
+Sistemas de Migraciones (Atlas):
+  migrate-diff  - Genera un archivo incremental desde el esquema (requiere NAME).
+  migrate-up    - Impacta migraciones pendientes a la BD activa.
+  migrate-set   - Revierte el historial a una versión previa (requiere VERSION).
 
-Comandos de Desarrollo:
-  sqlc-gen      - Genera código Go desde las queries SQL.
-  templ-gen     - Genera código desde plantillas Templ.
-  build         - Compila el binario de la aplicación.
-  run           - Compila y ejecuta el binario.
-  tidy          - Ordena y verifica las dependencias de Go.
-  clean         - Elimina el directorio de binarios.
-  docker-clean  - Limpieza completa del proyecto actual en Docker.
-  docker-nuke   - Elimina contenedores y volúmenes de Docker no utilizados.
+Desarrollo y Generación de Código:
+  sqlc-gen      - Recrea las estructuras Go basadas en queries SQL.
+  templ-gen     - Compila los archivos visuales .templ a código nativo Go.
+  build         - Compila la aplicación en un binario.
+  clean         - Limpia directorios de *build*.
 ```
 
 ---
-## Desarrolladores
 
-* **Ortiz Matias** - *Estudiante*
-* **Leon Nicolas** - *Estudiante*
+## 👥 Desarrolladores
 
-**Universidad Nacional del Centro de la Provincia de Buenos Aires (UNICEN)**
-Facultad de Ciencias Exactas - Tandil, Buenos Aires.
-Septiembre, 2025.
+* **Ortiz Matias** - *Estudiante de Ingeniería de Sistemas (UNICEN)*
+* **Leon Nicolas** - *Estudiante de Ingeniería de Sistemas (UNICEN)*
 
-![img.png](docs/banner.png)
+**Universidad Nacional del Centro de la Provincia de Buenos Aires (UNICEN)** Facultad de Ciencias Exactas — Tandil, Buenos Aires, Argentina.  
+*Septiembre, 2025.*
+
+![Banner del Proyecto](docs/banner.png)
